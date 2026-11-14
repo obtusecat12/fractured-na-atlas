@@ -1,0 +1,114 @@
+{
+ "arrow": {
+  "hot": [
+   0,
+   0
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "link": {
+  "hot": [
+   5,
+   0
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "beam": {
+  "hot": [
+   15,
+   16
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "helpsel": {
+  "hot": [
+   0,
+   0
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "cross": {
+  "hot": [
+   15,
+   16
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "move": {
+  "hot": [
+   15,
+   15
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "unavail": {
+  "hot": [
+   8,
+   8
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "ns": {
+  "hot": [
+   15,
+   15
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "ew": {
+  "hot": [
+   15,
+   15
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "nwse": {
+  "hot": [
+   15,
+   15
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "nesw": {
+  "hot": [
+   15,
+   15
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "pen": {
+  "hot": [
+   0,
+   0
+  ],
+  "frames": 1,
+  "delay": 166
+ },
+ "busy": {
+  "hot": [
+   16,
+   16
+  ],
+  "frames": 18,
+  "delay": 50
+ },
+ "working": {
+  "hot": [
+   0,
+   8
+  ],
+  "frames": 18,
+  "delay": 33
+ }
+}
