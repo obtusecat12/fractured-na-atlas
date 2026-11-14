@@ -35,7 +35,9 @@ sil=nat.difference(unary_union([shape(x['geometry']).buffer(0.5) for x in F])).b
 F=F+[{'id':'_silence','geometry':sil.__geo_interface__}]
 out={}
 for f in F:
-    g=shape(f['geometry']); parts=sorted(getattr(g,'geoms',[g]),key=lambda p:-p.area)
+    g=shape(f['geometry'])
+    def _fl(x): return [q for p in getattr(x,'geoms',[x]) for q in (_fl(p) if hasattr(p,'geoms') else [p]) if q.geom_type=='Polygon']
+    parts=sorted(_fl(g),key=lambda p:-p.area)
     A0=parts[0].area; L=[]
     for p in parts[:14]:
         if p.area<25 or (p.area<0.004*A0 and p.area<400): continue
