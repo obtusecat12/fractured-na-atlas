@@ -227,7 +227,7 @@
    "id": "fema",
    "zh": "联邦紧急事务管理署",
    "en": "Federal Emergency Management Agency",
-   "color": "#3B4CA8",
+   "color": "#3366D6",
    "lights": "rationed",
    "terrain_zh": "北部边境带：爱达荷狭长地带、蒙大拿北部（南界为密苏里河）、北达科他北部、明尼苏达北部、密歇根上半岛。",
    "terrain_en": "The northern border belt: Idaho Panhandle, northern Montana (southern edge is the Missouri River), northern North Dakota, northern Minnesota, Michigan's Upper Peninsula.",
@@ -241,7 +241,7 @@
    "id": "frc",
    "zh": "联邦残余指挥部",
    "en": "Federal Remnants Command",
-   "color": "#6A7FE8",
+   "color": "#2B78E4",
    "lights": "flicker",
    "terrain_zh": "墨西哥湾沿岸据点：新奥尔良—巴吞鲁日沿海、佛罗里达狭长地带、杰克逊维尔周边、坦帕湾至迈阿密与群岛。",
    "terrain_en": "Gulf coast holdouts: coastal Louisiana (New Orleans–Baton Rouge), the Florida Panhandle pocket, the Jacksonville area, Tampa Bay to Miami and the Keys.",
@@ -358,12 +358,12 @@
    "terrain_en": "Atlanta's east side and the Piedmont, down I-75 through McDonough and Forsyth to Macon."
   },
   {
-   "lore_zh": "原型是1968年在底特律成立的新阿非利加共和国临时政府，它主张密西西比、路易斯安那、亚拉巴马、佐治亚、南卡五州为黑人民族国家领土，1971年曾在密西西比设“库什区”。此处据点因紧邻钚生产基地，分量远超面积。",
-   "lore_en": "Modelled on the Provisional Government of the Republic of New Afrika (Detroit, 1968), which claimed Mississippi, Louisiana, Alabama, Georgia and South Carolina and set up a \"Kush District\" in Mississippi in 1971. Next to a plutonium complex, this foothold matters far beyond its size.",
+   "lore_zh": "原型是1968年在底特律成立的新阿非利加共和国临时政府，它主张密西西比、路易斯安那、亚拉巴马、佐治亚、南卡五州为黑人民族国家领土，1971年曾在密西西比设“库什区”。这块据点就是钚生产基地本身，分量远超面积。",
+   "lore_en": "Modelled on the Provisional Government of the Republic of New Afrika (Detroit, 1968), which claimed Mississippi, Louisiana, Alabama, Georgia and South Carolina and set up a \"Kush District\" in Mississippi in 1971. The foothold is the plutonium complex itself, which makes it matter far beyond its size.",
    "founded": "—",
    "id": "nafr",
-   "zh": "新阿非利加共和国·萨凡纳河区",
-   "en": "Republic of New Afrika — Savannah River District",
+   "zh": "新阿非利加共和国",
+   "en": "Republic of New Afrika",
    "color": "#7A4A12",
    "lights": "dim",
    "capital_zh": "新埃伦顿",
@@ -372,8 +372,8 @@
     -81.686,
     33.421
    ],
-   "terrain_zh": "南卡罗来纳艾肯县，紧贴萨凡纳河核基地西北角。",
-   "terrain_en": "Aiken County, South Carolina, against the northwest corner of the Savannah River nuclear site."
+   "terrain_zh": "萨凡纳河核基地全境（跨艾肯、巴恩韦尔、阿伦代尔三县）及北侧的新埃伦顿镇，边界即能源部基地围栏与镇界。",
+   "terrain_en": "The whole Savannah River nuclear site (across Aiken, Barnwell and Allendale counties) and the town of New Ellenton on its north fence; the border is the DOE perimeter and the town limits."
   },
   {
    "lore_zh": "以1915年在盐湖城被处决的世界产业工人联合会（IWW）歌手乔·希尔命名。原型：帕克城矿工1919年罢工；IWW盐湖城总会员支部在20世纪末复建，2000年代仍活跃；1989年成立“乔·希尔组织委员会”。1980—2010年犹他并无武装左翼，这是在劳工传统上的虚构延伸。",

@@ -1,16 +1,17 @@
-# Wikipedia-style US locator (Albers, AK/HI insets) from our factions.geojson. usage: mklocator.py out.png id[,id...]
+# Wikipedia-style US locator (v3.4: state outlines include Franklin, Deseret and Sequoyah) (Albers, AK/HI insets) from our factions.geojson. usage: mklocator.py out.png id[,id...]
 import sys, json
 from PIL import Image, ImageDraw
 from pyproj import Transformer
 from shapely.geometry import shape, box
 from shapely.ops import transform
-PR = '/workspace/projects/c5ed423d-6463-4621-81ae-6bc7bb708155/'
+import os
+PR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../pipeline/build/')  # v3.4: lon/lat layers from tools/v34_ll.py
 out, ids = sys.argv[1], sys.argv[2].split(',')
 W, H, S = 250, 160, 4
 SEA, LAND, LINE, HI_ = (198, 236, 255), (254, 254, 233), (100, 100, 100), (192, 0, 0)
-states = json.load(open(PR + 'data/work_states.geojson'))['features']
-facs = [f for f in json.load(open(PR + 'build/factions.geojson'))['features'] if f['properties'].get('id') in ids]
-cntry = [f for f in json.load(open(PR + 'data/ne/ne_50m_admin_0_countries.geojson'))['features'] if f['properties'].get('ADM0_A3') in ('CAN', 'MEX', 'CUB', 'BHS')]
+states = json.load(open(PR + '_states_ll.geojson'))['features']
+facs = [f for f in json.load(open(PR + 'factions.geojson'))['features'] if f['properties'].get('id') in ids]
+cntry = [f for f in json.load(open(PR + '_countries_ll.geojson'))['features']]
 conus = Transformer.from_crs(4326, '+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96', always_xy=True)
 ak = Transformer.from_crs(4326, '+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154', always_xy=True)
 hi = Transformer.from_crs(4326, '+proj=aea +lat_1=8 +lat_2=18 +lat_0=13 +lon_0=-157', always_xy=True)
@@ -31,7 +32,8 @@ def draw(geom, frame, fill, outline=None, wid=1):
         if p.geom_type != 'Polygon': continue
         def P(ring): return [(ox + x * sc, oy - y * sc) for x, y in (T.transform(*c) for c in ring.coords)]
         dr.polygon(P(p.exterior), fill=fill)
-        for r in p.interiors: dr.polygon(P(r), fill=SEA)
+        if fill is not None:
+            for r in p.interiors: dr.polygon(P(r), fill=SEA)
         if outline: dr.line(P(p.exterior), fill=outline, width=wid)
 for f in cntry: draw(shape(f['geometry']).buffer(0), 'c', (230, 230, 230), (160, 160, 160), 2)
 BOX = {'a': (0.005, 0.66, 0.27, 0.995), 'h': (0.27, 0.80, 0.42, 0.995)}
