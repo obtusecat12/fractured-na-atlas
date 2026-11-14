@@ -1,6 +1,7 @@
 import json, base64, io, html, os
 from PIL import Image
-from fl_content import USERS, PHOTOS, GROUP
+from fl_content import USERS, PHOTOS, GROUP, SETS
+import re
 D = os.path.dirname(os.path.abspath(__file__))
 def b64(im, q=72):
     b = io.BytesIO(); im.save(b, 'JPEG', quality=q, optimize=True); return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
@@ -21,6 +22,17 @@ BUD = {u: buddy(u) for u in USERS}
 im=raw('kc_dark_street'); GBUD=b64(im.crop((1150,560,1450,860)).resize((48,48),Image.LANCZOS),75)
 LOGO = 'data:image/gif;base64,' + base64.b64encode(open(f'{D}/ref/logo.gif','rb').read()).decode()
 FAV = 'data:image/x-icon;base64,' + base64.b64encode(open(f'{D}/ref/fav.ico','rb').read()).decode()
+
+def _uri(fn, mt):
+    return 'data:%s;base64,%s' % (mt, base64.b64encode(open(f'{D}/ref/{fn}','rb').read()).decode())
+IMG = {'photo-gne-sprite-2.png': _uri('img_photo-gne-sprite-2.png','image/png'), 'candy_button_bar_bg.gif': _uri('img_candy_button_bar_bg.gif','image/gif'),
+       'set_case.gif': _uri('img_set_case.gif','image/gif'), 'dotted.gif': _uri('img_dotted.gif','image/gif')}
+def _css(fn):
+    c = open(f'{D}/ref/{fn}', encoding='utf-8', errors='ignore').read()
+    c = re.sub(r'_background-image:[^;}]*;?', '', c)
+    return re.sub(r'url\((?:http://l\.yimg\.com/g/images/)?([^)]+)\)', lambda m: 'url(%s)' % IMG[m.group(1).split('/')[-1]] if m.group(1).split('/')[-1] in IMG else 'none', c)
+REALCSS = _css('main.css') + _css('sets.css')   # Flickr's own c_fold_main / c_sets stylesheets, June 2009 (Wayback)
+LOGO09 = _uri('logo_gamma.gif', 'image/gif'); SBTN = _uri('search_btn.png', 'image/png'); CARET = _uri('caret.png', 'image/png'); SPACE = _uri('spaceout.gif', 'image/gif')
 e = lambda s: html.escape(s, quote=True)
 def bud(u, s=48):
     src = BUD.get(u)
@@ -64,29 +76,73 @@ h1{font:normal 24px Arial;margin:6px 0 4px;color:#000}
 .note{background:#ffffd3;border:1px solid #e6db55;padding:6px 8px;margin:0 0 12px;font-size:12px}
 .gen{display:inline-block}
 '''
-def page(title, body):
-    head = f'''<div id="head"><a href="#" data-p="/" id="logo" class="ni"><img src="{LOGO}" width="98" height="26" alt="Flickr from Yahoo!" border="0"></a>
-<div id="tr">You aren't signed in &nbsp;<a href="#">Sign In</a> &nbsp; <a href="#">Help</a></div>
-<div id="nav"><a href="#" data-p="/">Home</a> <a href="#">The Tour</a> <a href="#">Sign Up</a> <a href="#">Explore</a></div>
-<form id="srch" onsubmit="return false"><input type="text"><input type="submit" class="btn" value="SEARCH"></form></div>'''
-    foot = f'''<div id="foot"><div class="fl"><a href="#" data-p="/">Home</a> | <a href="#">The Tour</a> | <a href="#">Sign Up</a> | <a href="#">Explore</a> | <a href="#">Upload</a> &nbsp;&nbsp; <a href="#">Help</a> | <a href="#">Community Guidelines</a> | <a href="#">The Help Forum</a> | <a href="#">FAQ</a> | <a href="#">Sitemap</a> | <a href="#">Get Help</a></div>
-<div class="fl"><a href="#">Flickr Blog</a> | <a href="#">About Flickr</a> | <a href="#">Terms of Use</a> | <a href="#">Your Privacy</a> | <a href="#">Copyright/IP Policy</a> | <a href="#">Report Abuse</a></div>
-<div>Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</div></div>'''
+def page(title, body, who='kmendoza916'):
+    head = f'''<div class="TopBar" id="TopBar"><table cellspacing="0" class="Header" border="0"><tr><td class="FlickrLogo"><a href="#" data-p="/"><img src="{LOGO09}" id="FlickrLogo" width="98" height="26" alt="Flickr logo. If you click it, you'll go home"></a></td>
+<td class="Status">You aren't signed in &nbsp;&nbsp;&nbsp; <a href="#">Sign In</a> &nbsp;&nbsp; <a href="#">Help</a></td></tr></table>
+<table cellspacing="0" class="NavBar" border="0"><tr><td class="Primary"><div id="candy_nav_button_bar" class="candy_button_bar"><ul class="site_nav_menu_buttons">
+<li class="no_menu_li"><span><a href="#" data-p="/">Home</a></span></li><li class="no_menu_li"><span><a href="#">The Tour</a></span></li><li class="no_menu_li"><span><a href="#">Sign Up</a></span></li>
+<li class="menu_li"><span><a href="#">Explore</a> <img src="{CARET}" class="nav_button_caret" width="18" height="15" alt="More options"></span></li></ul></div></td>
+<td id="search_header_form_td"><form onsubmit="return false" id="headersearchform"><input type="text" class="Box" value="Search {e(who)}'s photostream" style="color:#999"> <input value="Search" type="image" src="{SBTN}" style="vertical-align:top"></form></td></tr></table></div>'''
+    foot = '''<br id="MainFooterClear" clear="all"><div id="FooterWrapper"><div class="Footer"><table class="Jump" cellspacing="0">
+<tr><th class="To">You</th><td><a href="#">Sign in</a> | <a href="#">Create Your Free Account</a></td></tr>
+<tr><th class="To"><a href="#" class="Plain">Explore</a></th><td><a href="#">Places</a> | <a href="#">Last 7 Days</a> | <a href="#">This Month</a> | <a href="#">Popular Tags</a> | <a href="#">The Commons</a> | <a href="#">Creative Commons</a> | <a href="#">Search</a></td></tr>
+<tr><th class="To"><a href="#" class="Plain">Help</a></th><td><a href="#">Community Guidelines</a> | <a href="#">The Help Forum</a> | <a href="#">FAQ</a> | <a href="#">Sitemap</a> | <a href="#">Help by Email</a></td></tr></table>
+<p class="About"><span class="yahoo_logo"><a href="#"><img src="SPACE" width="99" height="11" alt="Flickr, a Yahoo! Company" class="f-sprite fs-logo_yahoo_company"></a></span>
+<a href="#">Flickr Blog</a> | <a href="#">About Flickr</a> | <a href="#">Terms of Use</a> | <a href="#">Your Privacy</a> | <a href="#">Copyright/IP Policy</a> | <a href="#">Report Abuse</a></p>
+<p class="LanguageSelector"><span><a href="#">&#32321;&#39636;&#20013;&#25991;</a> <b>|</b> <a href="#">Deutsch</a> <b>|</b> <a href="#" class="selected">English</a> <b>|</b> <a href="#">Espa&#241;ol</a> <b>|</b> <a href="#">Fran&#231;ais</a> <b>|</b> <a href="#">&#54620;&#44544;</a> <b>|</b> <a href="#">Italiano</a> <b>|</b> <a href="#">Portugu&#234;s</a></span></p>
+<p class="Copyright">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p></div></div>'''.replace('SPACE', SPACE)
     js = '''<script>document.addEventListener('click',function(ev){var a=ev.target.closest('a');if(!a)return;ev.preventDefault();var p=a.getAttribute('data-p');if(p)parent.postMessage({fl:p},'*');});</script>'''
-    return f'<!DOCTYPE html><html><head><meta charset="utf-8"><title>{e(title)}</title><style>{CSS}</style></head><body>{head}<div id="main">{body}</div>{foot}{js}</body></html>'
+    return f'<!DOCTYPE html><html><head><meta charset="utf-8"><title>{e(title)}</title><style>{REALCSS}</style><style>{CSS}</style></head><body>{head}<div id="Main">{body}</div>{foot}{js}</body></html>'
 def pp(p): return f'/photos/{p[2]}/{p[0]}/'
 def mon(d): return d.split(' at ')[0]
+PHOTOS = [p for p in PHOTOS if os.path.exists(f'{D}/raw/{p[1]}.png')]
+BYIMG = {p[1]: p for p in PHOTOS}
+SETS = [(i, n, d, [BYIMG[x] for x in xs if x in BYIMG]) for i, n, d, xs in SETS]
+SETS = [x for x in SETS if x[3]]
 P, T = {}, {}
 byu = {}
 for p in PHOTOS: byu.setdefault(p[2], []).append(p)
 for u, ps in byu.items():
     ps.sort(key=lambda p: int(p[0]), reverse=True)
     U = USERS[u]
-    cells = ''.join(f'<div class="cell">{L(pp(p), "<img src=%s alt=\"\">" % sized(p[1],240), "ni")}<div class="t">{L(pp(p), e(p[3]))}</div><div class="m">Uploaded on {e(p[6])} | {len(p[12])} comment{"s" if len(p[12])!=1 else ""}</div></div>' for p in ps)
-    body = f'''<div class="who">{bud(u)}<div class="ttl">{e(u)}'s photostream</div><div class="sub">{len(ps)} items</div></div>
-<div class="tabs"><b>Photostream</b> | <a href="#">Sets</a> | <a href="#">Favorites</a> | <a href="#">Profile</a> | <a href="#">Archives</a> | <a href="#">Tags</a> | <a href="#">Map</a></div>
-{'<div class="note">This member has not uploaded any photos since %s.</div>' % ps[0][6] if u!='kmendoza916' else ''}
-<div class="grid">{cells}</div>'''
+    def subnav(here, title=None, pro=False):
+        links = [('Sets', f'/photos/{u}/sets/' if u == 'kmendoza916' else None), ('Galleries', None), ('Tags', None), ('Map', None), ('Archives', None), ('Favorites', None)]
+        ln = ''.join('<span>%s</span>' % ('<span class="Here">%s</span>' % n if n == here else (L(pth, n) if pth else '<a href="#">%s</a>' % n)) for n, pth in links) + '<a href="#" rel="me">Profile</a>'
+        h1 = title or f"{e(u)}'s photostream"
+        return f'''<table width="800" cellspacing="0" id="SubNav"><tr><td class="Buddy">{L(f"/photos/{u}/", bud(u), "ni")}</td><td class="Section"><h1>{h1}</h1>
+<p class="LinksNewP"><span class="LinksNew">{ln}</span></p></td><td class="Extras"></td></tr></table>'''
+    def setcase(st):
+        cov = st[3][0]
+        return f'''<div class="Sets"><div class="SetCase"><div class="setLinkDiv">{L(f"/photos/{u}/sets/{st[0]}/", '<img class="setThumb" src="%s" width="75" height="75" alt="%s">' % (square(cov[1]), e(st[1])), "setLink")}</div></div>
+<h4>{L(f"/photos/{u}/sets/{st[0]}/", e(st[1]), "Seta")}</h4><p><b>{len(st[3])}</b> photo{"s" if len(st[3]) != 1 else ""}</p></div>'''
+    def big5(q, last):
+        w = 500
+        return f'''<div class="StreamView Big5Photo{' LastPhoto' if last else ''}"><p class="Photo" style="position:relative"><span class="photo_container pc_l">{L(pp(q), '<img src="%s" width="%d" alt="%s" class="pc_img">' % (sized(q[1], 500), w, e(q[3])), "ni")}</span></p>
+<h4>{e(q[3])}</h4><p class="Privacy"><img src="{SPACE}" width="15" height="15" class="f-sprite fs-icon_public" alt=""> <img src="{SPACE}" width="15" height="15" class="f-sprite fs-icon_all_rights" alt=""> All rights reserved</p>
+<p class="Do">Uploaded on <a href="#" class="Plain">{e(q[6])}</a></p><p class="Activity">{L(pp(q), "%d comment%s" % (len(q[12]), "" if len(q[12]) == 1 else "s"), "Plain")}</p></div>'''
+    mine = [x for x in SETS] if u == 'kmendoza916' else []
+    col = ''.join(setcase(st) + '<br clear="all">' for st in mine)
+    stream = ''.join(big5(q, i == len(ps) - 1) for i, q in enumerate(ps))
+    note = '' if u == 'kmendoza916' else '<div class="note">This member has not uploaded any photos since %s.</div>' % ps[0][6]
+    body = f'''{subnav(None)}{note}<table width="100%" cellspacing="0" cellpadding="0" class="PhotoStream"><tr valign="top"><td width="100%" valign="top" class="PhotosColumn Big5Column">{stream}<br clear="all"></td>
+<td class="CollectionsColumn"><div class="CollSpace">{col}{'<h3><font color="#FF0084">&raquo;</font> ' + L(f"/photos/{u}/sets/", "More Sets") + '</h3>' if mine else ''}</div></td></tr></table>
+<div class="Pages"><div class="Paginator"><span class="AtStart">&lt; Prev</span> <span class="this-page">1</span> <span class="AtEnd">Next &gt;</span></div><div class="Results">({len(ps)} items)</div></div>'''
+    if mine:
+        sl = ''.join(setcase(st) for st in mine)
+        P[f'/photos/{u}/sets/'] = page(f"Flickr: {u}'s Sets", f'{subnav("Sets")}<br clear="all">{sl}<br clear="all">', u); T[f'/photos/{u}/sets/'] = f"Flickr: {u}'s Sets"
+        for st in mine:
+            sp = st[3]; cov = sp[0]
+            thumbs = ''.join('<div class="setThumbs-indv"><span class="photo_container pc_s">%s</span></div>' % L(pp(q), '<img src="%s" width="75" height="75" alt="%s" class="pc_img">' % (square(q[1]), e(q[3])), 'image_link') for q in sp)
+            d0 = min(sp, key=lambda q: int(q[0]))[5].split(' at ')[0]; d1 = max(sp, key=lambda q: int(q[0]))[5].split(' at ')[0]
+            views = sum(q[10] for q in sp) // 9
+            sb = f'''<div id="setCrumbs"><table width="100%" cellpadding="0" cellspacing="0"><tr><td class="scTopCrumb">{L(f"/photos/{u}/", e(u))} &gt; {L(f"/photos/{u}/sets/", "Sets")}</td>
+<td align="right" class="scTopCrumbShareSlideshow"><div class="SlideShowShareButtons"><span class="slideshow-box"><a href="#" id="SlideShowButton"><span class="slideshow-link-wrapper">Slideshow</span></a></span></div></td></tr></table></div>
+<table width="800" cellspacing="0" id="SubNav"><tr><td class="Buddy">{L(f"/photos/{u}/", bud(u), "ni")}</td><td class="Section"><h1>{e(st[1])}</h1>
+<p class="LinksNewP"><span class="LinksNew"><nobr><span class="Here">Thumbnails</span> <span><a href="#">Detail</a></span> <span><a href="#">Map</a></span> <a href="#">Comments</a></nobr></span></p></td></tr></table>
+<div id="ViewSet"><div class="vsDetails"><p class="vsThumbnail"><span class="photo_container pc_m">{L(pp(cov), '<img id="primary_photo_img" src="%s" width="240" alt="%s" class="pc_img">' % (sized(cov[1], 240), e(cov[3])), "image_link")}</span></p>
+<p class="vsDescription">{e(st[2])}</p><p class="vsNumbers">{len(sp)} photos | {views:,} views</p><p class="vsNumbers">items are from between {e(d0)} &amp; {e(d1)}.</p></div>
+<div class="vsThumbs"><div id="setThumbs" class="clearfix">{thumbs}</div></div></div><br clear="all">'''
+            P[f'/photos/{u}/sets/{st[0]}/'] = page(f'{st[1]} - a set on Flickr', sb, u); T[f'/photos/{u}/sets/{st[0]}/'] = f'{st[1]} - a set on Flickr'
     path = f'/photos/{u}/'; P[path] = page(f"Flickr: {u}'s Photostream", body); T[path] = f"Flickr: {u}'s Photostream"
     for i, p in enumerate(ps):
         prv = ps[i-1] if i > 0 else None; nxt = ps[i+1] if i+1 < len(ps) else None
@@ -94,7 +150,7 @@ for u, ps in byu.items():
         cms = ''.join(f'<div class="cm">{bud(c[0])}<div class="tx"><a href="#">{e(c[0])}</a> says:<br>{e(c[2]).replace('[[group]]', L('/groups/lastuploads/','Last Uploads'))}<br><small>{e(c[1])} ( <a href="#">permalink</a> )</small></div></div>' for c in p[12])
         ingrp = u != 'kmendoza916'
         side = f'''<div class="box">{bud(u)} <span style="display:inline-block;vertical-align:top;margin-left:6px">Uploaded on {e(p[6])}<br>by <a href="#" data-p="/photos/{u}/">{e(u)}</a></span></div>
-<div class="box"><h3>This photo belongs to</h3><div>{L(f"/photos/{u}/", e(u)+"'s photostream")} ({len(ps)})</div><div class="ctx" style="margin-top:6px">{ctx}</div></div>
+<div class="box"><h3>This photo belongs to</h3><div>{L(f"/photos/{u}/", e(u)+"'s photostream")} ({len(ps)})</div><div class="ctx" style="margin-top:6px">{ctx}</div>{''.join('<div style="margin-top:6px">%s (set, %d)</div>' % (L(f"/photos/{u}/sets/{st[0]}/", e(st[1])), len(st[3])) for st in SETS if p in st[3] and u == 'kmendoza916')}</div>
 {'<div class="box"><h3>This photo also belongs to:</h3>'+L('/groups/lastuploads/','Last Uploads')+' (group)</div>' if ingrp else ''}
 <div class="box"><h3>Tags</h3><div class="tags">{''.join('<a href="#">%s</a>' % e(t) for t in p[9])}</div></div>
 <div class="box"><h3>Additional Information</h3><div class="meta">&copy; All Rights Reserved<br>Taken with an {e(p[7])}.<br><span class="g">See <a href="#">more photos</a> or <a href="#">video</a> from this camera.</span><br>Taken on <a href="#">{e(mon(p[5]))}</a><br>in <a href="#">{e(p[8])}</a> (<a href="#">map</a>)<br>Viewed <b>{p[10]:,}</b> times<br><a href="#">{p[11]} people</a> call this photo a favorite</div></div>'''
