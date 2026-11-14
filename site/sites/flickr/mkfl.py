@@ -1,6 +1,11 @@
 import json, base64, io, html, os
 from PIL import Image
 from fl_content import USERS, PHOTOS, GROUP, SETS
+try:
+    from fl_content import GROUPS
+except ImportError:
+    GROUPS = []
+import re
 D = os.path.dirname(os.path.abspath(__file__))
 def b64(im, q=72):
     b = io.BytesIO(); im.save(b, 'JPEG', quality=q, optimize=True); return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
@@ -76,6 +81,9 @@ def page(title, body):
 <div>Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</div></div>'''
     js = '''<script>document.addEventListener('click',function(ev){var a=ev.target.closest('a');if(!a)return;ev.preventDefault();var p=a.getAttribute('data-p');if(p)parent.postMessage({fl:p},'*');});</script>'''
     return f'<!DOCTYPE html><html><head><meta charset="utf-8"><title>{e(title)}</title><style>{CSS}</style></head><body>{head}<div id="main">{body}</div>{foot}{js}</body></html>'
+def gl(t):
+    t = t.replace('[[group]]', L('/groups/lastuploads/','Last Uploads'))
+    return re.sub(r'\[\[g:(\w+)\]\]', lambda m: L(f'/groups/{m.group(1)}/', e(next(g['name'] for g in GROUPS if g['id'] == m.group(1)))), t)
 def pp(p): return f'/photos/{p[2]}/{p[0]}/'
 def mon(d): return d.split(' at ')[0]
 PHOTOS = [p for p in PHOTOS if os.path.exists(f'{D}/raw/{p[1]}.png')]
@@ -109,11 +117,11 @@ for u, ps in byu.items():
     for i, p in enumerate(ps):
         prv = ps[i-1] if i > 0 else None; nxt = ps[i+1] if i+1 < len(ps) else None
         ctx = ''.join(L(pp(q), f'<img src="{square(q[1])}" width="75" height="75" alt="">', 'ni') for q in (prv, nxt) if q)
-        cms = ''.join(f'<div class="cm">{bud(c[0])}<div class="tx"><a href="#">{e(c[0])}</a> says:<br>{e(c[2]).replace('[[group]]', L('/groups/lastuploads/','Last Uploads'))}<br><small>{e(c[1])} ( <a href="#">permalink</a> )</small></div></div>' for c in p[12])
+        cms = ''.join(f'<div class="cm">{bud(c[0])}<div class="tx"><a href="#">{e(c[0])}</a> says:<br>{gl(e(c[2]))}<br><small>{e(c[1])} ( <a href="#">permalink</a> )</small></div></div>' for c in p[12])
         ingrp = u != 'kmendoza916'
         side = f'''<div class="box">{bud(u)} <span style="display:inline-block;vertical-align:top;margin-left:6px">Uploaded on {e(p[6])}<br>by <a href="#" data-p="/photos/{u}/">{e(u)}</a></span></div>
 <div class="box"><h3>This photo belongs to</h3><div>{L(f"/photos/{u}/", e(u)+"'s photostream")} ({len(ps)})</div><div class="ctx" style="margin-top:6px">{ctx}</div>{''.join('<div style="margin-top:6px">%s (set, %d)</div>' % (L(f"/photos/{u}/sets/{st[0]}/", e(st[1])), len(st[3])) for st in SETS if p in st[3] and u == 'kmendoza916')}</div>
-{'<div class="box"><h3>This photo also belongs to:</h3>'+L('/groups/lastuploads/','Last Uploads')+' (group)</div>' if ingrp else ''}
+{'<div class="box"><h3>This photo also belongs to:</h3>'+'<br>'.join(([L('/groups/lastuploads/','Last Uploads')+' (group)'] if ingrp else [])+[L(f"/groups/{g['id']}/", e(g['name']))+' (group)' for g in GROUPS if p[1] in g['pool']])+'</div>' if ingrp or any(p[1] in g['pool'] for g in GROUPS) else ''}
 <div class="box"><h3>Tags</h3><div class="tags">{''.join('<a href="#">%s</a>' % e(t) for t in p[9])}</div></div>
 <div class="box"><h3>Additional Information</h3><div class="meta">&copy; All Rights Reserved<br>Taken with an {e(p[7])}.<br><span class="g">See <a href="#">more photos</a> or <a href="#">video</a> from this camera.</span><br>Taken on <a href="#">{e(mon(p[5]))}</a><br>in <a href="#">{e(p[8])}</a> (<a href="#">map</a>)<br>Viewed <b>{p[10]:,}</b> times<br><a href="#">{p[11]} people</a> call this photo a favorite</div></div>'''
         body = f'''<h1>{e(p[3])}</h1><div class="lc"><img class="photo" src="{sized(p[1],500)}" width="500" alt="{e(p[3])}">
@@ -127,6 +135,26 @@ body = f'''<div class="who"><img class="bi" style="float:left" width="48" height
 <div class="box"><h3>Discuss</h3><table class="thr"><tr><th>Topic</th><th>Author</th><th>Replies</th><th>Latest Post</th></tr>{thr}</table></div></div>
 <div class="sb"><div class="box"><h3>Administrators</h3>{', '.join('<a href="#">%s</a>' % a for a in G['admins'])}</div><div class="box"><h3>Group Info</h3>This group is public. Anyone can join.<br>Pool is moderated.</div></div>'''
 P['/groups/lastuploads/'] = page('Flickr: Last Uploads', body); T['/groups/lastuploads/'] = 'Flickr: Last Uploads'
+for G in GROUPS:
+    gid = G['id']; gp = [BYIMG[x] for x in G['pool'] if x in BYIMG]
+    n_, (x, y) = G['icon']; im = raw(n_); gico = b64(im.crop((x-150, y-150, x+150, y+150)).resize((48, 48), Image.LANCZOS), 75)
+    pool = ''.join(L(pp(p), f'<img src="{square(p[1])}" width="75" height="75" alt="">', 'ni') for p in gp)
+    rows = []
+    for k, (t, a, posts) in enumerate(G['threads']):
+        tl = L(f'/groups/{gid}/discuss/{k}/', e(t)) if posts else f'<a href="#">{e(t)}</a>'
+        rows.append(f'<tr><td>{tl}</td><td><a href="#">{e(a)}</a></td><td>{G["counts"][k]}</td><td>{e(G["latest"][k])}</td></tr>')
+        if posts:
+            ps_ = ''.join(f'<div class="cm">{bud(c[0])}<div class="tx"><a href="#">{e(c[0])}</a> says:<br>{gl(e(c[2]))}<br><small>{e(c[1])} ( <a href="#">permalink</a> )</small></div></div>' for c in posts)
+            tb = f'''<div class="crumb">{L(f"/groups/{gid}/", e(G['name']))} &gt; <a href="#">Discuss</a></div><h1>{e(t)}</h1>
+<div class="lc">{ps_}<div class="add">Would you like to reply? <a href="#">Sign up</a> for a free account, or <a href="#">sign in</a> (if you're already a member).</div></div>
+<div class="sb"><div class="box"><h3>{e(G['name'])}</h3><img class="bi" width="48" height="48" src="{gico}" alt=""><div style="margin-top:6px">{L(f"/groups/{gid}/", "Group home")}<br><a href="#">Group pool</a> ({len(gp)})<br><a href="#">Discuss</a> ({len(G['threads'])} topics)</div></div>
+<div class="box"><h3>Administrators</h3>{', '.join('<a href="#">%s</a>' % x_ for x_ in G['admins'])}</div></div>'''
+            tp = f'/groups/{gid}/discuss/{k}/'; P[tp] = page(f"Flickr: Discussing {t} in {G['name']}", tb); T[tp] = f"Flickr: Discussing {t} in {G['name']}"
+    body = f'''<div class="who"><img class="bi" style="float:left" width="48" height="48" src="{gico}" alt=""><div class="ttl" style="margin-left:56px">{e(G['name'])}</div><div class="sub" style="margin-left:56px">{G['members']} members | Created {G['created']}</div></div>
+<div class="lc"><div class="desc">{e(G['desc'])}</div><div class="box"><h3>Group Pool</h3><div class="pool">{pool}</div><div><a href="#">{len(gp)} items</a> &raquo;</div></div>
+<div class="box"><h3>Discuss</h3><table class="thr"><tr><th>Topic</th><th>Author</th><th>Replies</th><th>Latest Post</th></tr>{''.join(rows)}</table></div></div>
+<div class="sb"><div class="box"><h3>Administrators</h3>{', '.join('<a href="#">%s</a>' % a for a in G['admins'])}</div><div class="box"><h3>Group Info</h3>This group is public. Anyone can join.<br>Pool is moderated.</div></div>'''
+    P[f'/groups/{gid}/'] = page(f"Flickr: {G['name']}", body); T[f'/groups/{gid}/'] = f"Flickr: {G['name']}"
 P['/'] = P['/photos/kmendoza916/']; T['/'] = T['/photos/kmendoza916/']
 tpl = '''/* flpage.js - generated by sites/flickr/mkfl.py: www.flickr.com late 2009 */
 (function () {
