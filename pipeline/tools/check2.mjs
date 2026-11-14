@@ -1,0 +1,14 @@
+import fs from 'fs'; import * as topo from 'topojson-client'; import * as d3 from 'd3'; import sharp from 'sharp';
+const us=JSON.parse(fs.readFileSync('../data/counties-10m.json'));
+const fac=JSON.parse(fs.readFileSync('../build/factions.geojson')); const h=JSON.parse(fs.readFileSync('../build/hatch.geojson'));
+const col={gilead:'#dbb601',usg:'#012967',jefferson:'#084081',lincoln:'#2060a6',sequoyah:'#076aab',fema:'#0b1d59',frc:'#283494',agg:'#1c6996',lds:'#00698f',texas:'#378fbd',wvbc:'#78201e',cascadia:'#3a6937',mxo:'#7fbf8f'};
+const [cx,cy,z,w,hh]=(process.argv[2]||'-96,38,1,1600,1000').split(',').map(Number);
+const proj=d3.geoAlbersUsa().scale(1300*z).translate([w/2,hh/2]);
+if(z>1){const p=d3.geoConicEqualArea().parallels([29.5,45.5]).rotate([-cx,0]).center([0,cy]).scale(1300*z).translate([w/2,hh/2]);var P=d3.geoPath(p)}else var P=d3.geoPath(proj);
+let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${hh}"><defs><pattern id="hp" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#000" stroke-width="2"/></pattern></defs><rect width="100%" height="100%" fill="#cde"/>`;
+s+=`<path d="${P(topo.feature(us,us.objects.nation))}" fill="#eee"/>`;
+if(z>1) s+=`<path d="${P(topo.mesh(us,us.objects.counties,(a,b)=>a!==b))}" fill="none" stroke="#bbb" stroke-width="0.5"/>`;
+for(const f of fac.features)s+=`<path d="${P(f)}" fill="${col[f.id]}" fill-opacity="0.9" stroke="#fff" stroke-width="0.6"/>`;
+for(const f of h.features)s+=`<path d="${P(f)}" fill="url(#hp)" opacity="0.5"/>`;
+s+=`<path d="${P(topo.mesh(us,us.objects.states,(a,b)=>a!==b))}" fill="none" stroke="#e33" stroke-width="0.7"/></svg>`;
+await sharp(Buffer.from(s)).png().toFile(process.argv[3]||'../ref/check2.png');

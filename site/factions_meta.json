@@ -1,0 +1,638 @@
+{
+ "factions": [
+  {
+   "id": "gilead",
+   "zh": "基列神权共和国",
+   "en": "Divine Republic of Gilead",
+   "color": "#E6B422",
+   "lights": "controlled_blackout",
+   "capital_zh": "华盛顿特区 · 波士顿（剑桥）",
+   "capital_en": "Washington, D.C. · Boston (Cambridge)",
+   "capital_ll": [
+    -77.0365,
+    38.8977
+   ],
+   "terrain_zh": "首都圈（哥伦比亚特区、北弗吉尼亚、马里兰）经 I-95 走廊连到纽约、费城，并囊括新英格兰大部（佛蒙特两共和国、黑水特许区与北部三个区除外）。",
+   "terrain_en": "The capital region (D.C., Northern Virginia, Maryland), joined along the I-95 corridor to New York and Philadelphia, plus most of New England (except the two Vermont republics, the Blackwater concession and the three northern districts).",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "lore_zh": "缅因北部是新英格兰福音派浸信会、五旬节派与卫理圣洁派会众最密的地带。基列在此设“边区”，以边境哨所与教会网络实行军管。",
+   "lore_en": "Northern Maine holds New England's densest Baptist, Pentecostal and Wesleyan-holiness congregations. Gilead runs it as a March: border posts plus the parish network under military rule.",
+   "founded": "—",
+   "id": "gilead_aroostook",
+   "parent": "gilead",
+   "zh": "阿鲁斯图克边区",
+   "en": "Aroostook March",
+   "color": "#E6B422",
+   "lights": "controlled_blackout",
+   "capital_zh": "普雷斯克艾尔",
+   "capital_en": "Presque Isle",
+   "capital_ll": [
+    -68.016,
+    46.681
+   ],
+   "terrain_zh": "缅因最北端的马铃薯高原与圣约翰河谷，北、东两面紧贴加拿大边境。",
+   "terrain_en": "Maine's far-north potato plateau and the St. John valley, hard against the Canadian border on two sides."
+  },
+  {
+   "lore_zh": "班戈一带三一论福音派教会与独立浸信会林立，成为基列在北方的第二个“圣约区”，负责林木、纸浆与河运。",
+   "lore_en": "Bangor's ring of Trinitarian evangelical and independent Baptist churches made it Gilead's second northern Covenant District, running timber, pulp and the river.",
+   "founded": "—",
+   "id": "gilead_penobscot",
+   "parent": "gilead",
+   "zh": "佩诺布斯科特圣约区",
+   "en": "Penobscot Covenant District",
+   "color": "#E6B422",
+   "lights": "controlled_blackout",
+   "capital_zh": "班戈",
+   "capital_en": "Bangor",
+   "capital_ll": [
+    -68.772,
+    44.801
+   ],
+   "terrain_zh": "佩诺布斯科特河流域与皮斯卡塔奎斯的林区，以班戈为枢纽。",
+   "terrain_en": "The Penobscot basin and the Piscataquis timberlands, hinged on Bangor."
+  },
+  {
+   "lore_zh": "新英格兰最贫困、最保守的山地县份，福音派会众比例远高于新英格兰平均。基列以此为跨州飞地，扼守康涅狄格河上游。",
+   "lore_en": "New England's poorest, most conservative hill counties, with evangelical shares well above the regional norm. Gilead holds them as a cross-border exclave on the upper Connecticut River.",
+   "founded": "—",
+   "id": "gilead_nek",
+   "parent": "gilead",
+   "zh": "东北王国区",
+   "en": "District of the Northeast Kingdom",
+   "color": "#E6B422",
+   "lights": "controlled_blackout",
+   "capital_zh": "圣约翰斯伯里",
+   "capital_en": "St. Johnsbury",
+   "capital_ll": [
+    -72.015,
+    44.419
+   ],
+   "terrain_zh": "佛蒙特“东北王国”三县（奥尔良、卡勒多尼亚、埃塞克斯）与新罕布什尔库斯县，怀特山北麓。",
+   "terrain_en": "Vermont's Northeast Kingdom (Orleans, Caledonia, Essex) plus Coös County, New Hampshire, north of the White Mountains."
+  },
+  {
+   "id": "usg",
+   "zh": "美国联邦政府",
+   "en": "U.S. Government",
+   "color": "#2F6FDB",
+   "lights": "normal",
+   "terrain_zh": "加利福尼亚中南部、亚利桑那、阿拉斯加、夏威夷；得克萨斯南部的努埃塞斯地带（努埃塞斯河与格兰德河之间，1836—1848年的历史争议区）；埃尔帕索（布利斯堡）被围飞地。",
+   "terrain_en": "Central & southern California, Arizona, Alaska, Hawaii; the Nueces Strip of South Texas (between the Nueces and the Rio Grande, the historic 1836–48 disputed zone); the besieged El Paso / Fort Bliss enclave.",
+   "capital_zh": "萨克拉门托",
+   "capital_en": "Sacramento",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—",
+   "capital_ll": [
+    -121.4944,
+    38.5816
+   ]
+  },
+  {
+   "lore_zh": "联邦本土溃散后，阿拉斯加司令部（ALCOM）与第十一空军就地接管民政，宣布效忠宪法政府但自行其是。",
+   "lore_en": "When the federal core broke, Alaskan Command and Eleventh Air Force took over civil government in place: loyal to the Constitution, answerable to no one.",
+   "founded": "—",
+   "id": "usg_ak",
+   "parent": "usg",
+   "zh": "阿拉斯加司令部军管区",
+   "en": "Alaskan Command Military District",
+   "color": "#2F6FDB",
+   "lights": "normal",
+   "capital_zh": "安克雷奇（埃尔门多夫空军基地）",
+   "capital_en": "Anchorage (Elmendorf AFB)",
+   "capital_ll": [
+    -149.81,
+    61.25
+   ],
+   "terrain_zh": "整个阿拉斯加，含阿留申群岛。",
+   "terrain_en": "All of Alaska including the Aleutians."
+  },
+  {
+   "lore_zh": "印太司令部在珍珠港恢复“领地”体制，州议会休会，军事总督代行职权。",
+   "lore_en": "Indo-Pacific Command revived territorial rule at Pearl Harbor; the legislature is suspended and a military governor acts in its place.",
+   "founded": "—",
+   "id": "usg_hi",
+   "parent": "usg",
+   "zh": "夏威夷太平洋司令部领地",
+   "en": "Territory of Hawaii (Pacific Command)",
+   "color": "#2F6FDB",
+   "lights": "normal",
+   "capital_zh": "檀香山（珍珠港—希卡姆）",
+   "capital_en": "Honolulu (Pearl Harbor-Hickam)",
+   "capital_ll": [
+    -157.95,
+    21.35
+   ],
+   "terrain_zh": "夏威夷群岛。",
+   "terrain_en": "The Hawaiian Islands."
+  },
+  {
+   "lore_zh": "得克萨斯共和国独立后，海军航空站与边境巡逻队守住了南部港口与河谷，形成与联邦本土隔绝的飞地。",
+   "lore_en": "When Texas went its own way, the naval air station and the Border Patrol held the southern ports and the valley, an exclave cut off from the federal mainland.",
+   "founded": "—",
+   "id": "usg_stx",
+   "parent": "usg",
+   "zh": "南得克萨斯联邦保护区",
+   "en": "South Texas Federal Protectorate",
+   "color": "#2F6FDB",
+   "lights": "normal",
+   "capital_zh": "科珀斯克里斯蒂（海军航空站）",
+   "capital_en": "Corpus Christi (NAS)",
+   "capital_ll": [
+    -97.29,
+    27.69
+   ],
+   "terrain_zh": "努埃西斯河以南至格兰德河下游的平原与海岸。",
+   "terrain_en": "The plains and coast from the Nueces down to the lower Rio Grande."
+  },
+  {
+   "lore_zh": "美国陆军最大装甲基地之一，被墨军围困但从未陷落，靠空投补给。",
+   "lore_en": "One of the Army's largest armour posts, besieged by Mexican forces but never taken; supplied by air.",
+   "founded": "—",
+   "id": "usg_elp",
+   "parent": "usg",
+   "zh": "布利斯堡联邦飞地",
+   "en": "Fort Bliss Federal Enclave",
+   "color": "#2F6FDB",
+   "lights": "normal",
+   "capital_zh": "埃尔帕索（布利斯堡）",
+   "capital_en": "El Paso (Fort Bliss)",
+   "capital_ll": [
+    -106.42,
+    31.81
+   ],
+   "terrain_zh": "埃尔帕索县，三面被墨西哥占领区包围。",
+   "terrain_en": "El Paso County, ringed on three sides by the Mexican occupation zone."
+  },
+  {
+   "id": "jefferson",
+   "zh": "杰斐逊州",
+   "en": "State of Jefferson",
+   "color": "#1E88C7",
+   "lights": "normal",
+   "terrain_zh": "克拉马斯山、南喀斯喀特与哈尼高原荒漠，北以蓝山南麓与林肯州相接。",
+   "terrain_en": "The Klamath Mountains, the southern Cascades and the Harney high desert; meets Lincoln at the southern foot of the Blue Mountains.",
+   "capital_zh": "雷卡",
+   "capital_en": "Yreka",
+   "lore_zh": "1941年11月27日，雷卡以南的99号国道上，持枪青年设卡散发《独立宣言》，宣布“每逢星期四脱离一次”。2009年2月26日（星期四），锡斯基尤县监事会宣布恢复这份宣言，加州北部12县与俄勒冈南部6县随后组成县联合会议。杰斐逊控制沙斯塔坝，凭水权与萨克拉门托的联邦政府签下《雷德布拉夫协定》。",
+   "lore_en": "On 27 November 1941 armed young men stopped traffic on US 99 south of Yreka and handed out a Proclamation of Independence, promising to \"secede every Thursday\". On Thursday 26 February 2009 the Siskiyou County supervisors declared it restored; twelve Northern California and six Southern Oregon counties formed a Joint Convention. Holding Shasta Dam, Jefferson traded water for the Red Bluff Accord with the federal government in Sacramento.",
+   "founded": "2009-02-26",
+   "capital_ll": [
+    -122.63,
+    41.73
+   ]
+  },
+  {
+   "id": "lincoln",
+   "zh": "林肯州",
+   "en": "State of Lincoln",
+   "color": "#0B3D91",
+   "lights": "normal",
+   "terrain_zh": "喀斯喀特山脊以东的旱地：华盛顿东部、俄勒冈东北部与蓝山，东至比特鲁特山脊（爱达荷—蒙大拿界）。",
+   "terrain_en": "The dry side of the Cascades: eastern Washington, north-east Oregon and the Blue Mountains, east to the Bitterroot crest on the Idaho–Montana line.",
+   "capital_zh": "斯波坎",
+   "capital_en": "Spokane",
+   "lore_zh": "内陆西北自1865年起多次要求另建“林肯州”。总统日大屠杀后，华盛顿州警卫队西调，东部与奥林匹亚失联。2009年2月20日，斯波坎县与市议会联席宣布成立林肯州临时政府，爱达荷北部、三城、亚基马与俄勒冈东北部随后加入。林肯州守着汉福德核设施与哥伦比亚河下游水坝，与卡斯卡迪亚争夺大古力坝和电网调度权。",
+   "lore_en": "The Inland Northwest has asked to become the \"State of Lincoln\" since 1865. After the Presidents' Day Massacre pulled the Washington Guard west and cut the east off from Olympia, Spokane's county and city councils proclaimed a provisional State of Lincoln on 20 February 2009; North Idaho, the Tri-Cities, Yakima and north-east Oregon followed. Lincoln guards Hanford and the lower Columbia dams and disputes Grand Coulee and grid dispatch with Cascadia.",
+   "founded": "2009-02-20",
+   "capital_ll": [
+    -117.43,
+    47.66
+   ]
+  },
+  {
+   "id": "sequoyah",
+   "zh": "塞阔亚州",
+   "en": "State of Sequoyah",
+   "color": "#19A7D8",
+   "lights": "normal",
+   "terrain_zh": "俄克拉何马东北部，塔尔萨与欧扎克高原西缘。",
+   "terrain_en": "Northeastern Oklahoma: Tulsa and the western edge of the Ozark Plateau.",
+   "capital_zh": "马斯科吉",
+   "capital_en": "Muskogee",
+   "lore_zh": "1905年五个文明部落在马斯科吉召开塞阔亚制宪会议；1906年《授权法》允许印第安领地单独表决，1907年11月16日与俄克拉何马州同日加入联邦。2009年4月起与南部各县失去联系，现仅控制东北部15县及代管的波尼县，靠大河水坝管理局水电和塔尔萨炼油厂维持。",
+   "lore_en": "The Five Civilized Tribes held the Sequoyah Constitutional Convention at Muskogee in 1905; the 1906 Enabling Act let Indian Territory vote separately, and Sequoyah was admitted with Oklahoma on November 16, 1907. Since April 2009 it has lost contact with its southern counties and holds fifteen north-eastern counties plus Pawnee County, running on Grand River Dam Authority power and Tulsa refinery fuel.",
+   "founded": "1907-11-16",
+   "capital_ll": [
+    -95.37,
+    35.75
+   ]
+  },
+  {
+   "id": "fema",
+   "zh": "联邦紧急事务管理署",
+   "en": "Federal Emergency Management Agency",
+   "color": "#3B4CA8",
+   "lights": "rationed",
+   "terrain_zh": "北部边境带：爱达荷狭长地带、蒙大拿北部（南界为密苏里河）、北达科他北部、明尼苏达北部、密歇根上半岛。",
+   "terrain_en": "The northern border belt: Idaho Panhandle, northern Montana (southern edge is the Missouri River), northern North Dakota, northern Minnesota, Michigan's Upper Peninsula.",
+   "capital_zh": "待定",
+   "capital_en": "TBD",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "frc",
+   "zh": "联邦残余指挥部",
+   "en": "Federal Remnants Command",
+   "color": "#6A7FE8",
+   "lights": "flicker",
+   "terrain_zh": "墨西哥湾沿岸据点：新奥尔良—巴吞鲁日沿海、佛罗里达狭长地带、杰克逊维尔周边、坦帕湾至迈阿密与群岛。",
+   "terrain_en": "Gulf coast holdouts: coastal Louisiana (New Orleans–Baton Rouge), the Florida Panhandle pocket, the Jacksonville area, Tampa Bay to Miami and the Keys.",
+   "capital_zh": "待定",
+   "capital_en": "TBD",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "agg",
+   "zh": "阿巴拉契亚游击政府",
+   "en": "Appalachian Guerrilla Government",
+   "color": "#2E8FA0",
+   "lights": "guerrilla",
+   "terrain_zh": "边界按真实地貌划定：蓝岭山脉与岭谷区（田纳西段），东界蓝岭前缘陡崖，西界坎伯兰高原陡崖与派恩山，北起罗阿诺克的詹姆斯河峡口，南至佐治亚北部。",
+   "terrain_en": "Bounded by real physiography: the Blue Ridge and the Valley-and-Ridge (Tennessee section). East edge is the Blue Ridge escarpment, west edge the Cumberland escarpment and Pine Mountain, from the James River gap at Roanoke to north Georgia.",
+   "capital_zh": "待定",
+   "capital_en": "TBD",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "lds",
+   "zh": "后期圣徒教会",
+   "en": "LDS Church",
+   "color": "#12B3B3",
+   "lights": "normal",
+   "terrain_zh": "犹他州两块飞地：瓦萨奇山脚的盐湖城，以及桑皮特谷地。",
+   "terrain_en": "Two Utah enclaves: Salt Lake City under the Wasatch front, and the Sanpete Valley.",
+   "capital_zh": "待定",
+   "capital_en": "TBD",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "texas",
+   "zh": "得克萨斯共和国",
+   "en": "Republic of Texas",
+   "color": "#58B6E0",
+   "lights": "normal",
+   "terrain_zh": "得克萨斯中东部：圣安东尼奥、奥斯汀、休斯敦，至大本德。南界为努埃塞斯河，东界萨宾河，北界红河。",
+   "terrain_en": "Central and East Texas: San Antonio, Austin, Houston, out to Big Bend. South border is the Nueces River, east the Sabine, north the Red River.",
+   "capital_zh": "待定",
+   "capital_en": "TBD",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "wvbc",
+   "zh": "西弗吉尼亚浸信会",
+   "en": "West Virginia Baptist Convention",
+   "color": "#B33A33",
+   "lights": "dim",
+   "terrain_zh": "西弗吉尼亚中南部的阿巴拉契亚高原；东界为阿勒格尼前缘断崖。",
+   "terrain_en": "The Appalachian Plateau of central and southern West Virginia; its eastern edge is the Allegheny Front.",
+   "capital_zh": "待定",
+   "capital_en": "TBD",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "cascadia",
+   "zh": "卡斯卡迪亚",
+   "en": "Cascadia",
+   "color": "#4FA35A",
+   "lights": "normal",
+   "terrain_zh": "喀斯喀特山脊以西：普吉特海湾（西雅图）、奥林匹克半岛、威拉米特谷地（波特兰）。东界即喀斯喀特山脊线。",
+   "terrain_en": "West of the Cascade crest: Puget Sound (Seattle), the Olympic Peninsula, the Willamette Valley (Portland). East border is the Cascade crest.",
+   "capital_zh": "待定",
+   "capital_en": "TBD",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "lore_zh": "武装工人委员会，民兵称“干草市场纵队”。原型：1886年干草市场事件、1937年共和钢铁阵亡将士纪念日惨案、1969年弗雷德·汉普顿的“彩虹联盟”、1977年萨德洛夫斯基的“钢铁工人反击”；密尔沃基1910—1960年的社会主义市长传统使湖岸北段倒向委员会。",
+   "lore_en": "An armed workers' council whose militia call themselves the Haymarket Brigades. Its roots: Haymarket (1886), the Memorial Day Massacre at Republic Steel (1937), Fred Hampton's Rainbow Coalition (1969) and Sadlowski's Steelworkers Fight Back (1977). Milwaukee's socialist mayors (1910–1960) pulled the north shore in.",
+   "founded": "—",
+   "id": "dwg",
+   "zh": "卡柳梅特—湖岸工人委员会",
+   "en": "Calumet–Lakeshore Workers' Council",
+   "color": "#B0103E",
+   "lights": "normal",
+   "capital_zh": "南芝加哥（原共和钢铁厂）",
+   "capital_en": "South Chicago (old Republic Steel works)",
+   "capital_ll": [
+    -87.55,
+    41.7
+   ],
+   "terrain_zh": "芝加哥—加里钢铁带与密歇根湖西岸，北至密尔沃基—马尼托沃克，沿I-55与伊利诺伊河一线伸向乔利埃特、布卢明顿、皮奥里亚。",
+   "terrain_en": "The Chicago–Gary steel belt and Lake Michigan's west shore up to Milwaukee and Manitowoc, with a line down I-55 and the Illinois River to Joliet, Bloomington and Peoria."
+  },
+  {
+   "lore_zh": "南方白人工人左翼。名字来自1921年布莱尔山矿工战争中工人系在脖子上的红头巾，那被认为是“红脖子”一词的来源之一；思想谱系上承1934年南方佃农联合会、高地人民学校，下接2009年起的“红脖子起义”与约翰·布朗枪支俱乐部。",
+   "lore_en": "The Southern white working-class left. The name comes from the red bandanas miners wore at Blair Mountain in 1921, one root of the word \"redneck\". Its line runs from the Southern Tenant Farmers' Union (1934) and Highlander to Redneck Revolt and the John Brown Gun Club (from 2009).",
+   "founded": "—",
+   "id": "srl",
+   "zh": "皮德蒙特红巾联邦",
+   "en": "Red Bandana Commonwealth of the Piedmont",
+   "color": "#E8261E",
+   "lights": "dim",
+   "capital_zh": "迪凯特",
+   "capital_en": "Decatur",
+   "capital_ll": [
+    -84.296,
+    33.775
+   ],
+   "terrain_zh": "亚特兰大东郊与皮德蒙特高原，沿I-75南下经麦克多诺、福赛斯到梅肯。",
+   "terrain_en": "Atlanta's east side and the Piedmont, down I-75 through McDonough and Forsyth to Macon."
+  },
+  {
+   "lore_zh": "原型是1968年在底特律成立的新阿非利加共和国临时政府，它主张密西西比、路易斯安那、亚拉巴马、佐治亚、南卡五州为黑人民族国家领土，1971年曾在密西西比设“库什区”。此处据点因紧邻钚生产基地，分量远超面积。",
+   "lore_en": "Modelled on the Provisional Government of the Republic of New Afrika (Detroit, 1968), which claimed Mississippi, Louisiana, Alabama, Georgia and South Carolina and set up a \"Kush District\" in Mississippi in 1971. Next to a plutonium complex, this foothold matters far beyond its size.",
+   "founded": "—",
+   "id": "nafr",
+   "zh": "新阿非利加共和国·萨凡纳河区",
+   "en": "Republic of New Afrika — Savannah River District",
+   "color": "#7A4A12",
+   "lights": "dim",
+   "capital_zh": "新埃伦顿",
+   "capital_en": "New Ellenton",
+   "capital_ll": [
+    -81.686,
+    33.421
+   ],
+   "terrain_zh": "南卡罗来纳艾肯县，紧贴萨凡纳河核基地西北角。",
+   "terrain_en": "Aiken County, South Carolina, against the northwest corner of the Savannah River nuclear site."
+  },
+  {
+   "lore_zh": "以1915年在盐湖城被处决的世界产业工人联合会（IWW）歌手乔·希尔命名。原型：帕克城矿工1919年罢工；IWW盐湖城总会员支部在20世纪末复建，2000年代仍活跃；1989年成立“乔·希尔组织委员会”。1980—2010年犹他并无武装左翼，这是在劳工传统上的虚构延伸。",
+   "lore_en": "Named for IWW songwriter Joe Hill, executed in Salt Lake City in 1915. Its roots: the Park City miners' strikes of 1919, the IWW Salt Lake General Membership Branch revived in the late 20th century and active through the 2000s, and the Joe Hill Organizing Committee (1989). Utah had no armed left in 1980–2010; this extends a labour tradition into fiction.",
+   "founded": "—",
+   "id": "utdr",
+   "zh": "瓦萨奇乔·希尔公社",
+   "en": "Joe Hill Commune of the Wasatch",
+   "color": "#8E1010",
+   "lights": "dim",
+   "capital_zh": "科尔维尔",
+   "capital_en": "Coalville",
+   "capital_ll": [
+    -111.399,
+    40.918
+   ],
+   "terrain_zh": "盐湖城以东的瓦萨奇山口与萨米特县（帕克城银矿区）。",
+   "terrain_en": "The Wasatch canyons east of Salt Lake and Summit County (the Park City silver district)."
+  },
+  {
+   "id": "mxo",
+   "zh": "墨西哥占领区",
+   "en": "Mexican Occupation Zone",
+   "color": "#8FD3A0",
+   "lights": "occupied",
+   "capital_zh": "拉斯克鲁塞斯（军事总督府）",
+   "capital_en": "Las Cruces (Military Governorate)",
+   "capital_ll": [
+    -106.7637,
+    32.3199
+   ],
+   "terrain_zh": "新墨西哥南部与得克萨斯跨佩科斯地区。",
+   "terrain_en": "Southern New Mexico and Trans-Pecos Texas.",
+   "rationale_zh": "占领区以格兰德河谷为轴。墨军经华雷斯—圣特雷莎与帕洛马斯—哥伦布口岸进入，控制I-10（洛兹堡—拉斯克鲁塞斯—范霍恩）、I-25南段（至大象丘水库）和联合太平洋“日落线”铁路。目标是大象丘与卡巴洛水库的灌溉水源、梅西亚河谷农田、格兰特县铜矿（奇诺、泰隆）和佩科斯河以西的特拉华盆地油田。东侧以佩科斯河为天然防线，北侧止于水库与图拉罗萨盆地北缘。埃尔帕索（布利斯堡）仍由美国政府据守，成为被包围的飞地；墨军补给绕开城区，直接走圣特雷莎。斜线区域（吉拉荒野、萨克拉门托与瓜达卢佩山区、戴维斯山脉、佩科斯河以东油田）只能巡逻，控制并不完整。",
+   "rationale_en": "The zone is built on the Rio Grande valley. Mexican forces cross at Juárez–Santa Teresa and Palomas–Columbus and hold I-10 (Lordsburg–Las Cruces–Van Horn), southern I-25 up to Elephant Butte, and the Union Pacific Sunset Route. Objectives: irrigation water from Elephant Butte and Caballo reservoirs, Mesilla Valley farmland, Grant County copper (Chino, Tyrone), and Delaware Basin oil west of the Pecos. The Pecos River is the eastern defensive line; the north stops at the reservoirs and the top of the Tularosa Basin. El Paso (Fort Bliss) is still held by the U.S. Government as a besieged enclave; Mexican supply bypasses it through Santa Teresa. Hatched areas (Gila Wilderness, Sacramento & Guadalupe uplands, Davis Mountains, oil fields east of the Pecos) are patrol-only and not fully controlled.",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "vtr",
+   "zh": "佛蒙特共和国",
+   "en": "Republic of Vermont",
+   "color": "#2E9E6B",
+   "lights": "dim",
+   "capital_zh": "蒙彼利埃",
+   "capital_en": "Montpelier",
+   "capital_ll": [
+    -72.5754,
+    44.2601
+   ],
+   "terrain_zh": "佛蒙特西北部：尚普兰湖谷地与温努斯基河流域（奇滕登、富兰克林、大岛、拉莫伊尔、华盛顿、奥兰治县）。",
+   "terrain_en": "North-western Vermont: the Champlain Valley and the Winooski basin (Chittenden, Franklin, Grand Isle, Lamoille, Washington, Orange counties).",
+   "lore_zh": "州议会在崩溃后宣布恢复1777—1791年的独立共和国，依托伯灵顿和尚普兰湖航运维持秩序。",
+   "lore_en": "After the collapse the state legislature restored the independent republic of 1777–1791, holding together around Burlington and Lake Champlain shipping.",
+   "founded": "—"
+  },
+  {
+   "id": "gmr",
+   "zh": "绿山共和国",
+   "en": "Green Mountain Republic",
+   "color": "#7DBA3C",
+   "lights": "dim",
+   "capital_zh": "本宁顿",
+   "capital_en": "Bennington",
+   "capital_ll": [
+    -73.1968,
+    42.8781
+   ],
+   "terrain_zh": "佛蒙特南部绿山山脉两侧（艾迪生、拉特兰、本宁顿、温德姆、温莎县），以山脊为天然屏障。",
+   "terrain_en": "Southern Vermont on both flanks of the Green Mountains (Addison, Rutland, Bennington, Windham, Windsor counties), the ridgeline its natural rampart.",
+   "lore_zh": "南部各县的民兵以“绿山兄弟会”为名拒绝蒙彼利埃的权威，自立为绿山共和国。",
+   "lore_en": "Militias in the southern counties, styling themselves the Green Mountain Boys, rejected Montpelier and set up their own republic.",
+   "founded": "—"
+  },
+  {
+   "id": "bw",
+   "zh": "黑水公司安全特许区",
+   "en": "Blackwater Security Concession",
+   "color": "#1F55C4",
+   "lights": "normal",
+   "capital_zh": "爱德华兹营（科德角联合基地）",
+   "capital_en": "Camp Edwards (Joint Base Cape Cod)",
+   "capital_ll": [
+    -70.56,
+    41.66
+   ],
+   "terrain_zh": "马萨诸塞东南部：普利茅斯、布里斯托尔县与科德角、玛莎葡萄园岛、楠塔基特。",
+   "terrain_en": "South-eastern Massachusetts: Plymouth and Bristol counties, Cape Cod, Martha's Vineyard and Nantucket.",
+   "lore_zh": "私营军事承包商接管了科德角的军事基地和港口，与基列沿诺福克县一线对峙，交界地带反复易手。",
+   "lore_en": "A private military contractor took over the Cape Cod bases and harbours and faces Gilead along the Norfolk County line, where the frontier keeps changing hands.",
+   "founded": "—"
+  },
+  {
+   "id": "csa",
+   "zh": "“邦联”",
+   "en": "\"The Confederacy\"",
+   "color": "#8A8F96",
+   "lights": "dim",
+   "capital_zh": "蒙哥马利",
+   "capital_en": "Montgomery",
+   "capital_ll": [
+    -86.2999,
+    32.377
+   ],
+   "terrain_zh": "阿拉巴马中部亚拉巴马河谷：蒙哥马利县与奥托加县。",
+   "terrain_en": "Central Alabama on the Alabama River: Montgomery and Autauga counties.",
+   "lore_zh": "一群白人民兵占据了1861年南方邦联的第一个首都，在州议会大厦升起旧旗，自称“邦联”。名字上的引号是旁人加的：没有任何势力承认它。",
+   "lore_en": "White militias seized the first capital of the 1861 Confederacy, raised the old flag over the State Capitol and call themselves \"the Confederacy\". The quotation marks are everyone else's: no one recognises it.",
+   "founded": "—"
+  },
+  {
+   "id": "frk",
+   "zh": "富兰克林州",
+   "en": "State of Franklin",
+   "color": "#4A6FA5",
+   "lights": "dim",
+   "capital_zh": "琼斯伯勒",
+   "capital_en": "Jonesborough",
+   "capital_ll": [
+    -82.47,
+    36.29
+   ],
+   "terrain_zh": "田纳西东北部、原富兰克林州县域：华盛顿、沙利文、格林、卡特、约翰逊、尤尼科伊、霍金斯、汉布伦、杰斐逊、科克、塞维尔县。东南以尤纳卡山—大烟山山脊（田纳西/北卡州界）为界，西北以霍尔斯顿河（切罗基湖）为界。",
+   "terrain_en": "North-east Tennessee, the old State of Franklin counties: Washington, Sullivan, Greene, Carter, Johnson, Unicoi, Hawkins, Hamblen, Jefferson, Cocke and Sevier. The Unaka–Great Smoky crest (the TN–NC line) on the south-east, the Holston River (Cherokee Lake) on the north-west.",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  },
+  {
+   "id": "sup",
+   "zh": "苏必利尔州",
+   "en": "State of Superior",
+   "color": "#7FA7D9",
+   "lights": "dim",
+   "capital_zh": "马凯特",
+   "capital_en": "Marquette",
+   "capital_ll": [
+    -87.4,
+    46.55
+   ],
+   "terrain_zh": "整个密歇根上半岛：西起蒙特利尔河，东至苏圣玛丽，南以梅诺米尼河与威斯康星相隔，北临苏必利尔湖；原联邦紧急事务管理署辖区被其接管。",
+   "terrain_en": "The whole Upper Peninsula of Michigan, from the Montreal River to Sault Ste. Marie, the Menominee River on the south and Lake Superior on the north; it took over the former FEMA district here.",
+   "lore_zh": "上半岛自1858年翁托纳贡大会起多次要求另建“苏必利尔州”。总统日大屠杀后，FEMA在此设立北部紧急辖区，实行宵禁与配给；3月底FEMA人员撤离。2009年3月27日，15县代表在马凯特县法院宣布建州，接管FEMA物资，封闭麦基诺大桥北端，靠苏圣玛丽国际大桥与安大略贸易维生。",
+   "lore_en": "The Upper Peninsula has sought statehood as \"Superior\" since the 1858 Ontonagon convention. After the Presidents' Day Massacre FEMA ran a curfew-and-ration Northern Tier district here until its staff left in late March. On 27 March 2009 delegates of all fifteen counties proclaimed the State of Superior at the Marquette County Courthouse, took over FEMA stocks, closed the north end of the Mackinac Bridge and now live on trade with Ontario across the Sault Ste. Marie bridge.",
+   "founded": "2009-03-27"
+  },
+  {
+   "id": "dst",
+   "zh": "德塞雷特州",
+   "en": "State of Deseret",
+   "color": "#2C5D8A",
+   "lights": "dim",
+   "capital_zh": "曼泰",
+   "capital_en": "Manti",
+   "capital_ll": [
+    -111.64,
+    39.27
+   ],
+   "terrain_zh": "犹他中部桑皮特河谷一带：桑皮特、塞维尔、皮尤特、韦恩、埃默里五县。北、东以沃萨奇高原与书崖为界，西以塞维尔河谷西侧的帕万特—图沙尔山脊为界，东抵格林河。西北与后期圣徒教会 I-15 走廊相接。",
+   "terrain_en": "Central Utah around the Sanpete Valley: Sanpete, Sevier, Piute, Wayne and Emery counties. The Wasatch Plateau and Book Cliffs on the north and east, the Pavant–Tushar crest west of the Sevier River valley, the Green River on the east; meets the LDS I-15 corridor on the north-west.",
+   "lore_zh": "1849年后期圣徒组建德塞雷特临时州；1894年《授权法》将犹他领地中部五县划为德塞雷特州，1896年1月4日与犹他州同日加入联邦。2009年4月州议会通过《曼泰决议》，自行维持宪法秩序，并以埃默里县电厂的电力与盐湖城的教会管理机构交换燃料。",
+   "lore_en": "Provisional State of Deseret organized by Latter Day Saints in 1849; the 1894 Enabling Act made five central counties of Utah Territory the State of Deseret, admitted with Utah on January 4, 1896. In April 2009 the Legislature adopted the Manti Resolution to keep constitutional order on its own, trading power from the Emery County plants to the church administration in Salt Lake City for fuel.",
+   "founded": "1896-01-04"
+  },
+  {
+   "id": "abs",
+   "zh": "阿布萨罗卡州",
+   "en": "State of Absaroka",
+   "color": "#9DC3EE",
+   "lights": "dim",
+   "capital_zh": "谢里登",
+   "capital_en": "Sheridan",
+   "capital_ll": [
+    -106.96,
+    44.8
+   ],
+   "terrain_zh": "依照 1939 年阿布萨罗卡提案：怀俄明北部谢里登、约翰逊、坎贝尔、克鲁克、韦斯顿县（西以比格霍恩山脊为界）；蒙大拿东南比格霍恩、罗斯巴德、特雷热、粉河、卡特县（北以黄石河为界）及卡斯特、普雷里县，北与联邦应急管理局接壤；南达科他黑山各县，东以夏延河为界。",
+   "terrain_en": "After the 1939 Absaroka proposal: Sheridan, Johnson, Campbell, Crook and Weston counties of northern Wyoming (the Bighorn crest on the west); Big Horn, Rosebud, Treasure, Powder River and Carter counties of SE Montana (the Yellowstone on the north) plus Custer and Prairie, meeting FEMA; the Black Hills counties of South Dakota, bounded east by the Cheyenne River.",
+   "lore_zh": "待补充",
+   "lore_en": "Awaiting dossier",
+   "founded": "—"
+  }
+ ],
+ "none": {
+  "id": "none",
+  "zh": "无线电静默",
+  "en": "RADIO SILENCE",
+  "desc_zh": "无归属/失联地区：无政权、无灯光、无信号。",
+  "desc_en": "Unaffiliated / lost contact: no authority, no lights, no signal.",
+  "color": "#050707"
+ },
+ "foreign": {
+  "mexico": {
+   "zh": "墨西哥合众国",
+   "en": "United Mexican States",
+   "color": "#1E4A33"
+  },
+  "canada": {
+   "zh": "加拿大",
+   "en": "Canada",
+   "color": "#3A2426"
+  },
+  "other": {
+   "zh": "他国",
+   "en": "Foreign state",
+   "color": "#1D2730"
+  }
+ },
+ "light_modes": {
+  "normal": "steady warm sodium/LED glow",
+  "controlled_blackout": "Gilead: curfew blackout, only a sparse regular grid of dim cold-white points (checkpoints, ministries) plus the capital core; no road glow; very slow uniform pulse",
+  "rationed": "FEMA: ~50% dimmer, rolling blackouts (clusters fade in/out on a slow cycle)",
+  "flicker": "FRC: dimmer, random brownout flicker in clusters",
+  "guerrilla": "AGG: very sparse dim campfire-orange points, irregular flicker, no highway glow",
+  "dim": "dim warm, ~40%",
+  "occupied": "MXO: cities along I-10/I-25 & Rio Grande lit; inside hatched zones only scattered flickering points",
+  "none": "RADIO SILENCE: zero lights"
+ },
+ "nuclear": [
+  {
+   "zh": "康科德—马雷岛核打击区",
+   "en": "Concord–Mare Island strike zone",
+   "ll": [
+    -122.16,
+    38.06
+   ],
+   "note_zh": "康科德海军武器站与马雷岛船厂",
+   "note_en": "Concord Naval Weapons Station and Mare Island shipyard"
+  },
+  {
+   "zh": "金曼核打击区",
+   "en": "Kingman strike zone",
+   "ll": [
+    -113.43,
+    35.4
+   ],
+   "note_zh": "金曼以东、66号公路沿线",
+   "note_en": "East of Kingman on Route 66"
+  },
+  {
+   "zh": "埃尔托罗核打击区",
+   "en": "El Toro strike zone",
+   "ll": [
+    -117.64,
+    33.75
+   ],
+   "note_zh": "原埃尔托罗海军陆战队航空站",
+   "note_en": "Former MCAS El Toro"
+  },
+  {
+   "zh": "米林顿核打击区",
+   "en": "Millington strike zone",
+   "ll": [
+    -89.83,
+    35.3
+   ],
+   "note_zh": "孟菲斯以北的中南部海军支援基地",
+   "note_en": "Naval Support Activity Mid-South, north of Memphis"
+  }
+ ]
+}

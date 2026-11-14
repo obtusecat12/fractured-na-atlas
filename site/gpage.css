@@ -1,0 +1,25 @@
+/* readability fixes */
+#hint{color:#666}
+#gnav .tri{font-size:12px}
+#sopts,#copy,#terms,#scale,#scale span{font-size:12px}
+/* touch targets on phones */
+@media (max-width:560px),(pointer:coarse) and (max-width:900px){
+  #gbar{height:44px;line-height:44px}
+  #gnav a,#guser>a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;vertical-align:top}
+  #gear{margin:0 0 0 6px;width:44px;height:44px;border-radius:4px}
+  #gear .gi{left:8px;top:13px}
+  #gear .ga{left:29px;top:20px}
+  #gearmenu{top:44px}
+  #logo{padding:7px 0}
+  #q{height:44px}
+  #sbtn{height:44px;min-width:44px}
+  #bar{height:44px;line-height:44px}
+  #factlink,#aboutlink{display:inline-flex;align-items:center;min-height:44px;min-width:44px;vertical-align:top}
+  #collapse{width:44px;height:44px;line-height:42px}
+  #resetv{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
+  .mt{height:44px;line-height:40px;min-width:44px}
+  #moremenu{top:44px}
+  #panc,#peg,#slider{display:none}
+  #ctl{transform:scale(2.2);transform-origin:0 0}
+  #ctl .zb,#zin,#zout{left:0;width:20px;height:21px;min-height:0}
+}

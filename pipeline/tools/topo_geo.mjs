@@ -1,0 +1,10 @@
+import fs from 'fs'; import * as d3 from 'd3'; import * as topojson from 'topojson-client'; import * as ts from 'topojson-simplify';
+let us=JSON.parse(fs.readFileSync('../data/states-10m.json')); us=ts.presimplify(us); us=ts.simplify(us,0.02);
+const st=topojson.feature(us,us.objects.states);
+const nat=topojson.merge(us,us.objects.states.geometries);
+const W=880,H=520;
+const pr=d3.geoAlbersUsa().fitExtent([[30,40],[W-30,H-40]],st);
+const path=d3.geoPath(pr).digits(1);
+const sites=JSON.parse(fs.readFileSync('/workspace/work/gm/topo/sites.json'));
+const out={W,H,nation:path(nat),states:path(topojson.mesh(us,us.objects.states,(a,b)=>a!==b)),sites:sites.map(s=>{const p=pr([s.lon,s.lat]);return {...s,x:+p[0].toFixed(1),y:+p[1].toFixed(1)}})};
+fs.writeFileSync('/workspace/work/gm/topo/geo.json',JSON.stringify(out));console.log(out.nation.length,out.sites.length);

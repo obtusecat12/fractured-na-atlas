@@ -1,0 +1,21 @@
+Common style suffix: "Photojournalism, shot in late 2009 on a Canon EOS-1D Mark III, telephoto or 35mm, natural available light, slight noise, muted realistic colour, Reuters/AP wire photo look, landscape 3:2. No text, no captions, no watermark, no recognizable real people, no logos."
+1 sacramento_dawn: Dawn fog over Capitol Mall in Sacramento, California, November 2009. A tan National Guard Humvee and coils of concertina wire block the street; two soldiers in ACU camouflage stand beside it; the white dome of the California State Capitol is soft in the fog far behind.
+2 spokane_checkpoint: Light snow on a steel bridge in Spokane, Washington. Volunteer militia in orange hunting vests over winter coats, rifles slung, check the driver's licence of a man in an old pickup truck; a line of cars waits behind with headlights on.
+3 marquette_fuel: Falling snow at a small-town gas station in Marquette, Michigan. A long line of people in parkas holding red plastic gas cans waits beside the pumps; a sheriff's deputy keeps order; grey Lake Superior is visible beyond the road.
+4 memphis_shelter: Inside a high school gymnasium in Memphis, Tennessee, turned into a shelter the day after a nuclear explosion nearby. Rows of green army cots, families wrapped in grey wool blankets, a child asleep on a duffel bag, harsh overhead gym lights.
+5 boston_gilead: Dusk on an emptied downtown Boston street. Two women in long red hooded cloaks and white winged bonnets walk side by side past closed shops; at a checkpoint behind them men in black uniforms stand next to a black van. Cold, quiet, wet pavement.
+6 elpaso_airlift: Heat haze at an army airfield outside El Paso, Texas. A grey C-130 Hercules with its rear ramp down; airmen roll shrink-wrapped pallets of food and water off with a forklift; the brown Franklin Mountains rise behind.
+
+Batch 2 (dispatched 2026-11-08 23:4x):
+7 millington_cloud_night: Night, from a darkened Memphis suburb street, a faint orange glow and a towering smoke column on the northern horizon; residents stand on lawns in coats watching, porch lights off, one holding a battery radio.
+8 i55_evacuation: Late afternoon, from an overpass, all lanes of a southbound interstate outside Memphis jammed bumper to bumper with cars, pickups and a school bus; a Tennessee state trooper car on the shoulder with lights on; hazy sky.
+9 dosimeter_check: A National Guard soldier in a gas mask and rubber gloves sweeps a handheld Geiger counter over a little girl's coat at a roadside decontamination tent in Mississippi; her mother holds her hand; plastic sheeting and a hose in background.
+10 sacramento_congress: Inside a converted 1920s civic auditorium in Sacramento, rows of folding tables with paper name cards and microphones, a few dozen lawmakers in suits seated, a hand-painted banner-free stage, armed guards at the doors; flat fluorescent light.
+11 corpus_christi_dock: A US Navy grey supply ship moored at a Gulf Coast pier in Corpus Christi, Texas; sailors and civilians unload boxes onto flatbed trucks under a heavy overcast sky; palm trees and refinery towers in the distance.
+12 anchorage_convoy: Snow-covered highway near Anchorage, Alaska, a convoy of olive military trucks with headlights on passes a closed gas station; Chugach Mountains white behind; blue arctic twilight.
+13 butte_sutter_line: A rural levee road in the Sacramento Valley, flat rice fields, a hand-built roadblock of hay bales and a parked pickup; two armed men in camouflage jackets watch a farmer on a tractor; Sutter Buttes on the horizon; November haze.
+14 spokane_bread_line: A long line of people in winter coats outside a downtown church in Spokane waiting for bread and canned food handed from a folding table; a volunteer in a knit cap; brick buildings, slush on the sidewalk.
+15 boston_wall: Early morning on the Harvard Bridge over the Charles River, Boston; a new concrete barrier and chain-link fence with coils of wire blocks half the roadway; a man in a black uniform with a rifle stands by a guard booth; mist on the river, city skyline soft behind.
+
+Batch 3 (2026-11-09):
+16 elpaso_fence 17 mackinac_closed 18 jonesborough_militia 19 calexpo_tents 20 i40_kingman_empty 21 vallejo_exclusion 22 dark_city_silence 23 candle_thanksgiving 24 sacramento_speech_tv

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="750" height="450" viewBox="0 0 750 450">
+<rect width="750" height="450" fill="#2d6a35"/>
+<g transform="translate(375,225)">
+<circle r="170" fill="#9a7420"/>
+<circle r="166" fill="#d9ad3a"/>
+<circle r="122" fill="#c99a2a"/>
+<circle r="118" fill="#e3bb4c"/>
+<defs><path id="ring" d="M -144 0 A 144 144 0 1 1 144 0 A 144 144 0 1 1 -144 0"/></defs>
+<text font-family="Georgia,'Times New Roman',serif" font-weight="bold" font-size="25" fill="#5a3f0c" letter-spacing="1.5"><textPath href="#ring" startOffset="0">THE GREAT SEAL OF THE STATE OF JEFFERSON ★</textPath></text>
+<g font-family="Georgia,'Times New Roman',serif" font-weight="bold" font-size="120" fill="#111" text-anchor="middle">
+<text x="-34" y="40" transform="rotate(-12 -34 0)">X</text>
+<text x="38" y="44" transform="rotate(10 38 0)">X</text>
+</g></g></svg>

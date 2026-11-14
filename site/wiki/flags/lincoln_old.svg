@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="750" height="450" viewBox="0 0 750 450">
+<rect width="750" height="450" fill="#14336b"/>
+<g font-family="Georgia,'Times New Roman',serif" font-weight="bold" fill="#e2b740" text-anchor="middle">
+<text x="375" y="72" font-size="50" letter-spacing="14">LINCOLN</text>
+<text x="375" y="420" font-size="30" letter-spacing="4">1865 · 2009</text>
+</g>
+<g transform="translate(375,236)">
+<circle r="140" fill="#e2b740"/>
+<circle r="133" fill="#fff"/>
+<clipPath id="c"><circle r="133"/></clipPath>
+<g clip-path="url(#c)">
+<path d="M-140 62 q23 -14 46 0 t46 0 t46 0 t46 0 t46 0 t46 0 t46 0 V140 H-140Z" fill="#2f63ad"/>
+<path d="M-140 88 q23 -14 46 0 t46 0 t46 0 t46 0 t46 0 t46 0 t46 0" fill="none" stroke="#fff" stroke-width="7"/>
+<path d="M-140 110 q23 -14 46 0 t46 0 t46 0 t46 0 t46 0 t46 0 t46 0" fill="none" stroke="#fff" stroke-width="7"/>
+</g>
+<g fill="#d39a1f" stroke="#8a5e10" stroke-width="2">
+<!-- sheaf stalks -->
+<g stroke="#8a5e10" stroke-width="4" fill="none">
+<path d="M0 60 L0 -40"/><path d="M-6 60 L-28 -37"/><path d="M6 60 L28 -37"/><path d="M-10 60 L-47 -21"/><path d="M10 60 L47 -21"/>
+</g>
+<g id="ear"><ellipse cx="0" cy="-58" rx="9" ry="26"/><path d="M0 -84 L0 -100" stroke-width="2" fill="none"/><path d="M-4 -72 L-12 -92 M4 -72 L12 -92" stroke-width="1.5" fill="none"/></g>
+<use href="#ear" transform="translate(-36 -6) rotate(-17 0 -58)"/>
+<use href="#ear" transform="translate(36 -6) rotate(17 0 -58)"/>
+<use href="#ear" transform="translate(-62 14) rotate(-33 0 -58)"/>
+<use href="#ear" transform="translate(62 14) rotate(33 0 -58)"/>
+<rect x="-22" y="18" width="44" height="13" rx="3" fill="#2f63ad" stroke="#14336b"/>
+</g>
+</g>
+</svg>
