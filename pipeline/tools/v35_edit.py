@@ -5,6 +5,7 @@
 # Run from pipeline/tools:  python3 v35_edit.py -> ../work/v35/*.geojson + ../build/_pf.json ; node v35_topo.mjs
 # Batches:
 #  1. sbc  Southern Baptist Convention (Nashville), see its block below.
+#  2. ttc  Twelve Tribes Communities (Chattanooga), see its block below.
 import sys, json, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from topo_py import load, features
@@ -106,6 +107,42 @@ sbc = sbc.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
 sbc = sbc.difference(G['agg'])
 print('plateau px', int(plateau.sum()), 'corridor px', int((corr & ~core).sum()))
 NEW.append(('sbc', sbc))
+
+# ---- 2. Twelve Tribes Communities (Chattanooga) ----
+# Same method as sbc: a settlement control field (towns + roads + fractal noise) inside a loose county frame
+# (Hamilton, Marion, Sequatchie TN; Dade, Walker GA; Jackson, DeKalb AL). It takes in the Chattanooga valley,
+# Lookout and Signal mountains and the top of Sand Mountain (the "Sand Mountain parish"), runs down the
+# Tennessee valley past Bridgeport and Stevenson to Scottsboro, and up I-75 / the river towards Cleveland and
+# Dolly Pond, where it runs into the Appalachian guerrilla government (AGG's edge is kept, tt is cut by it).
+RES = 0.1; bx0, by0, bx1, by1 = 3025, 2195, 3115, 2290
+tr = Affine(RES, 0, bx0, 0, RES, by0)
+X, Y, E = DEM.grid(bx0, by0, bx1, by1, RES); h, w = X.shape
+TOWNS = [
+    (-85.31, 35.05, 155), (-85.23, 35.00, 21), (-85.30, 35.10, 13), (-85.34, 35.12, 8), (-85.18, 35.27, 12), (-85.27, 35.00, 4),
+    (-85.36, 34.98, 2), (-85.26, 34.99, 4), (-85.28, 34.93, 10), (-85.25, 34.95, 9), (-85.29, 34.88, 2), (-85.51, 34.87, 2),
+    (-85.63, 35.07, 3), (-85.71, 35.00, 3), (-85.67, 35.03, 1), (-85.73, 34.95, 2), (-85.80, 34.86, 2), (-86.03, 34.67, 15),
+    (-85.39, 35.38, 3), (-85.97, 34.49, 4), (-85.85, 34.57, 1), (-85.98, 34.59, 1), (-85.82, 34.67, 1), (-85.13, 35.36, 1),
+    (-85.06, 35.31, 2), (-85.50, 34.95, 1), (-85.25, 35.17, 3)]
+ROADS = [[(-85.75, 35.04), (-85.63, 35.07), (-85.45, 35.05), (-85.31, 35.05), (-85.15, 35.03), (-85.02, 35.07)],   # I-24 / I-75
+         [(-85.31, 35.05), (-85.45, 34.92), (-85.51, 34.87), (-85.62, 34.74)],                                     # I-59
+         [(-85.71, 35.00), (-85.80, 34.86), (-85.95, 34.73), (-86.03, 34.67)],                                     # US-72
+         [(-85.31, 35.05), (-85.20, 35.20), (-85.09, 35.33)]]                                                      # US-27 north
+fld = np.zeros((h, w), np.float32)
+for lo, la, pop in TOWNS:
+    tx_, ty_ = map(float, PJ.fwd(lo, la)); r = 2.6 + 2.0 * np.sqrt(pop / 10)
+    fld += np.exp(-((X - tx_) ** 2 + (Y - ty_) ** 2) / (r * r))
+for rd in ROADS:
+    ln = LineString([tuple(map(float, PJ.fwd(lo, la))) for lo, la in rd])
+    dd = ndi.distance_transform_edt(~ras(ln.buffer(0.25))) * RES
+    fld += 0.55 * np.exp(-(dd / 3.5) ** 2)
+fld += 0.7 * fbm(200, 103) + 0.8 * fbm(80, 111) + 0.4 * fbm(25, 131) + 0.12 * fbm(8, 151)
+frame = county_union(['47065', '47115', '47153', '13083', '13295', '01071', '01049'])
+M = (fld > 0.30) & ras(frame.buffer(4))
+lab, nl = ndi.label(M); sizes = ndi.sum(M, lab, range(1, nl + 1)); M = lab == (1 + int(np.argmax(sizes)))
+M = ndi.binary_fill_holes(M)
+tt = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
+tt = tt.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
+NEW.append(('ttc', tt))
 
 taken = unary_union(list(G.values()))
 for fid, g in NEW:
