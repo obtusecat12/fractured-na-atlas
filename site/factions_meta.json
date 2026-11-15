@@ -665,6 +665,24 @@
    "lore_zh": "俄克拉荷马山中的以罗欣城基督教身份派营地在断网后东移，以哈里森为驻地，奉行与基列相同的教法，并采用基列的夜间灯火管制。",
    "lore_en": "After the cutoff the Christian Identity compound at Elohim City, in the Oklahoma hills, moved east and made Harrison its seat. It keeps Gilead's law and Gilead's night-time blackout.",
    "founded": "—"
+  },
+  {
+   "id": "fla",
+   "zh": "佛罗里达州议会",
+   "en": "Florida Legislature",
+   "color": "#5A5AB8",
+   "lights": "dim",
+   "capital_zh": "塔拉哈西",
+   "capital_en": "Tallahassee",
+   "capital_ll": [
+    -84.2807,
+    30.4382
+   ],
+   "terrain_zh": "佛罗里达大弯区：塔拉哈西及其以南的低地，沿 US-319 至克劳福德维尔与索普乔皮，沿圣马克斯河至圣马克斯，沿 US-27/US-19 东南至佩里。北面紧贴联邦残余指挥部的 I-10 车队走廊，西隔奥克洛科尼河与其巴拿马城—马里安纳防区相接，南临墨西哥湾沼泽海岸。",
+   "terrain_en": "Florida's Big Bend: Tallahassee and the lowlands south of it, down US-319 to Crawfordville and Sopchoppy, down the St. Marks River to St. Marks, and south-east on US-27/US-19 to Perry. The federal remnant command's I-10 convoy corridor runs along its north side, and its Panama City–Marianna sector lies across the Ochlockonee to the west; to the south are the Gulf salt marshes.",
+   "lore_zh": "断网后州议会在塔拉哈西州议会大厦继续开会，自称佛罗里达合法政府，但实际只管得了首府周边几个县。与联邦残余指挥部互不承认，又离不开其 I-10 车队的燃料补给。",
+   "lore_en": "After the cutoff the Legislature kept sitting in the Capitol in Tallahassee and calls itself Florida's lawful government, though it governs only a few counties round the capital. It does not recognise the federal remnant command, nor the command it, but it lives on the fuel the command's I-10 convoys bring.",
+   "founded": "—"
   }
  ],
  "none": {

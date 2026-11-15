@@ -10,6 +10,7 @@
 #  4. cws  Clearwater / Scientology (carved out of frc).
 #  5. nfm  North Florida Municipal League (Gainesville; takes frc's I-75 strip Lake City-Ocala).
 #  6. elc  Elohim City (Ozarks; Harrison AR), see its block below.
+#  7. fla  Florida Legislature (Tallahassee), see its block below.
 import sys, json, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from topo_py import load, features
@@ -296,6 +297,39 @@ M = ndi.binary_fill_holes(M)
 ec = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
 ec = ec.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
 NEW.append(('elc', ec))
+
+# ---- 7. Florida Legislature (Tallahassee) ----
+# Same method (towns + roads + noise in a loose county frame: Leon, Wakulla, Jefferson, Taylor, Madison). Silence only:
+# the federal remnant's I-10 convoy strip runs just north of Tallahassee and its Panama City / Marianna block lies
+# west of the Ochlockonee, so the Legislature holds the capital, the Big Bend lowlands down US-319 to Crawfordville,
+# Sopchoppy and Panacea, and US-27/US-19 south-east to Perry; frc (kept as is) closes it to the north and west.
+RES = 0.1; bx0, by0, bx1, by1 = 3128, 2428, 3205, 2500
+tr = Affine(RES, 0, bx0, 0, RES, by0)
+X, Y, E = DEM.grid(bx0, by0, bx1, by1, RES); h, w = X.shape
+TOWNS = [
+    (-84.28, 30.44, 150), (-84.38, 30.18, 4), (-84.26, 30.30, 3), (-84.21, 30.16, 1), (-84.39, 30.03, 1), (-84.49, 30.06, 1),
+    (-83.58, 30.12, 7), (-83.84, 30.40, 1), (-83.41, 29.67, 1), (-84.18, 30.20, 1), (-84.14, 30.38, 2), (-84.41, 30.37, 2),
+    (-84.21, 30.48, 8), (-84.35, 30.46, 6), (-84.33, 30.27, 1), (-83.73, 30.24, 1), (-84.05, 30.30, 1)]
+ROADS = [[(-84.28, 30.44), (-84.33, 30.27), (-84.38, 30.18), (-84.49, 30.06)],                       # US-319
+         [(-84.28, 30.44), (-84.05, 30.30), (-83.84, 30.40)], [(-84.05, 30.30), (-83.73, 30.24), (-83.58, 30.12)],  # US-27 / US-19
+         [(-84.39, 30.03), (-84.21, 30.16), (-84.18, 30.20), (-83.98, 30.13), (-83.58, 30.12)],         # US-98
+         [(-84.28, 30.44), (-84.26, 30.30), (-84.21, 30.16)]]                                         # Woodville Hwy to St Marks
+fld = np.zeros((h, w), np.float32)
+for lo, la, pop in TOWNS:
+    tx_, ty_ = map(float, PJ.fwd(lo, la)); r = 2.6 + 2.0 * np.sqrt(pop / 10)
+    fld += np.exp(-((X - tx_) ** 2 + (Y - ty_) ** 2) / (r * r))
+for rd in ROADS:
+    ln = LineString([tuple(map(float, PJ.fwd(lo, la))) for lo, la in rd])
+    dd = ndi.distance_transform_edt(~ras(ln.buffer(0.25))) * RES
+    fld += 0.55 * np.exp(-(dd / 3.5) ** 2)
+fld += 0.7 * fbm(200, 403) + 0.8 * fbm(80, 411) + 0.4 * fbm(25, 431) + 0.12 * fbm(8, 451)
+frame = county_union(['12073', '12129', '12065', '12123', '12079'])
+M = (fld > 0.30) & ras(frame.buffer(2)) & ~ras(G['frc'])
+lab, nl = ndi.label(M); sizes = ndi.sum(M, lab, range(1, nl + 1)); M = lab == (1 + int(np.argmax(sizes)))
+M = ndi.binary_fill_holes(M)
+fl = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
+fl = fl.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
+NEW.append(('fla', fl))
 
 taken = unary_union(list(G.values()))
 for fid, g in NEW:
