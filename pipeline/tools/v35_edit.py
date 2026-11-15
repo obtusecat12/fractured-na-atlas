@@ -9,6 +9,7 @@
 #  3. mcs  Mecklenburg Committee of Safety (Charlotte), see its block below.
 #  4. cws  Clearwater / Scientology (carved out of frc).
 #  5. nfm  North Florida Municipal League (Gainesville; takes frc's I-75 strip Lake City-Ocala).
+#  6. elc  Elohim City (Ozarks; Harrison AR), see its block below.
 import sys, json, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from topo_py import load, features
@@ -258,6 +259,43 @@ nf = L.clean(unary_union([nf, strip]).buffer(0.1, join_style=1).buffer(-0.1, joi
 nf = unary_union([Polygon(p.exterior) for p in L.polys(nf)])   # the gaps between the old strip and the field are League ground too
 print('nfm takes from frc', round(strip.area, 1))
 NEW.append(('nfm', nf))
+
+# ---- 6. Elohim City (Ozark Plateau; Harrison, Arkansas) ----
+# Same method as sbc: a settlement control field (towns + roads + fractal noise) inside a loose county frame
+# (Benton, Washington, Madison, Carroll, Boone, Newton AR; McDonald, Barry MO). It holds the Springfield Plateau of
+# north-west Arkansas (the I-540 / US-71 towns, US-62 and US-412 east to Harrison) and the karst hollows of McDonald
+# County, Missouri. The south edge is the Boston Mountains (smoothed ground above ~560 m, real terrain, stays
+# outside); west it runs along US-412 past Siloam Springs to Sequoyah's own line (Sequoyah is kept, ec is cut by it).
+RES = 0.1; bx0, by0, bx1, by1 = 2722, 2168, 2808, 2242
+tr = Affine(RES, 0, bx0, 0, RES, by0)
+X, Y, E = DEM.grid(bx0, by0, bx1, by1, RES); h, w = X.shape
+TOWNS = [
+    (-93.11, 36.23, 12), (-94.16, 36.06, 58), (-94.13, 36.19, 46), (-94.12, 36.33, 39), (-94.21, 36.37, 20), (-94.23, 36.47, 16),
+    (-94.54, 36.19, 11), (-93.57, 36.36, 4), (-93.74, 36.40, 2), (-93.74, 36.09, 2), (-93.44, 36.33, 3), (-93.19, 36.01, 1),
+    (-94.38, 36.59, 1), (-94.49, 36.55, 2), (-94.44, 36.65, 2), (-93.87, 36.68, 3), (-94.45, 36.42, 2), (-94.12, 36.45, 3),
+    (-94.32, 35.98, 3), (-94.42, 35.95, 2), (-94.01, 36.00, 1), (-93.29, 36.29, 1), (-92.96, 36.10, 1), (-93.19, 36.45, 1),
+    (-94.26, 36.29, 3), (-93.95, 36.43, 1), (-94.60, 36.68, 1), (-94.37, 36.23, 2)]
+ROADS = [[(-94.16, 36.06), (-94.13, 36.19), (-94.12, 36.33), (-94.21, 36.37), (-94.23, 36.47), (-94.38, 36.59), (-94.44, 36.65)],  # I-540 / US-71
+         [(-94.62, 36.18), (-94.54, 36.19), (-94.37, 36.23), (-94.13, 36.19), (-93.74, 36.09), (-93.29, 36.29), (-93.11, 36.23)],  # US-412
+         [(-94.12, 36.33), (-93.95, 36.43), (-93.74, 36.40), (-93.57, 36.36), (-93.44, 36.33), (-93.29, 36.29), (-93.11, 36.23)],  # US-62
+         [(-93.11, 36.23), (-93.19, 36.45)], [(-93.11, 36.23), (-93.19, 36.01)]]                                                  # US-65 / AR-7
+fld = np.zeros((h, w), np.float32)
+for lo, la, pop in TOWNS:
+    tx_, ty_ = map(float, PJ.fwd(lo, la)); r = 2.6 + 2.0 * np.sqrt(pop / 10)
+    fld += np.exp(-((X - tx_) ** 2 + (Y - ty_) ** 2) / (r * r))
+for rd in ROADS:
+    ln = LineString([tuple(map(float, PJ.fwd(lo, la))) for lo, la in rd])
+    dd = ndi.distance_transform_edt(~ras(ln.buffer(0.25))) * RES
+    fld += 0.55 * np.exp(-(dd / 3.5) ** 2)
+fld += 0.7 * fbm(200, 303) + 0.8 * fbm(80, 311) + 0.4 * fbm(25, 331) + 0.12 * fbm(8, 351)
+frame = county_union(['05007', '05143', '05087', '05015', '05009', '05101', '29119', '29009'])
+ridge = ndi.binary_opening(ndi.gaussian_filter(E, 5) > 560, iterations=3)
+M = ((fld > 0.30) & ras(frame.buffer(4))) & ~ridge
+lab, nl = ndi.label(M); sizes = ndi.sum(M, lab, range(1, nl + 1)); M = lab == (1 + int(np.argmax(sizes)))
+M = ndi.binary_fill_holes(M)
+ec = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
+ec = ec.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
+NEW.append(('elc', ec))
 
 taken = unary_union(list(G.values()))
 for fid, g in NEW:

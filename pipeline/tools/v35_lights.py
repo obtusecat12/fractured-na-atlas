@@ -116,7 +116,7 @@ def paste(x0, y0, rgb, mask):
 # ---------- new factions: weight from their lights mode, everything else unchanged ----------
 NEWF = sys.argv[1:]
 meta = {f['id']: f for f in json.load(open(SITE + 'factions_meta.json'))['factions']}
-MODE_WT = {'normal': 1.0, 'dim': .38}
+MODE_WT = {'normal': 1.0, 'dim': .38, 'controlled_blackout': 0.0}   # blackout: amber off, cold Gilead-style lamps added below
 for fid in NEWF: WT[fid] = MODE_WT[meta[fid]['lights']]
 old = [f for f in pf if f['id'] not in NEWF]
 for fid in NEWF:
@@ -129,5 +129,21 @@ for fid in NEWF:
     mask[:20] = mask[-20:] = 0; mask[:, :20] = mask[:, -20:] = 0
     paste(x0, y0, tone(radiance(g, A, G_) * w), np.clip(mask * 1.2, 0, 1))
     print(fid, 'patch', (x0, y0, x1, y1), 'changed px', int(ch.sum()), 'weight', WT[fid])
+    if meta[fid]['lights'] == 'controlled_blackout':
+        # Gilead's look (nightbake.py's gilead layer) baked into static: a regular grid of cold checkpoint lamps on
+        # the same global 19 px pitch, a faint 6% residue, and a small lit core round the capital. No pulse (static).
+        em = Image.new('F', (x1 - x0, y1 - y0), 0.0); d = ImageDraw.Draw(em)
+        for p_ in polys([f for f in pf if f['id'] == fid][0]['geometry']):
+            for i, ring in enumerate(p_): d.polygon([(x * SC - x0, y * SC - y0) for x, y in ring], fill=1.0 if i == 0 else 0.0)
+        em = np.asarray(em, np.float32); R = radiance(g, A, G_)
+        a = R * em * 0.06; YY, XX = np.mgrid[y0:y1, x0:x1]; P_ = int(13 * SC)
+        a[(YY % P_ == 0) & (XX % P_ == 0) & (em > 0.5)] = 1.4
+        cx, cy = fwd(*meta[fid]['capital_ll']); a += R * em * (((XX - cx * SC) ** 2 + (YY - cy * SC) ** 2) < (3 * SC) ** 2)
+        COLD = [(0, (0, 0, 0)), (.1, (30, 40, 64)), (.4, (140, 165, 205)), (.7, (205, 222, 255)), (1, (255, 255, 255))]
+        LC = np.stack([np.interp(v, [q[0] for q in COLD], [q[1][ch] for q in COLD]) for ch in range(3)], 1).astype(np.uint8)
+        dd = a + 0.3 * gaussian_filter(a, 2.0 * SC) + 0.18 * gaussian_filter(a, 8 * SC)
+        rgb = LC[np.clip(((1 - np.exp(-1.5 * dd)) * 255).astype(int), 0, 255)].astype(np.float32)
+        static[y0:y1, x0:x1] = np.clip(static[y0:y1, x0:x1] + rgb * gaussian_filter(em, 1.0)[..., None], 0, 255)
+        print(fid, 'blackout lamps', int(((YY % P_ == 0) & (XX % P_ == 0) & (em > 0.5)).sum()))
 Image.fromarray(np.clip(static, 0, 255).astype(np.uint8)).save(SITE + 'night/static.jpg', quality=88, optimize=True)
 print('wrote static.jpg')
