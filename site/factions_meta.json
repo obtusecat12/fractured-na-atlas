@@ -695,6 +695,24 @@
    "lore_zh": "断网后州议会在塔拉哈西州议会大厦继续开会，自称佛罗里达合法政府，但实际只管得了首府周边几个县。与联邦残余指挥部互不承认，又离不开其 I-10 车队的燃料补给。",
    "lore_en": "After the cutoff the Legislature kept sitting in the Capitol in Tallahassee and calls itself Florida's lawful government, though it governs only a few counties round the capital. It does not recognise the federal remnant command, nor the command it, but it lives on the fuel the command's I-10 convoys bring.",
    "founded": "—"
+  },
+  {
+   "id": "etx",
+   "zh": "东得克萨斯公理会",
+   "en": "East Texas Congregational Union",
+   "color": "#9E5A3C",
+   "lights": "dim",
+   "capital_zh": "泰勒",
+   "capital_en": "Tyler",
+   "capital_ll": [
+    -95.3011,
+    32.3513
+   ],
+   "terrain_zh": "东得克萨斯松林区：泰勒、基尔戈、朗维尤、马歇尔，南经亨德森、卡塞奇至纳科多奇斯与森特，北沿 US-271 与 US-259 进入静默区直到芒特普莱森特。西面隔着上内奇斯河一带的无人区（阿森斯—巴勒斯坦）与得克萨斯共和国对峙，东面萨宾河沿岸与卢夫金以南仍归得克萨斯。",
+   "terrain_en": "The East Texas Piney Woods: Tyler, Kilgore, Longview and Marshall, south through Henderson and Carthage to Nacogdoches and Center, and north up US-271 and US-259 into the silence as far as Mount Pleasant. To the west it faces the Republic of Texas across the no-man's-land of the upper Neches (Athens–Palestine); the Sabine bank to the east and everything from Lufkin south remain Texan.",
+   "lore_zh": "断网后东得克萨斯各县的教会联合起来接管了县政和油田治安，以泰勒为会所，拒绝向奥斯汀纳税，从得克萨斯共和国分离。",
+   "lore_en": "After the cutoff the churches of the East Texas counties banded together, took over county government and policing of the oil field, met at Tyler, refused to pay taxes to Austin and broke away from the Republic of Texas.",
+   "founded": "—"
   }
  ],
  "none": {
