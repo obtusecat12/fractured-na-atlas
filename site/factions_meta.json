@@ -647,6 +647,24 @@
    "lore_en": "After the cutoff the towns pooled their police, water works and municipal power into a league that sits in Gainesville and keeps the lights on from the city-owned plant. Federal convoys still run I-75 between Tampa and Jacksonville, on League passes.",
    "founded": "—",
    "zh_lines": "北佛罗里达|自治市|联席会"
+  },
+  {
+   "id": "elc",
+   "zh": "以罗欣城",
+   "en": "Elohim City",
+   "color": "#E6B422",
+   "lights": "controlled_blackout",
+   "capital_zh": "哈里森",
+   "capital_en": "Harrison",
+   "capital_ll": [
+    -93.1077,
+    36.2298
+   ],
+   "terrain_zh": "奥扎克高原西北部：阿肯色的本顿维尔、罗杰斯、斯普林代尔、费耶特维尔沿 I-540/US-71 一线，经 US-62 与 US-412 东至尤里卡斯普林斯、伯里维尔、亨茨维尔和哈里森，北含密苏里麦克唐纳县的喀斯特山谷。南以波士顿山脉为界，西沿 US-412 与塞阔亚州相接。",
+   "terrain_en": "The north-west Ozark Plateau: the Arkansas towns of Bentonville, Rogers, Springdale and Fayetteville along I-540/US-71, east by US-62 and US-412 to Eureka Springs, Berryville, Huntsville and Harrison, and north into the karst hollows of McDonald County, Missouri. The Boston Mountains close it to the south; to the west it meets Sequoyah along US-412.",
+   "lore_zh": "俄克拉荷马山中的以罗欣城基督教身份派营地在断网后东移，以哈里森为驻地，奉行与基列相同的教法，并采用基列的夜间灯火管制。",
+   "lore_en": "After the cutoff the Christian Identity compound at Elohim City, in the Oklahoma hills, moved east and made Harrison its seat. It keeps Gilead's law and Gilead's night-time blackout.",
+   "founded": "—"
   }
  ],
  "none": {
