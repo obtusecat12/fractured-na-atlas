@@ -592,6 +592,24 @@
    "lore_zh": "以查塔努加的十二支派公社及其黄色熟食店为中心，各公社共有财产、自给农耕。周边山区有五旬节派持蛇教会的传统，如田纳西州多莉池塘一带的“神迹相随神的教会”；这些教会独立于任何中央权威，与基列的国家神权并不相容。",
    "lore_en": "Centred on the Twelve Tribes communities of Chattanooga and their Yellow Deli, communes that hold property in common and farm for themselves. The surrounding hills carry the tradition of Pentecostal serpent-handling churches, such as the Church of God with Signs Following at Dolly Pond, Tennessee; answering to no central authority, they sit uneasily with Gilead's state theocracy.",
    "founded": "—"
+  },
+  {
+   "id": "mcs",
+   "zh": "梅克伦堡安全委员会",
+   "en": "Mecklenburg Committee of Safety",
+   "color": "#D46A8C",
+   "lights": "dim",
+   "capital_zh": "夏洛特",
+   "capital_en": "Charlotte",
+   "capital_ll": [
+    -80.8431,
+    35.2271
+   ],
+   "terrain_zh": "北卡罗来纳皮德蒙特高原，沿I-85、I-40与I-77：南起加斯托尼亚与南卡罗克希尔，经夏洛特、索尔兹伯里至格林斯伯勒—温斯顿-塞勒姆三角区与伯灵顿，西到希科里、摩根顿与勒诺尔；蓝岭山地不在其内，仅沿US-321上山至布洛英罗克，并在亚德金河谷与芒特艾里一带与阿巴拉契亚游击政府相接。",
+   "terrain_en": "The North Carolina Piedmont along I-85, I-40 and I-77: from Gastonia and Rock Hill, South Carolina, through Charlotte and Salisbury to the Triad and Burlington, west to Hickory, Morganton and Lenoir. The Blue Ridge stays outside, except a corridor up US-321 to Blowing Rock; it meets the Appalachian guerrilla government there and along the Yadkin valley round Mount Airy.",
+   "lore_zh": "取名自1775年梅克伦堡县的安全委员会及其《梅克伦堡决议》。吉尔福德县的贵格会（新花园会所、吉尔福德学院）曾是“地下铁路”的一环；原著中，贵格会协助逃亡者经“地下女性铁路”出境。",
+   "lore_en": "Named after the Mecklenburg County Committee of Safety and its Mecklenburg Resolves of 1775. The Quakers of Guilford County (New Garden Meeting, Guilford College) were a link in the Underground Railroad; in the novel, Quakers help fugitives out along the \"Underground Femaleroad\".",
+   "founded": "—"
   }
  ],
  "none": {

@@ -6,6 +6,7 @@
 # Batches:
 #  1. sbc  Southern Baptist Convention (Nashville), see its block below.
 #  2. ttc  Twelve Tribes Communities (Chattanooga), see its block below.
+#  3. mcs  Mecklenburg Committee of Safety (Charlotte), see its block below.
 import sys, json, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from topo_py import load, features
@@ -143,6 +144,52 @@ M = ndi.binary_fill_holes(M)
 tt = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
 tt = tt.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
 NEW.append(('ttc', tt))
+
+# ---- 3. Mecklenburg Committee of Safety (Charlotte) ----
+# Same method: settlement control field along I-85 / I-40 / I-77 across the North Carolina Piedmont, from
+# Gastonia and Rock Hill through Charlotte, Salisbury and the Triad to Burlington, west to Hickory, Morganton and
+# Lenoir. The Blue Ridge (smoothed ground above ~600 m, real terrain) stays outside, except a corridor up
+# US-321 from Lenoir past Blowing Rock towards Boone, where the Committee meets the Appalachian guerrilla
+# government; up the Yadkin valley (Wilkesboro, Elkin) and US-52 (King, Pilot Mountain) it also runs along
+# AGG's edge round Mount Airy.
+RES = 0.1; bx0, by0, bx1, by1 = 3180, 2105, 3305, 2235
+tr = Affine(RES, 0, bx0, 0, RES, by0)
+X, Y, E = DEM.grid(bx0, by0, bx1, by1, RES); h, w = X.shape
+TOWNS = [
+    (-80.84, 35.23, 540), (-79.79, 36.07, 224), (-80.24, 36.10, 185), (-80.01, 35.96, 85), (-80.58, 35.41, 56), (-81.19, 35.26, 66),
+    (-81.34, 35.73, 37), (-80.47, 35.67, 26), (-80.89, 35.78, 24), (-80.62, 35.49, 37), (-79.44, 36.10, 45), (-81.54, 35.91, 17),
+    (-81.68, 35.75, 17), (-80.81, 35.58, 19), (-80.55, 34.99, 26), (-81.03, 34.92, 50), (-81.54, 35.29, 20), (-80.25, 35.82, 20),
+    (-80.08, 35.88, 20), (-79.81, 35.71, 21), (-80.20, 35.35, 15), (-81.25, 35.47, 10), (-80.72, 35.12, 23), (-80.87, 35.40, 25),
+    (-81.10, 35.29, 10), (-81.04, 35.24, 9), (-81.22, 35.67, 13), (-81.16, 36.15, 7), (-80.85, 36.24, 4), (-80.56, 35.89, 4),
+    (-80.08, 36.12, 17), (-79.67, 36.35, 15), (-79.77, 36.49, 16), (-80.38, 36.03, 14), (-81.48, 35.81, 4), (-81.68, 36.13, 2),
+    (-81.52, 35.74, 4), (-80.95, 35.01, 8), (-80.64, 35.07, 11), (-80.85, 35.50, 12), (-79.40, 36.07, 13), (-79.27, 36.10, 7),
+    (-80.42, 36.13, 12), (-81.67, 36.20, 1), (-80.61, 36.50, 9), (-80.72, 36.40, 2), (-80.47, 36.39, 2),
+    (-80.36, 36.28, 6), (-80.75, 36.32, 2), (-81.38, 36.10, 1)]
+ROADS = [[(-81.40, 35.25), (-81.19, 35.26), (-80.84, 35.23), (-80.58, 35.41), (-80.47, 35.67), (-80.25, 35.82), (-80.01, 35.96), (-79.79, 36.07), (-79.44, 36.10), (-79.25, 36.08)],  # I-85
+         [(-81.80, 35.72), (-81.68, 35.75), (-81.34, 35.73), (-80.89, 35.78), (-80.56, 35.89), (-80.24, 36.10), (-79.79, 36.07)],                                         # I-40
+         [(-81.03, 34.92), (-80.84, 35.23), (-80.85, 35.50), (-80.89, 35.78), (-80.85, 36.24), (-80.80, 36.40)],                                                           # I-77
+         [(-81.19, 35.26), (-81.25, 35.47), (-81.34, 35.73), (-81.54, 35.91), (-81.66, 36.05), (-81.68, 36.13), (-81.67, 36.20)],                                          # US-321
+         [(-80.24, 36.10), (-80.70, 36.15), (-81.16, 36.15)],
+         [(-80.24, 36.10), (-80.36, 36.28), (-80.47, 36.39), (-80.61, 36.50)]]                                                                                              # US-52                                                                                                               # US-421
+fld = np.zeros((h, w), np.float32)
+for lo, la, pop in TOWNS:
+    tx_, ty_ = map(float, PJ.fwd(lo, la)); r = 2.4 + 1.3 * np.sqrt(pop / 10)
+    fld += np.exp(-((X - tx_) ** 2 + (Y - ty_) ** 2) / (r * r))
+for rd in ROADS:
+    ln = LineString([tuple(map(float, PJ.fwd(lo, la))) for lo, la in rd])
+    dd = ndi.distance_transform_edt(~ras(ln.buffer(0.25))) * RES
+    fld += 0.6 * np.exp(-(dd / 3.0) ** 2)
+fld += 0.7 * fbm(200, 203) + 0.8 * fbm(80, 211) + 0.4 * fbm(25, 231) + 0.12 * fbm(8, 251)
+frame = county_union(['37' + c for c in '119 025 071 179 109 097 159 057 067 081 151 001 035 027 023 193 059 197 167 045 003 157 169 171 189'.split()] + ['45091'])
+ridge = ndi.binary_opening(ndi.gaussian_filter(E, 5) > 600, iterations=3)
+road321 = LineString([tuple(map(float, PJ.fwd(lo, la))) for lo, la in [(-81.54, 35.91), (-81.66, 36.05), (-81.68, 36.13), (-81.67, 36.22)]])
+corr = (ndi.distance_transform_edt(~ras(road321.buffer(0.3))) * RES) < (2.6 + 1.2 * fbm(50, 241))
+M = (((fld > 0.30) & ras(frame.buffer(3))) & ~ridge) | corr
+lab, nl = ndi.label(M); sizes = ndi.sum(M, lab, range(1, nl + 1)); M = lab == (1 + int(np.argmax(sizes)))
+M = ndi.binary_fill_holes(M)
+mcs = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
+mcs = mcs.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
+NEW.append(('mcs', mcs))
 
 taken = unary_union(list(G.values()))
 for fid, g in NEW:
