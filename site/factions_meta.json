@@ -645,7 +645,8 @@
    "terrain_en": "The town belt along I-75 and US-301/441: Lake City, High Springs, Alachua, Gainesville, Starke and Ocala, south to The Villages and Leesburg; the former federal convoy corridor from Lake City to Ocala now belongs to the League. It meets the federal remnant command on the north, east and south; to the west, pine scrub runs out towards the Suwannee.",
    "lore_zh": "断网后各市县把警察、供水与市政电力合并成联席会，议事设在盖恩斯维尔，靠市营电厂维持夜间照明。联邦车队仍可凭通行证经 I-75 往返坦帕与杰克逊维尔。",
    "lore_en": "After the cutoff the towns pooled their police, water works and municipal power into a league that sits in Gainesville and keeps the lights on from the city-owned plant. Federal convoys still run I-75 between Tampa and Jacksonville, on League passes.",
-   "founded": "—"
+   "founded": "—",
+   "zh_lines": "北佛罗里达|自治市|联席会"
   }
  ],
  "none": {
