@@ -10,7 +10,7 @@
 - [x] Flickr 继续扩充：第二批 8 张照片（ChatGPT 生成）+ 4 个相册（Sets 列表页、相册页、右栏相册），版式按 2009 年真实 Flickr CSS 复原（2026-11-14）。
 - [x] 阿布萨罗卡州词条与旗帜（2026-11-15）：中英维基词条 + 红白「49」州旗（ChatGPT 生成）+ 定位图 + 地图气泡简介；按英文维基「Absaroka (proposed state)」与 Commons 旗帜页核对史实（名称源自希达察语对克罗族的称呼、横幅「全国游乐场」、哈康七世访问）。已有 8 篇词条在 wikipage.js 中逐字节不变。
 - [ ] 南方八政权（美南浸信会联会、十二支派公社、梅克伦堡安全委员会、清水市、北佛罗里达自治市联席会、以罗欣城、佛罗里达州议会、东得克萨斯公理会）：只做地图（领土多边形 + 标签），不做词条和旗帜（用户 2026-11-15），分批做。
-  - [x] 美南浸信会联会 sbc（2026-11-15，地图 v3.5）：中田纳西 37 县 + 肯塔基 6 县，东界按坎伯兰高原西麓陡崖裁切；灯光 dim。工具 `pipeline/tools/v35_edit.py → v35_topo.mjs → v2_labels.py（只取 sbc 与 _silence/_silgrid 新锚点）→ v35_lights.py sbc`，输入冻结为 `pipeline/build/map_v34.topo.json`。下一批在 v35_edit.py 的 NEW 列表里追加。
+  - [x] 美南浸信会联会 sbc（2026-11-15，地图 v3.5）：边界不沿县界：按城镇驻防“控制场”+州际公路生成参差的前线（加分形噪声），西以田纳西河/肯塔基湖为界，东界取真实高程（AWS Terrain Tiles z9，约 440 m 等高线）描坎伯兰高原陡崖，沿 I-40 穿高原经克罗斯维尔到哈里曼—金斯顿谷地，与阿巴拉契亚游击政府相接约 24 km（用户 2026-11-15：边界太规整、要与游击政府相接）；灯光 dim。工具 `pipeline/tools/v35_edit.py → v35_topo.mjs → v2_labels.py（只取 sbc 与 _silence/_silgrid 新锚点）→ v35_lights.py sbc`，输入冻结为 `pipeline/build/map_v34.topo.json`。下一批在 v35_edit.py 的 NEW 列表里追加。
   - [ ] 十二支派公社（查塔努加）
 
 ## 已完成（存档）
