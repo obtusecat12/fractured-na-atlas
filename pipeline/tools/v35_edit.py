@@ -11,6 +11,7 @@
 #  5. nfm  North Florida Municipal League (Gainesville; takes frc's I-75 strip Lake City-Ocala).
 #  6. elc  Elohim City (Ozarks; Harrison AR), see its block below.
 #  7. fla  Florida Legislature (Tallahassee), see its block below.
+#  8. etx  East Texas Congregational Assembly (Tyler; carved out of texas, user-approved 2026-11-15).
 import sys, json, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from topo_py import load, features
@@ -330,6 +331,58 @@ M = ndi.binary_fill_holes(M)
 fl = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
 fl = fl.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
 NEW.append(('fla', fl))
+
+# ---- 8. East Texas Congregational Assembly (Tyler) ----
+# Third exception to "silence only" (user-approved 2026-11-15): the Piney Woods towns east of the Republic of Texas's
+# own no-man's-land (the silence hole along the upper Neches, Athens - Palestine) are carved out of texas. Same method:
+# towns + roads + fractal noise. Tyler, Kilgore, Longview, Marshall, Henderson, Carthage, Jacksonville, Nacogdoches,
+# Center; north it runs up US-271 / US-259 into the silence towards Mount Pleasant, Daingerfield and Jefferson (the
+# Sulphur River / Red River country). Lufkin, the Angelina and Jasper stay with texas. West it stops at the hole's own
+# edge (left as no-man's-land), east it fades out short of Shreveport.
+RES = 0.1; bx0, by0, bx1, by1 = 2695, 2345, 2795, 2460
+tr = Affine(RES, 0, bx0, 0, RES, by0)
+X, Y, E = DEM.grid(bx0, by0, bx1, by1, RES); h, w = X.shape
+TOWNS = [
+    (-95.30, 32.35, 84), (-94.74, 32.50, 74), (-94.37, 32.54, 24), (-94.88, 32.39, 11), (-94.80, 32.15, 11), (-94.34, 32.16, 7),
+    (-94.94, 32.73, 5), (-95.27, 31.96, 14), (-94.66, 31.60, 30), (-94.18, 31.80, 6), (-95.22, 32.23, 6), (-95.41, 32.52, 3),
+    (-94.97, 33.16, 14), (-94.98, 33.00, 4), (-94.72, 33.03, 3), (-94.35, 32.76, 2), (-94.57, 32.50, 3), (-95.15, 31.80, 5),
+    (-94.36, 33.01, 2), (-94.94, 32.54, 6), (-94.98, 32.27, 2), (-95.12, 32.15, 2), (-94.25, 31.94, 1), (-94.49, 31.83, 1),
+    (-94.68, 31.92, 1), (-95.32, 32.14, 1), (-94.16, 33.11, 6)]
+ROADS = [[(-95.41, 32.52), (-94.88, 32.47), (-94.74, 32.47), (-94.37, 32.52), (-94.10, 32.48)],                     # I-20
+         [(-94.72, 33.03), (-94.80, 32.75), (-94.74, 32.50), (-94.88, 32.39), (-94.80, 32.15), (-94.68, 31.92), (-94.66, 31.60)],  # US-259
+         [(-95.30, 32.35), (-95.32, 32.14), (-95.27, 31.96)],                                                     # US-69
+         [(-95.30, 32.35), (-95.05, 32.55), (-94.94, 32.73), (-94.98, 33.00), (-94.97, 33.16)],                   # US-271
+         [(-95.30, 32.35), (-94.88, 32.39), (-94.74, 32.50)],                                                     # TX-31
+         [(-94.37, 32.54), (-94.34, 32.16), (-94.25, 31.94), (-94.49, 31.83), (-94.66, 31.60)],                   # US-59 south
+         [(-94.37, 32.54), (-94.35, 32.76), (-94.36, 33.01)]]                                                     # US-59 north
+fld = np.zeros((h, w), np.float32)
+for lo, la, pop in TOWNS:
+    tx_, ty_ = map(float, PJ.fwd(lo, la)); r = 2.6 + 2.0 * np.sqrt(pop / 10)
+    fld += np.exp(-((X - tx_) ** 2 + (Y - ty_) ** 2) / (r * r))
+for rd in ROADS:
+    ln = LineString([tuple(map(float, PJ.fwd(lo, la))) for lo, la in rd])
+    dd = ndi.distance_transform_edt(~ras(ln.buffer(0.25))) * RES
+    fld += 0.55 * np.exp(-(dd / 3.5) ** 2)
+fld += 0.7 * fbm(200, 503) + 0.8 * fbm(80, 511) + 0.4 * fbm(25, 531) + 0.12 * fbm(8, 551)
+tex = G['texas']; hole = unary_union([Polygon(i) for p in L.polys(tex) for i in p.interiors])
+north = county_union(['48343', '48449', '48063', '48067', '48315'])    # Morris, Titus, Camp, Cass, Marion (silence)
+M = (fld > 0.22) & (ras(tex) | ras(north.difference(unary_union([g for k, g in G.items() if k != 'texas'])))) & ~ras(hole.buffer(0.3))
+lab, nl = ndi.label(M); sizes = ndi.sum(M, lab, range(1, nl + 1)); M = lab == (1 + int(np.argmax(sizes)))
+M = ndi.binary_fill_holes(M)
+et = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
+et = et.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
+cut = L.clean(G['texas'].intersection(et))
+cut = L.clean(unary_union([p for p in L.polys(cut) if p.area > 0.5]))
+G['texas'] = L.clean(G['texas'].difference(cut))
+eb = et.envelope   # texas pockets left cut off inside the Assembly's ground go with it; texas keeps its main body
+pk = [p for p in L.polys(G['texas']) if p.area < 1000 and eb.contains(p.representative_point())]
+cut = L.clean(unary_union([cut] + pk))
+G['texas'] = L.clean(unary_union([p for p in L.polys(G['texas']) if p not in pk and p.area > 0.3] + [p for p in L.polys(G['texas']) if p.area >= 50]))
+for f in OBJ['factions']:
+    if f['id'] == 'texas': f['geom'] = G['texas']
+et = L.clean(unary_union([et, cut]))
+print('etx takes from texas', round(cut.area, 1))
+NEW.append(('etx', et))
 
 taken = unary_union(list(G.values()))
 for fid, g in NEW:
