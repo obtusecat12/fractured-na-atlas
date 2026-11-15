@@ -556,6 +556,24 @@
    "lore_zh": "沿用1939年谢里登建州运动（A·R·斯威卡德自封州长，横幅写“全国游乐场”）的名称和红白“49”旗。2009年3月14日五县在谢里登博览会场宣布建州，4月黑山各县加入，6月以科尔斯特里普电站的电力向联邦应急管理局换取柴油。",
    "lore_en": "Borrows the name and the red-and-white \"49\" flag of the 1939 Sheridan statehood stunt (A. R. Swickard, self-appointed governor; banner reading \"the Nation's Playground\"). Five counties proclaimed it at the Sheridan fairgrounds on 14 March 2009; the Black Hills counties joined in April, and since June Colstrip power has been traded to FEMA for diesel.",
    "founded": "2009"
+  },
+  {
+   "id": "sbc",
+   "zh": "美南浸信会联会",
+   "en": "Southern Baptist Convention",
+   "color": "#8C4A9E",
+   "lights": "dim",
+   "capital_zh": "纳什维尔",
+   "capital_en": "Nashville",
+   "capital_ll": [
+    -86.7816,
+    36.1627
+   ],
+   "terrain_zh": "纳什维尔盆地与中田纳西高地边缘，北沿I-65进入肯塔基彭尼罗亚尔地区至鲍灵格林；西以田纳西河（肯塔基湖）为界，东止于坎伯兰高原西麓陡崖。",
+   "terrain_en": "The Nashville Basin and the Highland Rim of Middle Tennessee, north up I-65 through Kentucky's Pennyroyal to Bowling Green; bounded west by the Tennessee River (Kentucky Lake) and east by the foot of the Cumberland Plateau escarpment.",
+   "lore_zh": "以联会执行委员会所在的纳什维尔商业街901号为中枢。浸信会传统强调地方教会自治与“灵魂自主”，与基列自上而下的神权体制相抵触；原著中，基列的天使军正在阿巴拉契亚高地“清剿浸信会游击队”。",
+   "lore_en": "Run from the Convention's Executive Committee building at 901 Commerce Street, Nashville. Baptist polity stresses the autonomy of the local church and \"soul competency\", at odds with Gilead's top-down theocracy; in the novel, Gilead's Angels are \"smoking out a pocket of Baptist guerrillas\" in the Appalachian Highlands.",
+   "founded": "—"
   }
  ],
  "none": {
