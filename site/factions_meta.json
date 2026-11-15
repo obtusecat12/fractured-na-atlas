@@ -628,6 +628,24 @@
    "lore_zh": "山达基教会自1975年起以清水市为“旗舰基地”（Flag Land Base），中枢是市中心的福特哈里森酒店与旗舰大楼。凭借自备发电与教会财力，这里入夜后仍灯火通明，与周围限电的联邦辖区形成鲜明对比。",
    "lore_en": "The Church of Scientology has run its Flag Land Base from Clearwater since 1975, centred on the Fort Harrison Hotel and the Flag Building downtown. On its own generators and the church's money it stays lit after dark, in sharp contrast to the rationed federal ground around it.",
    "founded": "—"
+  },
+  {
+   "id": "nfm",
+   "zh": "北佛罗里达自治市联席会",
+   "en": "North Florida Municipal League",
+   "color": "#6FA05A",
+   "lights": "normal",
+   "capital_zh": "盖恩斯维尔",
+   "capital_en": "Gainesville",
+   "capital_ll": [
+    -82.3248,
+    29.6516
+   ],
+   "terrain_zh": "沿 I-75 与 US-301/441 的城镇带：莱克城、海斯普林斯、阿拉楚阿、盖恩斯维尔、斯塔克、奥卡拉，南至维拉吉斯与利斯堡；原联邦车队走廊（莱克城至奥卡拉）已移交联席会。北、东、南三面与联邦残余指挥部相接，西为通往萨旺尼河的松林灌丛。",
+   "terrain_en": "The town belt along I-75 and US-301/441: Lake City, High Springs, Alachua, Gainesville, Starke and Ocala, south to The Villages and Leesburg; the former federal convoy corridor from Lake City to Ocala now belongs to the League. It meets the federal remnant command on the north, east and south; to the west, pine scrub runs out towards the Suwannee.",
+   "lore_zh": "断网后各市县把警察、供水与市政电力合并成联席会，议事设在盖恩斯维尔，靠市营电厂维持夜间照明。联邦车队仍可凭通行证经 I-75 往返坦帕与杰克逊维尔。",
+   "lore_en": "After the cutoff the towns pooled their police, water works and municipal power into a league that sits in Gainesville and keeps the lights on from the city-owned plant. Federal convoys still run I-75 between Tampa and Jacksonville, on League passes.",
+   "founded": "—"
   }
  ],
  "none": {
