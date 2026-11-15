@@ -23,6 +23,11 @@ def buddy(u):
     return b64(im.crop((x-r, y-r, x+r, y+r)).resize((48, 48), Image.LANCZOS), 75)
 DEFBUD = 'data:image/gif;base64,' + base64.b64encode(open(f'{D}/ref/buddyicon.gif','rb').read()).decode() if os.path.exists(f'{D}/ref/buddyicon.gif') else ''
 BUD = {u: buddy(u) for u in USERS}
+try:
+    from fl_content import AVATARS
+except ImportError:
+    AVATARS = {}
+for _u, _n in AVATARS.items(): BUD[_u] = b64(raw(_n).resize((48, 48), Image.LANCZOS), 75)
 im=raw('kc_dark_street'); GBUD=b64(im.crop((1150,560,1450,860)).resize((48,48),Image.LANCZOS),75)
 LOGO = 'data:image/gif;base64,' + base64.b64encode(open(f'{D}/ref/logo.gif','rb').read()).decode()
 FAV = 'data:image/x-icon;base64,' + base64.b64encode(open(f'{D}/ref/fav.ico','rb').read()).decode()
