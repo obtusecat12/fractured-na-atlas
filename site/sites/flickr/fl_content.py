@@ -251,3 +251,7 @@ GROUPS = [
    ('Canon A590 or SD1100 for my mom?','kc_mike_b',None)],
   counts=[4,3,18,7], latest=['7 months ago','9 months ago','10 months ago','1 year ago']),
 ]
+
+# Buddy icons for commenters who are not main accounts (2009-style, generated in the user's ChatGPT).
+# Commenters not listed keep Flickr's default grey buddy icon, as many real 2009 users did.
+AVATARS = {u: 'av_' + u for u in ('kc_mike_b', 'azdesertrat', 'jessb_916', 'rivercity_ron', 'jen_loves_labs', 'scrubsandcoffee', 'ohio_kat')}

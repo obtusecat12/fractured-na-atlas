@@ -1,6 +1,7 @@
 # State of Absaroka
 
 > {{Current}} This article documents a **current event**. Information may change rapidly as the event progresses, and initial news reports may be unreliable.
+> {{Refimprove}} This article **needs additional citations for verification**. Please help improve this article by adding reliable references. Unsourced material may be challenged and removed. (October 2009)
 > {{About}} This article is about the provisional state proclaimed in 2009. For the 1930s movement, see [[Absaroka (proposed state)]]. For the mountain range, see [[Absaroka Range]].
 
 The **State of Absaroka** (pronounced ab-SOR-kə) is a provisional state proclaimed in March 2009 by counties of northern [[Wyoming]], south-eastern [[Montana]] and western [[South Dakota]], following the breakdown of state government in [[Cheyenne, Wyoming|Cheyenne]], [[Helena, Montana|Helena]] and [[Pierre, South Dakota|Pierre]] after the [[Presidents' Day Massacre]]. Its capital is [[Sheridan, Wyoming|Sheridan]] and its largest city is [[Rapid City, South Dakota|Rapid City]].
@@ -29,11 +30,11 @@ The name is taken from the 1939 statehood campaign led from Sheridan by [[A. R. 
 
 {{Main|Absaroka (proposed state)}}
 
-During the [[Great Depression]] ranchers in the three corners of Wyoming, Montana and South Dakota complained that [[New Deal]] relief money went to towns near the state capitals, which were a long drive away by [[Ford Model A|Model A]]. Talk of a new state began around 1935. In the spring of 1939 A. R. Swickard, Sheridan's street commissioner, became its leader. He and a handful of supporters drew the map of the new state in the basement of the Sheridan [[Rotary Club]], cutting a straight line across northern Wyoming and western South Dakota and taking a square out of south-eastern Montana.<ref>3</ref>
+During the [[Great Depression]] ranchers in the three corners of Wyoming, Montana and South Dakota complained that [[New Deal]] relief money went to towns near the state capitals, which were a long drive away by [[Ford Model A|Model A]]. Talk of a new state began around 1935. In the spring of 1939 A. R. Swickard, a former minor-league ballplayer who had become Sheridan's street commissioner, took it over after first circulating a petition for Sheridan County to join Montana.<ref>1</ref> He and a handful of supporters drew the map of the new state in the basement of the Sheridan [[Rotary Club]], cutting a straight line across northern Wyoming and western South Dakota and taking a square out of south-eastern Montana.<ref>3</ref>
 
-Swickard appointed himself governor and began hearing "writs of grievance". Absaroka license plates and souvenir coins were issued, and supporters paraded a banner calling the state "the Nation's Playground".<ref>4</ref> Dorothy Fellows was crowned Miss Absaroka, and when King [[Haakon VII of Norway]] toured south-eastern Montana and Wyoming that year, supporters claimed the visit as official recognition of the new state. On May 12 Swickard called on Wyoming Governor [[Nels H. Smith]] in Cheyenne and told reporters afterwards: "We Absarokans are a peace-loving lot and while we think that we really need the state of Absaroka we are not inclined to revolution."<ref>5</ref>
+Swickard appointed himself governor and began hearing "writs of grievance". Absaroka license plates and souvenir coins were issued, and supporters paraded a banner calling the state "the Nation's Playground".<ref>4</ref> Dorothy Fellows was crowned Miss Absaroka, and when Norwegian royalty passed through Montana that year (most accounts say the King; it was probably Crown Prince [[Olav V of Norway|Olav]]{{citation needed}}), supporters billed it as a state visit. On May 12 Swickard called on Wyoming Governor [[Nels H. Smith]] in Cheyenne and told reporters afterwards: "We Absarokans are a peace-loving lot and while we think that we really need the state of Absaroka we are not inclined to revolution."<ref>5</ref>
 
-Hawaii's delegate [[Samuel Wilder King]] objected on the floor of the House that Hawaii had "prior claim" to be the 49th state. The movement faded as relief spending reached the rural counties and the country moved toward war.
+Hawaii's delegate [[Samuel Wilder King]] is said to have objected in Congress that Hawaii had "prior claim" to be the 49th state.{{citation needed}} The movement faded as relief spending reached the rural counties and the country moved toward war. Former senator [[Alan K. Simpson|Alan Simpson]], whose uncle took part, said in 2008: "a lot of people thought it was silliness, but to them, it wasn't."<ref>1</ref>
 
 ### 2009 crisis
 
@@ -47,7 +48,7 @@ Big Horn, Powder River and Carter counties in Montana joined in late March. The 
 
 Pierre stopped broadcasting in the first days of April. On April 6 the commissions of Pennington, Lawrence, Meade, Custer and Butte counties voted to join, and the state's eastern line was drawn roughly along the [[Cheyenne River]].<ref>10</ref> Fall River County stayed out; the area around [[Hot Springs, South Dakota|Hot Springs]] is reported to be administered by a county committee.
 
-#### Ellsworth Air Force Base
+### Ellsworth Air Force Base
 
 The [[B-1 Lancer|B-1B]] bombers of the [[28th Bomb Wing]] left [[Ellsworth Air Force Base]] near Box Elder in the last days of February; where they went has not been disclosed. Under the "Black Hills arrangement" of April, the Absaroka State Guard patrols outside the fence while the remaining Air Force personnel keep control inside it.<ref>11</ref>{{who}} The arrangement has not been confirmed by any federal authority.
 
@@ -67,6 +68,12 @@ FEMA officials in Billings described the agreement as "a utility contract with l
 | [[Republic of Gilead]] | Listed Absaroka among "seditious county governments" in a broadcast of May 30 |
 | Crow Nation | Memorandum of understanding; not a member |
 
+## Government
+
+The Convention of Counties meets at the Sheridan County Courthouse. Each member county sends two commissioners.{{citation needed}} Wyoming law remains in force in the Wyoming counties and Montana and South Dakota law in theirs "until otherwise provided".
+
+{{Expand section}}
+
 ## Geography
 
 The state runs from the crest of the [[Bighorn Mountains]] in the west to the Cheyenne River in the east and from the [[Yellowstone River]] in the north to a line south of [[Kaycee, Wyoming|Kaycee]] and [[Wright, Wyoming|Wright]]. Most of it is the semi-arid [[Powder River Basin]], drained by the [[Powder River (Wyoming–Montana)|Powder]], [[Tongue River (Montana)|Tongue]] and [[Little Bighorn River|Little Bighorn]] rivers. The south-east is the [[Black Hills]], with [[Harney Peak]] (7,242 ft) the highest point; [[Mount Rushmore National Memorial]] and [[Devils Tower National Monument]] are both inside the state.
@@ -75,23 +82,23 @@ The state runs from the crest of the [[Bighorn Mountains]] in the west to the Ch
 
 | County | Former state | Seat | Population (2000) |
 |---|---|---|---|
-| Sheridan | Wyoming | Sheridan | 26,563 |
-| Johnson | Wyoming | Buffalo | 7,084 |
-| Campbell | Wyoming | Gillette | 33,705 |
-| Crook | Wyoming | Sundance | 5,886 |
-| Weston | Wyoming | Newcastle | 6,643 |
-| Big Horn | Montana | Hardin | 12,676 |
-| Treasure | Montana | Hysham | 857 |
+| Sheridan | Wyoming | Sheridan | 26,560 |
+| Johnson | Wyoming | Buffalo | 7,075 |
+| Campbell | Wyoming | Gillette | 33,698 |
+| Crook | Wyoming | Sundance | 5,887 |
+| Weston | Wyoming | Newcastle | 6,644 |
+| Big Horn | Montana | Hardin | 12,671 |
+| Treasure | Montana | Hysham | 861 |
 | Rosebud (south of the Yellowstone) | Montana | Forsyth | n/a |
 | Powder River | Montana | Broadus | 1,858 |
-| Carter | Montana | Ekalaka | 1,358 |
-| Custer | Montana | Miles City | 11,694 |
+| Carter | Montana | Ekalaka | 1,360 |
+| Custer | Montana | Miles City | 11,696 |
 | Prairie | Montana | Terry | 1,199 |
-| Pennington (west of the Cheyenne) | South Dakota | Rapid City | 88,619 |
-| Lawrence | South Dakota | Deadwood | 21,805 |
-| Meade (west of the Cheyenne) | South Dakota | Sturgis | 24,230 |
-| Custer | South Dakota | Custer | 7,268 |
-| Butte | South Dakota | Belle Fourche | 9,093 |
+| Pennington (west of the Cheyenne) | South Dakota | Rapid City | 88,565 |
+| Lawrence | South Dakota | Deadwood | 21,802 |
+| Meade (west of the Cheyenne) | South Dakota | Sturgis | 24,253 |
+| Custer | South Dakota | Custer | 7,275 |
+| Butte | South Dakota | Belle Fourche | 9,094 |
 
 ## Economy
 
@@ -102,6 +109,10 @@ Gasoline is rationed through county coupons. The provisional government took ove
 ## Flag
 
 In April the Convention of Counties readopted the flag of the 1939 movement: red and white, with a "49" in the hoist triangle for the forty-ninth state that Swickard expected Absaroka to become.<ref>14</ref> No 1939 example is known to survive, and the 2009 flag was drawn from newspaper descriptions and a photograph of Miss Absaroka.
+
+## In popular culture
+
+* [[Craig Johnson (author)|Craig Johnson]]'s Walt Longmire mystery novels, beginning with *[[The Cold Dish]]* (2004), are set in the fictional Absaroka County, Wyoming, named after the 1939 movement.
 
 ## See also
 
@@ -129,4 +140,4 @@ In April the Convention of Counties readopted the flag of the 1939 movement: red
 
 [[Category:Absaroka]] [[Category:2009 crisis]] [[Category:States of the United States]]
 
-This page was last modified on 5 November 2009, at 09:12.
+This page was last modified on 13 November 2009, at 15:47.

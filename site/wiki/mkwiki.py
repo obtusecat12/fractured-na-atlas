@@ -239,6 +239,9 @@ def md_build(aid, L, flag_img, loc_img, loc_cap):
         x = _re.sub(r'\{\{(citation needed|来源请求|需要来源)\}\}', lambda m: '<sup class="noprint Template-Fact">[<i>%s</i>]</sup>' % ('<a href="#">citation needed</a>' if m.group(1)=='citation needed' else '<a href="#">来源请求</a>'), x)
         x = _re.sub(r'\{\{(who|谁)\}\}', lambda m: '<sup class="noprint">[<i><a href="#">%s</a></i>]</sup>' % ('who?' if m.group(1)=='who' else '谁？'), x)
         x = _re.sub(r'\{\{(clarify|澄清)\}\}', lambda m: '<sup class="noprint">[<i><a href="#">%s</a></i>]</sup>' % ('clarification needed' if m.group(1)=='clarify' else '需要澄清'), x)
+        x = _re.sub(r'\{\{(dead link|失效链接)\}\}', lambda m: '<sup class="noprint">[<i><a href="#">%s</a></i>]</sup>' % ('dead link' if m.group(1)=='dead link' else '失效链接'), x)
+        x = _re.sub(r'\{\{(when|何时)\}\}', lambda m: '<sup class="noprint">[<i><a href="#">%s</a></i>]</sup>' % ('when?' if m.group(1)=='when' else '何时？'), x)
+        x = _re.sub(r'\{\{(by whom|哪里)\}\}', lambda m: '<sup class="noprint">[<i><a href="#">%s</a></i>]</sup>' % ('by whom?' if m.group(1)=='by whom' else '哪里？'), x)
         x = _re.sub(r'\{\{flagicon\|(\w+)\}\}', lambda m: '<span class="flagicon"><img src="mb/%s.png" width="22" alt=""></span>' % FLAGS.get(m.group(1), 'f_us'), x)
         def wl(m):
             tgt, lab = (m.group(1).split('|', 1) + [None])[:2]; lab = lab or tgt
@@ -252,7 +255,7 @@ def md_build(aid, L, flag_img, loc_img, loc_cap):
     cur = None; mode = None
     for ln in src[1:]:
         st = ln.strip()
-        if not st: continue
+        if not st or st.startswith('<!--'): continue
         if st.startswith('[[Category:'):
             cats += _re.findall(r'\[\[Category:([^\]]+)\]\]', st); continue
         if st.startswith('最后修订于') or st.startswith('This page was last modified'):
@@ -260,6 +263,7 @@ def md_build(aid, L, flag_img, loc_img, loc_cap):
         if st.startswith('> '):
             c = st[2:]
             if '消歧义' in c or '{{About}}' in c: hat.append(inl(_re.sub(r'^(【模板:消歧义】|\{\{About\}\})\s*', '', c)))
+            elif _re.match(r'^(【模板:(来源不足|翻译|清理)】|\{\{(Refimprove|Cleanup|Expand)\}\})', c): amb.append(('content', inl(_re.sub(r'^(【模板:[^】]+】|\{\{\w+\}\})\s*', '', c))))
             else: amb.append(inl(_re.sub(r'^(【模板:[^】]+】|\{\{\w+\}\})\s*', '', c)))
             continue
         if st.startswith('## '):
@@ -319,6 +323,8 @@ def md_build(aid, L, flag_img, loc_img, loc_cap):
     out = []
     if hat: out += ['<div class="dablink" style="padding-left:2em;font-style:italic;margin-bottom:.5em">%s</div>' % h for h in hat]
     for a in amb:
+        if isinstance(a, tuple):
+            out.append('<table class="ambox ambox-content"><tr><td class="ambox-image"><img src="mb/ambox_content.png" width="40" alt=""></td><td class="ambox-text">%s</td></tr></table>' % a[1]); continue
         out.append('<table class="ambox ambox-current"><tr><td class="ambox-image"><img src="mb/ambox_current.png" width="42" alt=""></td><td class="ambox-text">%s</td></tr></table>' % a)
     out.append(''.join(rows))
     def flush(items):
