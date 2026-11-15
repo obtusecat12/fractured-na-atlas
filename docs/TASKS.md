@@ -8,7 +8,8 @@
   - 内容：加州用户与沦陷区用户在断网前后的讨论，口吻真实、有日常也有危机。
 - [x] Flickr 第三批：8 张照片（ChatGPT「Generate Separate Images」#13–20；日常照按用户许可定为 2008 年）+ 新用户 bluffcity_tm（Memphis）+ 2 个新小组（Cal Expo Camp: Families & Volunteers、Kansas City Flickr Meetup）及 4 个可打开的讨论帖页；公共 header/footer/CSS 未改动，已逐像素比对（2026-11-14）。
 - [x] Flickr 继续扩充：第二批 8 张照片（ChatGPT 生成）+ 4 个相册（Sets 列表页、相册页、右栏相册），版式按 2009 年真实 Flickr CSS 复原（2026-11-14）。
-- [ ] 阿布萨罗卡州词条与旗帜：以 1939 年谢里丹建州运动（A.R. Swickard 自封州长、车牌、州旗、Miss Absaroka）为底子。
+- [x] 阿布萨罗卡州词条与旗帜（2026-11-15）：中英维基词条 + 红白「49」州旗（ChatGPT 生成）+ 定位图 + 地图气泡简介；按英文维基「Absaroka (proposed state)」与 Commons 旗帜页核对史实（名称源自希达察语对克罗族的称呼、横幅「全国游乐场」、哈康七世访问）。已有 8 篇词条在 wikipage.js 中逐字节不变。
+- [ ] 南方八政权（美南浸信会联会、十二支派公社、梅克伦堡安全委员会、清水市、北佛罗里达自治市联席会、以罗欣城、佛罗里达州议会、东得克萨斯公理会）：领土、标签、词条、旗帜（ChatGPT），分批做。
 
 ## 已完成（存档）
 - [x] **地图修订 v3.4**（2026-11-14，分支 map-v34）：工具 `pipeline/tools/v34_edit.py → v34_topo.mjs → v2_labels.py → v34_ll.py → v34_lights.py`，输入是冻结的 `pipeline/build/map_v33.topo.json` 与 `build/night/static.jpg`（v3.3 成品）。
