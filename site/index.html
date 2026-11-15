@@ -1113,7 +1113,8 @@ html.cwdrag{cursor:default;user-select:none}
    "terrain_en": "The town belt along I-75 and US-301/441: Lake City, High Springs, Alachua, Gainesville, Starke and Ocala, south to The Villages and Leesburg; the former federal convoy corridor from Lake City to Ocala now belongs to the League. It meets the federal remnant command on the north, east and south; to the west, pine scrub runs out towards the Suwannee.",
    "lore_zh": "断网后各市县把警察、供水与市政电力合并成联席会，议事设在盖恩斯维尔，靠市营电厂维持夜间照明。联邦车队仍可凭通行证经 I-75 往返坦帕与杰克逊维尔。",
    "lore_en": "After the cutoff the towns pooled their police, water works and municipal power into a league that sits in Gainesville and keeps the lights on from the city-owned plant. Federal convoys still run I-75 between Tampa and Jacksonville, on League passes.",
-   "founded": "—"
+   "founded": "—",
+   "zh_lines": "北佛罗里达|自治市|联席会"
   }
  ],
  "none": {
@@ -2925,6 +2926,31 @@ var LBL = (function () {
       }
     }
     var al = tryAlong(); if (al) return al;
+    // v3.5: a long name in a narrow shape may carry its own line breaks (meta.zh_lines, "北佛罗里达|自治市|联席会");
+    // tried only after every layout above has failed, so labels that already fit are untouched
+    var zm = kind === 'fac' && mode !== 'en' && D.factions && D.factions.filter(function (f) { return f.meta.zh === zh && f.meta.zh_lines; })[0];
+    if (zm) {
+      var ZL = zm.meta.zh_lines.split('|'), LZ = [{ zh: ZL, en: [] }], ZA = anchors.slice();
+      // finer anchor grid than the 9x9 above: a narrow shape's free spots are often between those points
+      var fx0 = Math.max(10, bx0), fx1 = Math.min(S.w - 10, bx1), fy0 = Math.max(10, by0), fy1 = Math.min(S.h - 10, by1);
+      if (fx1 > fx0 && fy1 > fy0) for (var fi = 0; fi < 24; fi++) for (var fj = 0; fj < 24; fj++) {
+        var fqx = fx0 + (fx1 - fx0) * (fi + 0.5) / 24, fqy = fy0 + (fy1 - fy0) * (fj + 0.5) / 24;
+        if (idAt((fqx - t.x) / k, (fqy - t.y) / k) === want) ZA.push([fqx, fqy, 999]);
+      }
+      ZA.sort(function (a, b) { return Math.hypot(a[0] - px, a[1] - py) - Math.hypot(b[0] - px, b[1] - py); });
+      if (mode === 'both') LZ.unshift({ zh: ZL, en: splitEn(en, 3) || [en] });
+      for (var zi = 0; zi < LZ.length; zi++) for (var zs = base; zs >= 10; zs--) {
+        var Bz = measure(LZ[zi], zs, 0, true), zw = Bz.w + 4, zh2 = Bz.h;
+        for (var za = 0; za < ZA.length; za++) {
+          var aa = ZA[za];
+          if (aa[0] - zw / 2 < 2 || aa[0] + zw / 2 > S.w - 2 || aa[1] - zh2 / 2 < 2 || aa[1] + zh2 / 2 > S.h - 2) continue;
+          if (badFrac(aa[0], aa[1], zw, zh2, want) > 0.07) continue;
+          var zb = [aa[0] - zw / 2, aa[1] - zh2 / 2, aa[0] + zw / 2, aa[1] + zh2 / 2];
+          if (!free(zb, true)) continue;
+          drawBlock(Bz, aa[0], aa[1], st); free(zb); return { x: aa[0], y: aa[1] };
+        }
+      }
+    }
     // 4: beside the shape
     if (allowBeside && kind !== 'sil' && (bx1 - bx0) + (by1 - by0) > 5) {
       var Lb = layouts(zh, en, mode)[0], Bb = measure(Lb, 10, 0, true), cy = (by0 + by1) / 2;
