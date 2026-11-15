@@ -7,7 +7,8 @@
 #  1. sbc  Southern Baptist Convention (Nashville), see its block below.
 #  2. ttc  Twelve Tribes Communities (Chattanooga), see its block below.
 #  3. mcs  Mecklenburg Committee of Safety (Charlotte), see its block below.
-#  4. cws  Clearwater / Scientology (carved out of frc, the only exception to the silence-only rule).
+#  4. cws  Clearwater / Scientology (carved out of frc).
+#  5. nfm  North Florida Municipal League (Gainesville; takes frc's I-75 strip Lake City-Ocala).
 import sys, json, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from topo_py import load, features
@@ -217,6 +218,46 @@ G['frc'] = L.clean(G['frc'].difference(cw))
 for f in OBJ['factions']:
     if f['id'] == 'frc': f['geom'] = G['frc']
 NEW.append(('cws', cw))
+
+# ---- 5. North Florida Municipal League (Gainesville) ----
+# Towns along I-75 and US-301/US-441 that pooled their police and water works: Lake City, High Springs, Alachua,
+# Gainesville, Starke, Micanopy, Ocala, down to The Villages and Leesburg. The federal command's I-75 convoy strip
+# (Lake City to Ocala) runs straight through it, so that segment is handed to the League (second exception to
+# "silence only"; frc keeps its I-10 strip, the Jacksonville coast and the southern block, which the League now
+# touches round Wildwood and Ocala). West the scrub thins towards the Suwannee and the Gulf hammocks.
+RES = 0.1; bx0, by0, bx1, by1 = 3200, 2450, 3275, 2525
+tr = Affine(RES, 0, bx0, 0, RES, by0)
+X, Y, E = DEM.grid(bx0, by0, bx1, by1, RES); h, w = X.shape
+TOWNS = [(-82.325, 29.652, 125), (-82.14, 29.19, 56), (-82.64, 30.19, 12), (-82.60, 29.83, 6), (-82.50, 29.79, 10),
+         (-82.11, 29.94, 6), (-82.28, 29.51, 2), (-81.99, 28.93, 50), (-81.88, 28.81, 20), (-82.04, 28.86, 7),
+         (-82.06, 29.08, 4), (-82.45, 29.39, 3), (-82.43, 29.67, 5), (-82.09, 29.64, 2), (-82.17, 29.80, 2), (-82.70, 29.96, 2),
+         (-82.30, 30.03, 2), (-82.14, 29.53, 2), (-81.99, 29.10, 3)]
+ROADS = [[(-82.64, 30.25), (-82.60, 30.00), (-82.42, 29.75), (-82.30, 29.62), (-82.20, 29.35), (-82.14, 29.19), (-82.10, 29.00), (-82.04, 28.86)],  # I-75
+         [(-82.11, 29.94), (-82.20, 29.75), (-82.28, 29.51), (-82.14, 29.19), (-81.99, 28.93), (-81.88, 28.81)],                                  # US-301/441
+         [(-82.325, 29.652), (-82.43, 29.67), (-82.60, 29.83), (-82.64, 30.19)]]                                                                 # US-441 north
+fld = np.zeros((h, w), np.float32)
+for lo, la, pop in TOWNS:
+    tx_, ty_ = map(float, PJ.fwd(lo, la)); r = 2.0 + 1.2 * np.sqrt(pop / 10)
+    fld += np.exp(-((X - tx_) ** 2 + (Y - ty_) ** 2) / (r * r))
+for rd in ROADS:
+    ln = LineString([tuple(map(float, PJ.fwd(lo, la))) for lo, la in rd])
+    dd = ndi.distance_transform_edt(~ras(ln.buffer(0.25))) * RES
+    fld += 0.6 * np.exp(-(dd / 3.0) ** 2)
+fld += 0.7 * fbm(200, 403) + 0.8 * fbm(80, 411) + 0.4 * fbm(25, 431) + 0.12 * fbm(8, 451)
+M = fld > 0.34
+lab, nl = ndi.label(M); sizes = ndi.sum(M, lab, range(1, nl + 1)); M = lab == (1 + int(np.argmax(sizes)))
+M = ndi.binary_fill_holes(M)
+nf = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
+nf = nf.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
+strip = L.clean(G['frc'].intersection(Polygon([(3205, 2458), (3265, 2458), (3265, 2506), (3205, 2506)])))
+strip = L.clean(unary_union([p for p in L.polys(strip) if p.area > 0.5]))
+G['frc'] = L.clean(G['frc'].difference(strip))
+for f in OBJ['factions']:
+    if f['id'] == 'frc': f['geom'] = G['frc']
+nf = L.clean(unary_union([nf, strip]).buffer(0.1, join_style=1).buffer(-0.1, join_style=1))
+nf = unary_union([Polygon(p.exterior) for p in L.polys(nf)])   # the gaps between the old strip and the field are League ground too
+print('nfm takes from frc', round(strip.area, 1))
+NEW.append(('nfm', nf))
 
 taken = unary_union(list(G.values()))
 for fid, g in NEW:
