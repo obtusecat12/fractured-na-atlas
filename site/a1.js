@@ -346,6 +346,16 @@ function hitTest(mx, my) {
     var i = d[o] / 5 - 1; if (i !== Math.floor(i) || i < 0 || i >= D.factions.length) return -1;
     return d[o + 2] === (i * 37 + 11) % 251 ? i : -1;
   }
+  // v3.5: an enclave smaller than a few hit pixels (Clearwater, ~27 units²) is tested exactly first; nothing else changes
+  for (var si = 0; si < D.factions.length; si++) {
+    var sf = D.factions[si]; if (!(sf.meta.area < 100) || !sf.geometry) continue;
+    var polys = sf.geometry.type === 'Polygon' ? [sf.geometry.coordinates] : sf.geometry.coordinates;
+    for (var pi = 0; pi < polys.length; pi++) {
+      if (!d3.polygonContains(polys[pi][0], [mx, my])) continue;
+      var inHole = false; for (var hi = 1; hi < polys[pi].length; hi++) if (d3.polygonContains(polys[pi][hi], [mx, my])) inHole = true;
+      if (!inHole) return sf;
+    }
+  }
   var i0 = at(cx, cy); if (i0 >= 0) return D.factions[i0];
   // edge pixel: is it on land at all? then vote among exact neighbours
   var o0 = (cy * cw + cx) * 4; if (cx < 0 || cy < 0 || cx >= cw || cy >= ch || d[o0 + 3] < 128) return null;

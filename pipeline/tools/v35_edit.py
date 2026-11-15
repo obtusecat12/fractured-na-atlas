@@ -7,6 +7,7 @@
 #  1. sbc  Southern Baptist Convention (Nashville), see its block below.
 #  2. ttc  Twelve Tribes Communities (Chattanooga), see its block below.
 #  3. mcs  Mecklenburg Committee of Safety (Charlotte), see its block below.
+#  4. cws  Clearwater / Scientology (carved out of frc, the only exception to the silence-only rule).
 import sys, json, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from topo_py import load, features
@@ -191,10 +192,36 @@ mcs = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, tr
 mcs = mcs.simplify(0.12).buffer(0.15, join_style=1).buffer(-0.15, join_style=1)
 NEW.append(('mcs', mcs))
 
+# ---- 4. Clearwater (Church of Scientology, Flag Land Base) ----
+# The one exception to "silence only": Clearwater sits inside the Tampa Bay federal remnant (frc), so this enclave is
+# carved out of frc, and frc loses exactly that ground (nothing else of frc moves). Core: downtown Clearwater round
+# the Fort Harrison Hotel and the Flag Building, Clearwater Beach and the harbour, north to Dunedin and south to
+# Belleair; the land edge is a small control field (towns + noise), the rest is frc's own coastline. It faces the
+# federal command across Old Tampa Bay and along the Largo line.
+RES = 0.04; bx0, by0, bx1, by1 = 3222, 2552, 3245, 2575
+tr = Affine(RES, 0, bx0, 0, RES, by0)
+X, Y, E = DEM.grid(bx0, by0, bx1, by1, RES); h, w = X.shape
+TOWNS = [(-82.800, 27.965, 108), (-82.772, 28.012, 36), (-82.812, 27.936, 4), (-82.828, 27.978, 6), (-82.790, 27.990, 10),
+         (-82.760, 27.960, 8)]
+fld = np.zeros((h, w), np.float32)
+for lo, la, pop in TOWNS:
+    tx_, ty_ = map(float, PJ.fwd(lo, la)); r = 0.9 + 0.55 * np.sqrt(pop / 10)
+    fld += np.exp(-((X - tx_) ** 2 + (Y - ty_) ** 2) / (r * r))
+fld += 0.6 * fbm(120, 303) + 0.6 * fbm(40, 311) + 0.25 * fbm(12, 331)
+M = fld > 0.42
+M = ndi.binary_fill_holes(M)
+cw = unary_union([shape(g) for g, v in rf.shapes(M.astype(np.uint8), mask=M, transform=tr) if v == 1])
+cw = cw.simplify(0.03).buffer(0.05, join_style=1).buffer(-0.05, join_style=1)
+cw = L.clean(cw.intersection(G['frc']))
+G['frc'] = L.clean(G['frc'].difference(cw))
+for f in OBJ['factions']:
+    if f['id'] == 'frc': f['geom'] = G['frc']
+NEW.append(('cws', cw))
+
 taken = unary_union(list(G.values()))
 for fid, g in NEW:
     g = L.clean(g.difference(taken).buffer(0.05).buffer(-0.05))
-    g = L.clean(unary_union([p for p in L.polys(g) if p.area > 2]))
+    g = L.clean(unary_union([p for p in L.polys(g) if p.area > (0.05 if fid == 'cws' else 2)]))
     print(fid, 'area', round(g.area, 1), 'bounds', [round(v) for v in g.bounds], 'overlap with existing', round(g.intersection(taken).area, 3))
     G[fid] = g; OBJ['factions'].append({'id': fid, 'properties': {}, 'geom': g}); taken = unary_union([taken, g])
 L.write(OBJ, OUT)

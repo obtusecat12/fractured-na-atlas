@@ -610,6 +610,24 @@
    "lore_zh": "取名自1775年梅克伦堡县的安全委员会及其《梅克伦堡决议》。吉尔福德县的贵格会（新花园会所、吉尔福德学院）曾是“地下铁路”的一环；原著中，贵格会协助逃亡者经“地下女性铁路”出境。",
    "lore_en": "Named after the Mecklenburg County Committee of Safety and its Mecklenburg Resolves of 1775. The Quakers of Guilford County (New Garden Meeting, Guilford College) were a link in the Underground Railroad; in the novel, Quakers help fugitives out along the \"Underground Femaleroad\".",
    "founded": "—"
+  },
+  {
+   "id": "cws",
+   "zh": "清水市",
+   "en": "Clearwater",
+   "color": "#C9A227",
+   "lights": "normal",
+   "capital_zh": "清水市",
+   "capital_en": "Clearwater",
+   "capital_ll": [
+    -82.8001,
+    27.9659
+   ],
+   "terrain_zh": "皮内拉斯半岛西岸的清水市中心、清水海滩与清水港，北至达尼丁、南至贝莱尔；陆上三面被坦帕湾的联邦残余指挥部包围，隔老坦帕湾与其对峙。",
+   "terrain_en": "Downtown Clearwater, Clearwater Beach and the harbour on the west shore of the Pinellas peninsula, north to Dunedin and south to Belleair; on land it is ringed by the federal remnant command of Tampa Bay, which it faces across Old Tampa Bay.",
+   "lore_zh": "山达基教会自1975年起以清水市为“旗舰基地”（Flag Land Base），中枢是市中心的福特哈里森酒店与旗舰大楼。凭借自备发电与教会财力，这里入夜后仍灯火通明，与周围限电的联邦辖区形成鲜明对比。",
+   "lore_en": "The Church of Scientology has run its Flag Land Base from Clearwater since 1975, centred on the Fort Harrison Hotel and the Flag Building downtown. On its own generators and the church's money it stays lit after dark, in sharp contrast to the rationed federal ground around it.",
+   "founded": "—"
   }
  ],
  "none": {
