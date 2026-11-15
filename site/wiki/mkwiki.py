@@ -363,6 +363,7 @@ for L in ('zh', 'en'):
     if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),'articles','frk.%s.md'%L)): TITLES.setdefault('frk', {})[L] = md_build('frk', L, 'frk_200.png', 'frk_locator.png', ('富兰克林州（红色）' if L == 'zh' else 'Location of Franklin (red)'))
     TITLES.setdefault('dst', {})[L] = md_build('dst', L, 'dst_200.png', 'dst_locator.png', ('德塞雷特州（红色）' if L == 'zh' else 'Location of Deseret (red)'))
     if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),'articles','sequoyah.%s.md'%L)): TITLES.setdefault('sequoyah', {})[L] = md_build('sequoyah', L, 'sequoyah_200.png', 'sequoyah_locator.png', ('塞阔亚州政府实际控制区（红色），2009年11月' if L == 'zh' else 'Area controlled by the Sequoyah state government (red), November 2009'))
+    if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),'articles','abs.%s.md'%L)): TITLES.setdefault('abs', {})[L] = md_build('abs', L, 'abs_200.png', 'abs_locator.png', ('阿布萨罗卡临时州政府实际控制区（红色），2009年11月' if L == 'zh' else 'Area controlled by the provisional State of Absaroka (red), November 2009'))
 print('ok')
 
 # ---- pack both pages into ../wikipage.js (self-contained srcdoc; images as data URIs) ----
