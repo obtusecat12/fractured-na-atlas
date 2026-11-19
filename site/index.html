@@ -2865,8 +2865,28 @@ var LBL = (function () {
     return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
   }
   // curved label: returns placement or null
+  // v3.5: the skeleton of a narrow shape is jagged at low zoom (Green Mountain), and arc length along it is much longer
+  // than the distance glyphs actually cover, so glyphs bunched up and stepped sideways. Resample every 2 px and smooth
+  // over about one glyph before laying glyphs on it.
+  function smoothLine(SL, rad) {
+    var n = Math.max(2, Math.ceil(SL.L / 2)), Q = [];
+    for (var i = 0; i <= n; i++) { var s = SL.L * i / n, p = pt(SL, s), c = at(SL, s); Q.push([p[0], p[1], c.hw]); }
+    var r = Math.max(1, Math.round(rad / 2));
+    for (var pass = 0; pass < 2; pass++) {
+      var R = Q.map(function (q, i) {
+        if (i === 0 || i === Q.length - 1) return q;
+        var a = Math.max(0, i - r), b = Math.min(Q.length - 1, i + r), x = 0, y = 0, m = b - a + 1;
+        for (var j = a; j <= b; j++) { x += Q[j][0]; y += Q[j][1]; }
+        return [x / m, y / m, q[2]];
+      });
+      Q = R;
+    }
+    var d = [0]; for (var k = 1; k < Q.length; k++) d.push(d[k - 1] + Math.hypot(Q[k][0] - Q[k - 1][0], Q[k][1] - Q[k - 1][1]));
+    return { P: Q, d: d, L: d[d.length - 1] };
+  }
   function curved(SL, zh, en, mode, sz, want, free, side) {
     if (SL.L < 40) return null;
+    SL = smoothLine(SL, sz * 0.6);
     var rowsSpec = [];
     if (mode !== 'en') rowsSpec.push({ s: zh, zh: true, f: fontZ(sz + 1, true) });
     if (mode !== 'zh') rowsSpec.push({ s: en, zh: false, f: fontE(sz, true) });
@@ -2875,20 +2895,35 @@ var LBL = (function () {
     var out = [], boxes = [];
     for (var r = 0; r < rowsSpec.length; r++) {
       var R = rowsSpec[r]; ctx.font = R.f; setLS(0);
-      var ch = Array.from(R.s), cw = ch.map(function (c) { return R.zh ? sz + 1 : ctx.measureText(c).width; });
+      // v3.5: upright CJK on a diagonal line needs more room per glyph, or neighbours overlap and halos eat them
+      var ca = Math.atan2(SL.P[SL.P.length - 1][1] - SL.P[0][1], SL.P[SL.P.length - 1][0] - SL.P[0][0]);
+      var zf = Math.min(1.2, 1 / Math.max(Math.abs(Math.cos(ca)), Math.abs(Math.sin(ca))));
+      var ch = Array.from(R.s), cw = ch.map(function (c) { return R.zh ? (sz + 1) * zf : ctx.measureText(c).width; });
       var tw = cw.reduce(function (a, b) { return a + b; }, 0);
       if (tw > SL.L * 0.92) return null;
       var extra = ch.length > 1 ? Math.max(0, Math.min((R.zh ? 1.6 : 0.9) * sz, (SL.L * 0.66 - tw) / (ch.length - 1))) : 0;
       var tot = tw + extra * (ch.length - 1), s = (SL.L - tot) / 2, prev = null, G = [];
+      var hwMax = 0; if (side) for (var hs = 0; hs <= 8; hs++) hwMax = Math.max(hwMax, at(SL, s + tot * hs / 8).hw);   // v3.5: one offset for the whole row
       for (var i = 0; i < ch.length; i++) {
         var c = at(SL, s + cw[i] / 2);
         if (!side && c.hw < needHW) return null;
         if (prev != null) { var da = Math.abs(((c.ang - prev + 3 * Math.PI) % (2 * Math.PI)) - Math.PI); if (da > 0.55) return null; }
         prev = c.ang;
-        var o = side ? side * (c.hw + sz * 0.8 + r * (sz + 3)) : off[r];
+        var o = side ? side * (hwMax + sz * 0.8 + r * (sz + 3)) : off[r];
         var nx = -Math.sin(c.ang), ny = Math.cos(c.ang), x = c.x + nx * o, y = c.y + ny * o;
+        if (G.length > 1) {   // and a row whose glyphs still zigzag is rejected (the next layout or the upright column takes over)
+          var g1 = G[G.length - 1], g0 = G[G.length - 2], t0 = Math.atan2(g1.y - g0.y, g1.x - g0.x), t1 = Math.atan2(y - g1.y, x - g1.x);
+          if (Math.abs(((t1 - t0 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) > 0.45) return null;
+        }
         var mx = (x - S.t.x) / S.t.k, my = (y - S.t.y) / S.t.k;
         if (!side && idAt(mx, my) !== want) return null;
+        if (!side) {   // v3.5: no glyph may hang over a neighbouring faction (corners checked, half a glyph out)
+          for (var cq = 0; cq < 4; cq++) {
+            var cid = idAt(mx + ((cq & 1) ? 1 : -1) * sz * 0.4 / S.t.k, my + ((cq & 2) ? 1 : -1) * sz * 0.4 / S.t.k);
+            if (cid > 0 && cid !== want) return null;
+          }
+        }
+        if (side) { var sid = idAt(mx, my); if (sid > 0 && sid !== want) return null; }   // v3.5: an along-label never sits on a neighbour's land
         if (side && x < 2 || x > S.w - 2 || y < 2 || y > S.h - 2) return null;
         G.push({ c: ch[i], x: x, y: y, a: R.zh ? 0 : c.ang, f: R.f });
         var hb = Math.max(cw[i], sz) / 2 + 1; boxes.push([x - hb, y - sz / 2 - 1, x + hb, y + sz / 2 + 1]);
@@ -3021,7 +3056,13 @@ var LBL = (function () {
     if (allowBeside && kind !== 'sil' && (bx1 - bx0) + (by1 - by0) > 5) {
       var Lb = layouts(zh, en, mode)[0], Bb = measure(Lb, 10, 0, true), cy = (by0 + by1) / 2;
       var cand = [[bx1 + 4 + Bb.w / 2, cy], [bx0 - 4 - Bb.w / 2, cy], [(bx0 + bx1) / 2, by0 - 3 - Bb.h / 2], [(bx0 + bx1) / 2, by1 + 3 + Bb.h / 2]];
-      cand.sort(function (A, B) { return otherFrac(A[0], A[1], Bb.w, Bb.h, want) - otherFrac(B[0], B[1], Bb.w, Bb.h, want); });   // v3.3: prefer sea / silence over a neighbour's land
+      // v3.5: also the four corners, at the shape's own side midpoints (long diagonal strips such as the Florida League)
+      var mx2 = (bx0 + bx1) / 2, qh = (by1 - by0) / 4;
+      cand.push([bx1 + 4 + Bb.w / 2, cy - qh], [bx1 + 4 + Bb.w / 2, cy + qh], [bx0 - 4 - Bb.w / 2, cy - qh], [bx0 - 4 - Bb.w / 2, cy + qh]);
+      cand.forEach(function (A) { A[2] = otherFrac(A[0], A[1], Bb.w, Bb.h, want); });
+      cand.sort(function (A, B) { return A[2] - B[2]; });   // v3.3: prefer sea / silence over a neighbour's land
+      // v3.5: a beside label touching a neighbour's land at all is only a last resort, after every clean spot
+      cand = cand.filter(function (A) { return A[2] === 0; }).concat(cand.filter(function (A) { return A[2] > 0; }));
       for (var ci = 0; ci < cand.length; ci++) {
         var q = cand[ci], bxx = [q[0] - Bb.w / 2 - 1, q[1] - Bb.h / 2, q[0] + Bb.w / 2 + 1, q[1] + Bb.h / 2];
         if (bxx[0] < 2 || bxx[2] > S.w - 2 || bxx[1] < 2 || bxx[3] > S.h - 2) continue;
