@@ -2,7 +2,7 @@
 // 程序生成的卫星图（低分辨率绘制 → 模糊 → 颗粒 → 真实 JPEG 压缩 → 放大），做法同 Level 11 的 gmaps-satellite.js。
 var MAP = (function () {
   'use strict';
-  var T = TOWN, R = REGION;
+  var R = REGION;
   var LON0 = -110.1575, LAT0 = 34.905, KX = 111320 * Math.cos(LAT0 * Math.PI / 180), KY = 110540;
   function m2ll(p) { return [LON0 + p[0] / KX, LAT0 - p[1] / KY]; }
   // ---- projection (Web Mercator, like Google) ----
@@ -11,21 +11,25 @@ var MAP = (function () {
   function xlon(x, z) { return x / (256 * Math.pow(2, z)) * 360 - 180; }
   function ylat(y, z) { var n = Math.PI - 2 * Math.PI * y / (256 * Math.pow(2, z)); return 180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))); }
   function mpp(z) { return 156543.03 * Math.cos(LAT0 * Math.PI / 180) / Math.pow(2, z); }
-
-  // ---- convert town data to lon/lat once ----
-  var BLD = T.bld.map(function (b, i) {
-    var ll = b.p.map(m2ll), xs = b.p.map(function (q) { return q[0]; }), ys = b.p.map(function (q) { return q[1]; });
-    var area = 0; for (var k = 0, j = b.p.length - 1; k < b.p.length; j = k++) area += (b.p[j][0] + b.p[k][0]) * (b.p[j][1] - b.p[k][1]);
-    return { i: i, ll: ll, m: b.p, box: [Math.min.apply(0, xs), Math.min.apply(0, ys), Math.max.apply(0, xs), Math.max.apply(0, ys)], area: Math.abs(area / 2), b: b.b, name: b.name || '', am: b.amen || b.shop || b.tour || '', lv: +(b.buil || 1) };
+  function bbll(ll) { var a = [1e9, 1e9, -1e9, -1e9]; for (var i = 0; i < ll.length; i++) { var p = ll[i]; if (p[0] < a[0]) a[0] = p[0]; if (p[1] < a[1]) a[1] = p[1]; if (p[0] > a[2]) a[2] = p[0]; if (p[1] > a[3]) a[3] = p[1]; } return a; }
+  // ---- town data (OSM + filled-in houses on unmapped streets), all in one metre frame centred on Holbrook ----
+  var BLD = [], HW = [], RAIL = [], WAT = [], AREA = [], POI = [], TOWN_BOXES = [];
+  TOWNS.forEach(function (T) {
+    TOWN_BOXES.push({ id: T.id, a: m2ll(T.box[0]), b: m2ll(T.box[1]) });
+    T.bld.forEach(function (b) {
+      var ll = b.p.map(m2ll), xs = b.p.map(function (q) { return q[0]; }), ys = b.p.map(function (q) { return q[1]; });
+      var area = 0; for (var k = 0, j = b.p.length - 1; k < b.p.length; j = k++) area += (b.p[j][0] + b.p[k][0]) * (b.p[j][1] - b.p[k][1]);
+      BLD.push({ i: BLD.length, t: T.id, ll: ll, bb: bbll(ll), m: b.p, box: [Math.min.apply(0, xs), Math.min.apply(0, ys), Math.max.apply(0, xs), Math.max.apply(0, ys)], area: Math.abs(area / 2), b: b.b, s: b.s, name: b.name || '', am: b.amen || b.shop || b.tour || '', lv: +(b.buil || 1) });
+    });
+    T.hw.forEach(function (h) { var ll = h.p.map(m2ll); HW.push({ ll: ll, bb: bbll(ll), m: h.p, h: h.h, n: h.n }); });
+    (T.rail || []).forEach(function (r) { var ll = r.p.map(m2ll); RAIL.push({ ll: ll, bb: bbll(ll), m: r.p, r: r.r }); });
+    (T.water || []).forEach(function (w) { var ll = w.p.map(m2ll); WAT.push({ ll: ll, bb: bbll(ll), m: w.p, w: w.w, n: w.n }); });
+    (T.area || []).forEach(function (a) { var ll = a.p.map(m2ll); AREA.push({ ll: ll, bb: bbll(ll), m: a.p, k: a.k, v: a.v, n: a.n }); });
+    (T.poi || []).forEach(function (p) { POI.push({ ll: m2ll(p.p), m: p.p, n: p.n, t: p.t, town: T.id }); });
   });
-  var HW = T.hw.map(function (h) { return { ll: h.p.map(m2ll), m: h.p, h: h.h, n: h.n, r: h.r }; });
-  var RAIL = T.rail.map(function (r) { return { ll: r.p.map(m2ll), m: r.p, r: r.r }; });
-  var WAT = T.water.map(function (w) { return { ll: w.p.map(m2ll), m: w.p, w: w.w, n: w.n }; });
-  var AREA = T.area.map(function (a) { return { ll: a.p.map(m2ll), m: a.p, k: a.k, v: a.v, n: a.n }; });
-  var POI = T.poi.map(function (p) { return { ll: m2ll(p.p), m: p.p, n: p.n, t: p.t }; });
-  var TB = (function () { var a = [1e9, 1e9, -1e9, -1e9]; BLD.forEach(function (b) { a[0] = Math.min(a[0], b.box[0]); a[1] = Math.min(a[1], b.box[1]); a[2] = Math.max(a[2], b.box[2]); a[3] = Math.max(a[3], b.box[3]); }); return a; })();
-  var TOWN_BOX = [m2ll([-2600, 2300]), m2ll([2600, -2300])]; // lon/lat SW, NE of the detailed area
-  function inTown(lon, lat) { return lon > TOWN_BOX[0][0] && lon < TOWN_BOX[1][0] && lat > TOWN_BOX[0][1] && lat < TOWN_BOX[1][1]; }
+  function townAt(lon, lat) { for (var i = 0; i < TOWN_BOXES.length; i++) { var b = TOWN_BOXES[i]; if (lon > b.a[0] && lon < b.b[0] && lat < b.a[1] && lat > b.b[1]) return b; } return null; }
+  function inTown(lon, lat) { return !!townAt(lon, lat); }
+  function boxHitsTown(lon0, lat0, lon1, lat1) { return TOWN_BOXES.some(function (b) { return lon1 > b.a[0] && lon0 < b.b[0] && lat1 > b.b[1] && lat0 < b.a[1]; }); }
   // building grid for hit tests (25 m cells)
   var GRID = {}; BLD.forEach(function (b) { for (var x = Math.floor(b.box[0] / 25); x <= Math.floor(b.box[2] / 25); x++) for (var y = Math.floor(b.box[1] / 25); y <= Math.floor(b.box[3] / 25); y++) (GRID[x + ',' + y] = GRID[x + ',' + y] || []).push(b); });
   function ll2m(lon, lat) { return [(lon - LON0) * KX, (LAT0 - lat) * KY]; }
@@ -47,7 +51,7 @@ var MAP = (function () {
     var red = Math.max(0, Math.min(1, (lat - 34.95) * 6)) * Math.max(0, Math.min(1, (lon + 110.0) * 3 + .4)) * (big * 1.6 - .3);
     r += 26 * red; g -= 2 * red; b -= 14 * red;
     // Mogollon Rim pine forest to the south
-    var f = Math.max(0, Math.min(1, (34.47 - lat) * 9 + (mid - .5) * 1.4));
+    var f = Math.max(0, Math.min(1, (34.40 - lat) * 4.5 + (mid - .5) * 1.4));
     r = r * (1 - f) + 74 * f; g = g * (1 - f) + 86 * f; b = b * (1 - f) + 60 * f;
     // reservation north: redder sandstone
     var n = Math.max(0, Math.min(1, (lat - 35.3) * 3));
@@ -102,21 +106,22 @@ var MAP = (function () {
     var M = mpp(z); // metres per px (at full scale)
     var tlon0 = xlon(X0 - 40, z), tlon1 = xlon(X0 + 296, z), tlat1 = ylat(Y0 - 40, z), tlat0 = ylat(Y0 + 296, z);
     function vis(ll) { for (var i = 0; i < ll.length; i++) { var p = ll[i]; if (p[0] > tlon0 && p[0] < tlon1 && p[1] > tlat0 && p[1] < tlat1) return true; } return false; }
+    function visb(o) { var b = o.bb; return b[2] > tlon0 && b[0] < tlon1 && b[3] > tlat0 && b[1] < tlat1; }
     function path(ll) { g.beginPath(); ll.forEach(function (p, i) { var q = P(p); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); }
-    var detail = z >= 13 && inTown(xlon(X0 + 128, z), ylat(Y0 + 128, z)) || (z >= 13 && (inTown(tlon0, tlat0) || inTown(tlon1, tlat1) || inTown(tlon0, tlat1) || inTown(tlon1, tlat0)));
+    var detail = z >= 13 && boxHitsTown(tlon0, tlat0, tlon1, tlat1);
     // regional water + roads (TIGER)
     g.lineCap = g.lineJoin = 'round';
-    if (!(z >= 14 && inTown(xlon(X0 + 128, z), ylat(Y0 + 128, z)))) R.water.forEach(function (w) { var big = /Colorado|Puerco|Silver/.test(w.n); w.p.forEach(function (ln) { if (!vis(ln)) return; path(ln); g.strokeStyle = 'rgba(104,112,74,.35)'; g.lineWidth = Math.max(1.6, (big ? 90 : 30) / M); g.stroke(); g.strokeStyle = 'rgba(214,200,170,.95)'; g.lineWidth = Math.max(1, (big ? 55 : 14) / M); g.stroke(); }); });
+    if (!(z >= 14 && boxHitsTown(tlon0, tlat0, tlon1, tlat1) && inTown(xlon(X0 + 128, z), ylat(Y0 + 128, z)))) R.water.forEach(function (w) { var big = /Colorado|Puerco|Silver/.test(w.n); w.p.forEach(function (ln) { if (!vis(ln)) return; path(ln); g.strokeStyle = 'rgba(104,112,74,.35)'; g.lineWidth = Math.max(1.6, (big ? 90 : 30) / M); g.stroke(); g.strokeStyle = 'rgba(214,200,170,.95)'; g.lineWidth = Math.max(1, (big ? 55 : 14) / M); g.stroke(); }); });
     R.lakes.forEach(function (l) { l.p.forEach(function (ln) { if (!vis(ln)) return; path(ln); g.fillStyle = '#26404a'; g.fill(); }); });
     if (!detail) R.roads.forEach(function (r) { r.p.forEach(function (ln) { if (!vis(ln)) return; path(ln); g.strokeStyle = r.t === 'I' ? 'rgba(88,86,82,.95)' : 'rgba(110,104,96,.85)'; g.lineWidth = Math.max(r.t === 'I' ? 1.4 : .9, (r.t === 'I' ? 30 : 12) / M); g.stroke(); }); });
     if (!detail) R.rail.forEach(function (ln) { if (!vis(ln)) return; path(ln); g.strokeStyle = 'rgba(80,70,62,.7)'; g.lineWidth = Math.max(.8, 10 / M); g.stroke(); });
     if (detail) {
       // landuse
       AREA.forEach(function (a) {
-        if (!vis(a.ll)) return; path(a.ll); g.closePath();
+        if (!visb(a)) return; path(a.ll); g.closePath();
         var col = null;
         if (a.v === 'residential') col = 'rgba(150,132,104,.35)';
-        else if (a.v === 'commercial' || a.v === 'retail' || a.v === 'industrial') col = 'rgba(190,182,166,.35)';
+        else if (a.v === 'commercial' || a.v === 'retail' || a.v === 'industrial') col = 'rgba(176,168,152,.7)';
         else if (a.v === 'pitch') col = hash(a.m[0][0] | 0, a.m[0][1] | 0) < .5 ? 'rgba(98,122,62,.9)' : 'rgba(176,140,104,.9)';
         else if (a.v === 'park' || a.v === 'recreation_ground' || a.v === 'cemetery' || a.v === 'playground') col = 'rgba(112,124,74,.75)';
         else if (a.v === 'parking') col = 'rgba(96,94,90,.92)';
@@ -126,35 +131,37 @@ var MAP = (function () {
         if (col) { g.fillStyle = col; g.fill(); }
       });
       // washes / river
-      WAT.forEach(function (w) { if (!vis(w.ll)) return; path(w.ll); if (w.w === 'water') { g.closePath(); g.fillStyle = '#4a5a50'; g.fill(); } else { g.strokeStyle = 'rgba(104,112,74,.35)'; g.lineWidth = (w.w === 'river' ? 90 : 12) / M; g.stroke(); g.strokeStyle = 'rgba(216,202,172,.97)'; g.lineWidth = (w.w === 'river' ? 58 : 6) / M; g.stroke(); if (w.w === 'river' && z >= 15) { g.strokeStyle = 'rgba(196,180,150,.8)'; g.lineWidth = 12 / M; g.setLineDash([40 / M, 25 / M]); g.stroke(); g.setLineDash([]); } } });
+      WAT.forEach(function (w) { if (!visb(w)) return; path(w.ll); if (w.w === 'water') { g.closePath(); g.fillStyle = '#4a5a50'; g.fill(); } else { g.strokeStyle = 'rgba(104,112,74,.35)'; g.lineWidth = (w.w === 'river' ? 90 : 12) / M; g.stroke(); g.strokeStyle = 'rgba(216,202,172,.97)'; g.lineWidth = (w.w === 'river' ? 58 : 6) / M; g.stroke(); if (w.w === 'river' && z >= 15) { g.strokeStyle = 'rgba(196,180,150,.8)'; g.lineWidth = 12 / M; g.setLineDash([40 / M, 25 / M]); g.stroke(); g.setLineDash([]); } } });
       // roads
       var RW = { motorway: 24, trunk: 18, primary: 15, secondary: 13, tertiary: 12, unclassified: 9, residential: 9, living_street: 7, service: 5, motorway_link: 8, trunk_link: 8, primary_link: 8, track: 4, footway: 0, path: 0 };
-      HW.forEach(function (h) { var w = RW[h.h]; if (!w || !vis(h.ll)) return; path(h.ll); g.strokeStyle = h.h === 'track' ? 'rgba(206,188,160,.9)' : (h.h === 'service' ? '#7d7a74' : '#6f6c66'); g.lineWidth = w / M; g.stroke(); });
-      HW.forEach(function (h) { if ((h.h === 'motorway' || h.h === 'trunk' || h.h === 'primary') && vis(h.ll) && z >= 16) { path(h.ll); g.strokeStyle = 'rgba(230,226,210,.55)'; g.lineWidth = .35 / M + .3; g.setLineDash([3 / M, 9 / M]); g.stroke(); g.setLineDash([]); } });
-      RAIL.forEach(function (r) { if (!vis(r.ll)) return; path(r.ll); g.strokeStyle = '#6e645a'; g.lineWidth = 5 / M; g.stroke(); if (z >= 16) { g.strokeStyle = '#3c3632'; g.lineWidth = .6; g.stroke(); } });
+      HW.forEach(function (h) { var w = RW[h.h]; if (!w || !visb(h)) return; path(h.ll); g.strokeStyle = h.h === 'track' ? 'rgba(206,188,160,.9)' : (h.h === 'service' ? '#7d7a74' : '#6f6c66'); g.lineWidth = w / M; g.stroke(); });
+      HW.forEach(function (h) { if ((h.h === 'motorway' || h.h === 'trunk' || h.h === 'primary') && visb(h) && z >= 16) { path(h.ll); g.strokeStyle = 'rgba(230,226,210,.55)'; g.lineWidth = .35 / M + .3; g.setLineDash([3 / M, 9 / M]); g.stroke(); g.setLineDash([]); } });
+      RAIL.forEach(function (r) { if (!visb(r)) return; path(r.ll); g.strokeStyle = '#6e645a'; g.lineWidth = 5 / M; g.stroke(); if (z >= 16) { g.strokeStyle = '#3c3632'; g.lineWidth = .6; g.stroke(); } });
       // trees in residential areas (deterministic per 9 m cell)
       if (z >= 15) {
         var cell = 9, mx0 = ll2m(tlon0, tlat1), mx1 = ll2m(tlon1, tlat0);
         for (var cx = Math.floor(mx0[0] / cell); cx <= Math.ceil(mx1[0] / cell); cx++) for (var cy = Math.floor(mx0[1] / cell); cy <= Math.ceil(mx1[1] / cell); cy++) {
-          var h1 = hash(cx, cy, 77); if (h1 > .07) continue;
-          var mxp = [cx * cell + hash(cx, cy, 78) * cell, cy * cell + hash(cx, cy, 79) * cell];
-          if (Math.abs(mxp[0]) > 2400 || Math.abs(mxp[1]) > 2100) continue;
-          if (buildingAt(m2ll(mxp)[0], m2ll(mxp)[1])) continue;
-          var inRes = AREA.some(function (a) { return a.v === 'residential' && pip(mxp, a.m); }); if (!inRes && h1 > .025) continue;
-          var q = P(m2ll(mxp)), rr = (2 + hash(cx, cy, 80) * 3.5) / M;
-          g.fillStyle = 'rgba(40,36,28,.45)'; g.beginPath(); g.arc(q[0] - rr * .8, q[1] - rr * .9, rr, 0, 7); g.fill();
-          g.fillStyle = hash(cx, cy, 81) < .5 ? '#4b5532' : '#5d6238'; g.beginPath(); g.arc(q[0], q[1], rr, 0, 7); g.fill();
+          var h1 = hash(cx, cy, 77), mxp = [cx * cell + hash(cx, cy, 78) * cell, cy * cell + hash(cx, cy, 79) * cell], tll = m2ll(mxp);
+          var pine = Math.max(0, Math.min(1, (34.40 - tll[1]) * 4.5 + (fbm(mxp[0] / 300, mxp[1] / 300, 61, 2) - .5) * 1.6));
+          if (h1 > .07 + .3 * pine * pine) continue;
+          if (!inTown(tll[0], tll[1])) continue;
+          if (buildingAt(tll[0], tll[1])) continue;
+          if (!pine) { var inRes = AREA.some(function (a) { return a.v === 'residential' && pip(mxp, a.m); }); if (!inRes && h1 > .025) continue; }
+          var q = P(tll), rr = (pine ? 2.6 + hash(cx, cy, 80) * 3 : 2 + hash(cx, cy, 80) * 3.5) / M;
+          g.fillStyle = pine ? 'rgba(22,24,18,.55)' : 'rgba(40,36,28,.45)'; g.beginPath(); g.arc(q[0] - rr * .8, q[1] - rr * .9, rr * (pine ? 1.15 : 1), 0, 7); g.fill();
+          g.fillStyle = pine ? (hash(cx, cy, 81) < .5 ? '#2f3a24' : '#3a432a') : (hash(cx, cy, 81) < .5 ? '#4b5532' : '#5d6238'); g.beginPath(); g.arc(q[0], q[1], rr, 0, 7); g.fill();
+          if (pine && z >= 17) { g.fillStyle = 'rgba(120,130,90,.35)'; g.beginPath(); g.arc(q[0] + rr * .3, q[1] + rr * .3, rr * .45, 0, 7); g.fill(); }
         }
       }
       // buildings
-      BLD.forEach(function (b) { if (!vis(b.ll)) return; drawRoof(g, b, P, M, z); });
+      BLD.forEach(function (b) { if (!visb(b)) return; drawRoof(g, b, P, M, z); });
       // cars in parking lots
       if (z >= 16) AREA.forEach(function (a) {
-        if (a.v !== 'parking' || !vis(a.ll)) return;
+        if (a.v !== 'parking' || !visb(a)) return;
         var bx = [1e9, 1e9, -1e9, -1e9]; a.m.forEach(function (q) { bx[0] = Math.min(bx[0], q[0]); bx[1] = Math.min(bx[1], q[1]); bx[2] = Math.max(bx[2], q[0]); bx[3] = Math.max(bx[3], q[1]); });
         for (var x = bx[0] + 2; x < bx[2] - 2; x += 2.8) for (var y = bx[1] + 3; y < bx[3] - 3; y += 6) {
-          if (hash(x * 10 | 0, y * 10 | 0, 5) > .45 || !pip([x, y], a.m)) continue;
-          var q = P(m2ll([x, y])); g.fillStyle = ['#e8e8e4', '#d9dadb', '#a2a5a8', '#2a2b2e', '#7a2320', '#24406e', '#c9b48a'][hash(x | 0, y | 0, 6) * 7 | 0];
+          if (hash(x * 10 | 0, y * 10 | 0, 5) > .28 || !pip([x, y], a.m)) continue;
+          var q = P(m2ll([x, y])); g.fillStyle = ['#d8d8d3', '#c9cacb', '#9a9da0', '#3a3b3e', '#6e3330', '#3a4a66', '#b9a98a', '#d8d8d3'][hash(x | 0, y | 0, 6) * 8 | 0];
           g.fillRect(q[0] - .9 / M, q[1] - 2.2 / M, 1.8 / M, 4.4 / M);
         }
       });
@@ -215,6 +222,6 @@ var MAP = (function () {
     g.strokeStyle = 'rgba(80,76,70,.6)'; g.lineWidth = .8; g.strokeRect(q[0] - w / 2, q[1] - h / 2, w, h);
   }
 
-  return { T: T, R: R, BLD: BLD, HW: HW, RAIL: RAIL, WAT: WAT, AREA: AREA, POI: POI, m2ll: m2ll, ll2m: ll2m, wx: wx, wy: wy, xlon: xlon, ylat: ylat, mpp: mpp, pip: pip, hash: hash,
-    buildingAt: buildingAt, inTown: inTown, TOWN_BOX: TOWN_BOX, tile: tile, pump: pump, setFacilities: setFacilities, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
+  return { R: R, BLD: BLD, HW: HW, RAIL: RAIL, WAT: WAT, AREA: AREA, POI: POI, m2ll: m2ll, ll2m: ll2m, wx: wx, wy: wy, xlon: xlon, ylat: ylat, mpp: mpp, pip: pip, hash: hash,
+    buildingAt: buildingAt, inTown: inTown, townAt: townAt, TOWN_BOXES: TOWN_BOXES, boxHitsTown: boxHitsTown, tile: tile, pump: pump, setFacilities: setFacilities, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
 })();
