@@ -3053,19 +3053,39 @@ var LBL = (function () {
       }
     }
     // 4: beside the shape
+    // v3.6: scan every spot around the shape (dense 4px sampling, so thin neighbour strips such as the Florida
+    // corridor count) and take the nearest spot clear of every other faction (land before sea); a zh_lines block is tried too
     if (allowBeside && kind !== 'sil' && (bx1 - bx0) + (by1 - by0) > 5) {
-      var Lb = layouts(zh, en, mode)[0], Bb = measure(Lb, 10, 0, true), cy = (by0 + by1) / 2;
-      var cand = [[bx1 + 4 + Bb.w / 2, cy], [bx0 - 4 - Bb.w / 2, cy], [(bx0 + bx1) / 2, by0 - 3 - Bb.h / 2], [(bx0 + bx1) / 2, by1 + 3 + Bb.h / 2]];
-      // v3.5: also the four corners, at the shape's own side midpoints (long diagonal strips such as the Florida League)
-      var mx2 = (bx0 + bx1) / 2, qh = (by1 - by0) / 4;
-      cand.push([bx1 + 4 + Bb.w / 2, cy - qh], [bx1 + 4 + Bb.w / 2, cy + qh], [bx0 - 4 - Bb.w / 2, cy - qh], [bx0 - 4 - Bb.w / 2, cy + qh]);
-      cand.forEach(function (A) { A[2] = otherFrac(A[0], A[1], Bb.w, Bb.h, want); });
-      cand.sort(function (A, B) { return A[2] - B[2]; });   // v3.3: prefer sea / silence over a neighbour's land
-      // v3.5: a beside label touching a neighbour's land at all is only a last resort, after every clean spot
-      cand = cand.filter(function (A) { return A[2] === 0; }).concat(cand.filter(function (A) { return A[2] > 0; }));
-      for (var ci = 0; ci < cand.length; ci++) {
-        var q = cand[ci], bxx = [q[0] - Bb.w / 2 - 1, q[1] - Bb.h / 2, q[0] + Bb.w / 2 + 1, q[1] + Bb.h / 2];
-        if (bxx[0] < 2 || bxx[2] > S.w - 2 || bxx[1] < 2 || bxx[3] > S.h - 2) continue;
+      var Lb = layouts(zh, en, mode)[0], BL = [[measure(Lb, 10, 0, true), 0]];
+      var zb2 = kind === 'fac' && mode !== 'en' && D.factions && D.factions.filter(function (f) { return f.meta.zh === zh && f.meta.zh_lines; })[0];
+      if (zb2) BL.push([measure({ zh: zb2.meta.zh_lines.split('|'), en: mode === 'both' ? (splitEn(en, 3) || [en]) : [] }, 10, 0, true), 4]);
+      var own = [], ox0 = Math.max(0, bx0), ox1 = Math.min(S.w, bx1), oy0 = Math.max(0, by0), oy1 = Math.min(S.h, by1);
+      for (var ux = ox0; ux <= ox1; ux += 3) for (var uy = oy0; uy <= oy1; uy += 3) if (idAt((ux - t.x) / k, (uy - t.y) / k) === want) own.push([ux, uy]);
+      if (!own.length) own.push([px, py]);
+      var cand = [];
+      BL.forEach(function (bl) {
+        var Bq = bl[0], hw2 = Bq.w / 2 + 1, hh2 = Bq.h / 2, m = Math.max(Bq.w, Bq.h) + 10;
+        for (var cx2 = bx0 - m; cx2 <= bx1 + m; cx2 += 5) for (var cy2 = by0 - m; cy2 <= by1 + m; cy2 += 5) {
+          if (cx2 - hw2 < 2 || cx2 + hw2 > S.w - 2 || cy2 - hh2 < 2 || cy2 + hh2 > S.h - 2) continue;
+          var gap = 1e9;
+          for (var oi = 0; oi < own.length; oi++) {
+            var ddx = Math.max(0, Math.abs(own[oi][0] - cx2) - hw2), ddy = Math.max(0, Math.abs(own[oi][1] - cy2) - hh2), dd = ddx * ddx + ddy * ddy;
+            if (dd < gap) gap = dd;
+          }
+          gap = Math.sqrt(gap); if (gap > 40) continue;
+          var bad = false, ins = 0, sea = 0, nn = 0;
+          for (var sx2 = cx2 - hw2; sx2 <= cx2 + hw2 + 0.1 && !bad; sx2 += 4) for (var sy2 = cy2 - hh2; sy2 <= cy2 + hh2 + 0.1; sy2 += 4) {
+            var id2 = idAt((sx2 - t.x) / k, (sy2 - t.y) / k); nn++;
+            if (id2 > 0 && id2 !== want || id2 === -2) { bad = true; break; }
+            if (id2 === want) ins++; else if (id2 === -1) sea++;
+          }
+          if (bad) continue;
+          cand.push([cx2, cy2, Math.max(gap, 2) + 30 * ins / nn + 10 * sea / nn + bl[1] + 0.01 * Math.hypot(cx2 - px, cy2 - py), Bq]);
+        }
+      });
+      cand.sort(function (A, B) { return A[2] - B[2]; });
+      for (var ci = 0; ci < cand.length && ci < 600; ci++) {
+        var q = cand[ci], Bb = q[3], bxx = [q[0] - Bb.w / 2 - 1, q[1] - Bb.h / 2, q[0] + Bb.w / 2 + 1, q[1] + Bb.h / 2];
         if (!free(bxx, true)) continue;
         drawBlock(Bb, q[0], q[1], { fill: S.mode === 'night' ? d3.rgb(color || '#ddd').brighter(1.2).toString() : d3.rgb(color || '#555').darker(1.3).toString(), halo: st.halo, hw: st.hw }); free(bxx);
         return { x: q[0], y: q[1] };
