@@ -2,23 +2,24 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>约洛县应急管理 - Google 地图 Yolo County Emergency Management - Google Maps</title>
+<title>纳瓦霍县 - Google 地图 Navajo County - Google Maps</title>
 <link rel="icon" href="../gimg/fav2010.png">
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="../sprites.css">
 <link rel="stylesheet" href="../7s.css">
 <link rel="stylesheet" href="game.css">
+<link rel="stylesheet" href="logon.css">
 </head>
 <body class="game">
 <div id="gbar">
   <div id="gnav"><a href="#">网页 Web</a><a href="#">图片 Images</a><a href="#">视频 Videos</a><b>地图 Maps</b><a href="#">新闻 News</a><a href="#">邮件 Mail</a><a href="#" class="more">更多 more <span class="tri">&#9660;</span></a></div>
-  <div id="guser"><b>yolo.oes@co.yolo.ca.us</b> | <a href="#">我的地图 My Maps</a> | <a href="#" id="help">帮助 Help</a> | <a href="#">退出 Sign out</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><a href="#" class="gmi" id="gmsave"><b class="ck"></b>保存进度 Save game</a></div></div>
+  <div id="guser"><b>oem@co.navajo.az.us</b> | <a href="#">我的地图 My Maps</a> | <a href="#" id="help">帮助 Help</a> | <a href="#">退出 Sign out</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><a href="#" class="gmi" id="gmsave"><b class="ck"></b>保存进度 Save game</a></div></div>
 </div>
 <div id="header">
   <a id="logo" href="../index.html" title="返回地图 Back to the atlas"><img src="maplogo.gif" width="175" height="40" alt="Google Maps"></a>
   <form id="searchform" onsubmit="return false">
-    <div class="srow"><input id="q" type="text" autocomplete="off" placeholder=""><button type="submit" id="sbtn">搜索约洛县 Search Yolo County</button><a href="#" id="sopts">显示搜索选项 Show search options</a></div>
-    <div id="hint">搜索城镇、设施、公文或条例。Search towns, facilities, dispatches or ordinances.</div>
+    <div class="srow"><input id="q" type="text" autocomplete="off" placeholder=""><button type="submit" id="sbtn">搜索地图 Search Maps</button><a href="#" id="sopts">显示搜索选项 Show search options</a></div>
+    <div id="hint"><span class="zh">例如：霍尔布鲁克、Wigwam Motel</span><span class="bi"> · </span><span class="en">e.g. Holbrook, Wigwam Motel</span></div>
   </form>
   <div id="clock">
     <div id="cdate"></div>
@@ -30,7 +31,7 @@
     <a href="#" data-tab="ov" class="on">概况 Overview</a><span class="sep"></span><a href="#" data-tab="nb">周边 Region</a><span class="sep"></span><a href="#" data-tab="law">条例 Ordinances</a><span class="sep"></span><a href="#" data-tab="build">建造 Build</a><span class="sep"></span><a href="#" data-tab="mail">公文 Dispatches <b id="mailn"></b></a>
   </div>
   <div id="barr">
-    <span class="meter" id="m-trust" title="信任：县民对县政府的信任 Trust in the county government"><span class="ml">信任 Trust</span><span class="mb"><i></i></span><b></b></span><span class="sep"></span>
+    <span class="meter" id="m-trust" title="信任 Trust"><span class="ml">信任 Trust</span><span class="mb"><i></i></span><b></b></span><span class="sep"></span>
     <span class="meter red" id="m-panic" title="恐慌 Panic"><span class="ml">恐慌 Panic</span><span class="mb"><i></i></span><b></b></span><span class="sep"></span>
     <span id="stand"></span>
   </div>
@@ -46,9 +47,9 @@
         <button class="hit" id="ps" style="left:20px;top:39px" title="向南平移 Pan down"></button>
         <button class="hit" id="pw" style="left:2px;top:20px" title="向西平移 Pan left"></button>
         <button class="hit" id="pe" style="left:39px;top:20px" title="向东平移 Pan right"></button>
-        <button class="hitc" id="pc" title="回到约洛县 Back to Yolo County"></button>
+        <button class="hitc" id="pc" title="回到纳瓦霍县 Back to Navajo County"></button>
       </div>
-      <div id="peg" class="mc3d" title="街景：本县 2008 年拍摄 Street View: captured 2008"></div>
+      <div id="peg" class="mc3d" title="街景 Street View"></div>
       <button class="zb mc3d" id="zin" title="放大 Zoom In"></button>
       <div id="slider"><div id="track" class="mc3d"></div><div id="knob" class="mc3d"></div></div>
       <button class="zb mc3d" id="zout" title="缩小 Zoom Out"></button>
@@ -57,22 +58,24 @@
       <div id="more"><button id="morebtn" class="mt" type="button">更多… More...</button><div id="moremenu" hidden>
         <label><input type="checkbox" data-ly="fac" checked> 设施 Facilities</label>
         <label><input type="checkbox" data-ly="cases" checked> 病例 Cases</label>
-        <label><input type="checkbox" data-ly="ref" checked> 难民 Arrivals</label>
-        <label><input type="checkbox" data-ly="cov" checked> 指挥覆盖 EOC coverage</label>
+        <label><input type="checkbox" data-ly="res" checked> 保留地 Reservations</label>
       </div></div>
-      <div id="mtg"><button class="mt sel" data-mode="map">地图 Map</button><button class="mt" data-mode="fac">立场 Stance</button><button class="mt" data-mode="heat">病例 Cases</button></div>
+      <div id="mtg"><button class="mt sel" data-mode="map">地图 Map</button><button class="mt" data-mode="sat">卫星 Satellite</button><button class="mt" data-mode="hyb">混合 Hybrid</button></div>
     </div>
     <div id="buildhint" hidden></div>
     <div id="info" hidden><div class="ishadow"></div><div class="ibox"><a href="#" id="infox" class="gclose" title="关闭 Close"></a><div id="infobody"></div></div><div class="tail"><svg width="44" height="34" viewBox="0 0 44 34"><path d="M0 0H36L8 33z" fill="#fff"/><path d="M0.5 .5L8 33 36 .5" fill="none" stroke="#ababab"/></svg></div></div>
     <div id="scale"><div><span id="sc1"></span></div></div>
-    <div id="copy">©2009 Google - 地图数据 ©2009 Tele Atlas - <span id="imgdate"></span> - <a href="#">使用条款 Terms of Use</a></div>
+    <div id="copy">©2009 Google - <span id="imgdate"></span> - <a href="#">使用条款 Terms of Use</a></div>
   </div>
 </div>
 <div id="dlgwrap" class="win7" hidden><div id="dlg" class="window glass active"><div class="title-bar"><div class="title-bar-text" id="dlgt"></div><div class="title-bar-controls"><button aria-label="Close" id="dlgx"></button></div></div><div class="window-body has-space" id="dlgb"></div></div></div>
 <script src="../cursors.js"></script>
 <script src="../lang.js"></script>
-<script src="geo.js"></script>
+<script src="region.js"></script>
+<script src="town.js"></script>
 <script src="data.js"></script>
+<script src="map.js"></script>
 <script src="game.js"></script>
+<script src="logon.js"></script>
 </body>
 </html>

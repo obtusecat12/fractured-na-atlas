@@ -1,133 +1,124 @@
-// data.js — 莫诺卡西病：约洛县 原型数据 / prototype data for the Yolo County management game.
-// All text bilingual: [zh, en].
+// data.js — 纳瓦霍县开局的内容。所有文字 [中文, English]。
 var DATA = {
+  scenarios: [
+    { id: 'navajo', zh: '纳瓦霍县，亚利桑那州', en: 'Navajo County, Arizona', seat: ['县府：霍尔布鲁克', 'County seat: Holbrook'], date: ['2009年10月14日', 'Oct 14, 2009'], ok: true },
+    { id: 'nye', zh: '奈县，内华达州', en: 'Nye County, Nevada', seat: ['县府：托诺帕', 'County seat: Tonopah'], date: ['', ''], ok: false }
+  ],
   start: { y: 2009, m: 10, d: 14, day: 23, hour: 15 },
-  // 三方 / the three state powers
   powers: {
-    gov:    { zh: '州长办公室', en: "Governor's Office", short: ['州长', 'Gov.'], color: '#2F6FDB' },
-    council:{ zh: '加州应急委员会', en: 'California Emergency Council', short: ['委员会', 'Council'], color: '#7A5BB5' },
-    calema: { zh: 'Cal EMA 加州应急管理局', en: 'Cal EMA', short: ['Cal EMA', 'Cal EMA'], color: '#D9822B' },
-    county: { zh: '本县财政', en: 'County funds', short: ['本县', 'County'], color: '#3A8A3A' }
+    fed:    { zh: '联邦政府', en: 'Federal government', short: ['联邦', 'Federal'], color: '#2F6FDB', via: ['亚利桑那州应急管理局 · 凤凰城', 'Arizona Division of Emergency Management · Phoenix'] },
+    navajo: { zh: '纳瓦霍族政府', en: 'Navajo Nation', short: ['纳瓦霍族', 'Navajo Nation'], color: '#B5552B', via: ['纳瓦霍族应急管理部 · 窗岩', 'Navajo Nation Dept. of Emergency Management · Window Rock'] },
+    lds:    { zh: '后期圣徒教会', en: 'LDS Church', short: ['教会', 'LDS'], color: '#7A5BB5', via: ['斯诺弗莱克支联会', 'Snowflake Arizona Stake'] },
+    county: { zh: '本县财政', en: 'County general fund', short: ['本县', 'County'], color: '#3A8A3A' }
   },
+  // 本县实际能管的城镇（保留地以外）/ towns under county jurisdiction
   towns: [
-    { id: 'woodland', zh: '伍德兰', en: 'Woodland', ll: [-121.7733, 38.6785], pop: 55400, cases: 14, mood: 58, seat: true,
-      note: ['县府所在地。县应急指挥中心设在县行政大楼地下室。', 'County seat. The county EOC sits in the basement of the county administration building.'] },
-    { id: 'davis', zh: '戴维斯', en: 'Davis', ll: [-121.7405, 38.5449], pop: 64900, cases: 17, mood: 64,
-      note: ['加州大学戴维斯分校停课两周后部分复课，学生志愿者很多。', 'UC Davis resumed some classes after a two-week closure. Plenty of student volunteers.'] },
-    { id: 'wsac', zh: '西萨克拉门托', en: 'West Sacramento', ll: [-121.5302, 38.5805], lab: 'l', pop: 47200, cases: 6, mood: 47,
-      note: ['隔一座塔桥就是州议会大厦。三方的车每天都从这里过。', 'The Capitol is one Tower Bridge away. All three sides drive through here every day.'] },
-    { id: 'winters', zh: '温特斯', en: 'Winters', ll: [-121.9708, 38.5249], pop: 6700, cases: 0, mood: 71,
-      note: ['果园小镇，周六农夫市集照常开。', 'Orchard town. The Saturday farmers market is still running.'] },
-    { id: 'esparto', zh: '埃斯帕托', en: 'Esparto', ll: [-122.0172, 38.6924], pop: 3100, cases: 0, mood: 69,
-      note: ['卡佩谷入口，SR-16 上的小镇。', 'Gateway to the Capay Valley on SR-16.'] },
-    { id: 'knights', zh: '奈茨兰丁', en: 'Knights Landing', ll: [-121.7178, 38.7996], pop: 1000, cases: 0, mood: 66,
-      note: ['萨克拉门托河边的小镇，北面是萨特县。', 'River town on the Sacramento; Sutter County is across the water.'] },
-    { id: 'dunnigan', zh: '邓尼根', en: 'Dunnigan', ll: [-121.9697, 38.8852], pop: 1400, cases: 0, mood: 63,
-      note: ['I-5 与 I-505 交汇处，卡车休息站很多。', 'Where I-5 meets I-505. Lots of truck stops.'] },
-    { id: 'clarksburg', zh: '克拉克斯堡', en: 'Clarksburg', ll: [-121.5272, 38.4202], pop: 420, cases: 0, mood: 70,
-      note: ['三角洲酒庄区。', 'Delta wine country.'] }
+    { id: 'holbrook', zh: '霍尔布鲁克', en: 'Holbrook', ll: [-110.1582, 34.9022], pop: 5053, cases: 9, mood: 61, seat: true, town: 'TOWN' },
+    { id: 'winslow', zh: '温斯洛', en: 'Winslow', ll: [-110.6974, 35.0242], pop: 9655, cases: 11, mood: 58 },
+    { id: 'showlow', zh: '肖洛', en: 'Show Low', ll: [-110.0298, 34.2542], pop: 10660, cases: 6, mood: 66 },
+    { id: 'snowflake', zh: '斯诺弗莱克', en: 'Snowflake', ll: [-110.0782, 34.5134], pop: 5590, cases: 2, mood: 72 },
+    { id: 'taylor', zh: '泰勒', en: 'Taylor', ll: [-110.0918, 34.4653], pop: 4112, cases: 1, mood: 70 },
+    { id: 'pinetop', zh: '派恩托普-莱克赛德', en: 'Pinetop-Lakeside', ll: [-109.9293, 34.1425], pop: 4282, cases: 2, mood: 67 },
+    { id: 'heber', zh: '希伯-奥弗加德', en: 'Heber-Overgaard', ll: [-110.5665, 34.4156], pop: 2822, cases: 0, mood: 64 },
+    { id: 'joseph', zh: '约瑟夫城', en: 'Joseph City', ll: [-110.3343, 34.9561], pop: 1386, cases: 0, mood: 69 },
+    { id: 'linden', zh: '林登', en: 'Linden', ll: [-110.1593, 34.2845], pop: 2597, cases: 0, mood: 65 },
+    { id: 'woodruff', zh: '伍德拉夫', en: 'Woodruff', ll: [-110.0451, 34.7825], pop: 160, cases: 0, mood: 68 }
   ],
-  // 周边政权 / neighbouring authorities (visible at start)
+  // 其他地名（只作标注）/ other labels
+  labels: [
+    ['凤凰城', 'Phoenix', -112.074, 33.448, 1], ['弗拉格斯塔夫', 'Flagstaff', -111.651, 35.198, 1], ['窗岩', 'Window Rock', -109.052, 35.681, 1],
+    ['圣约翰斯', 'St. Johns', -109.361, 34.506, 1], ['格洛布', 'Globe', -110.787, 33.394, 1], ['盖洛普', 'Gallup', -108.742, 35.528, 0],
+    ['怀特里弗', 'Whiteriver', -109.964, 33.837, 0], ['凯恩塔', 'Kayenta', -110.29, 36.728, 0], ['基科茨莫维', 'Kykotsmovi', -110.626, 35.871, 0],
+    ['钦利', 'Chinle', -109.551, 36.154, 0], ['图巴城', 'Tuba City', -111.239, 36.135, 0], ['佩森', 'Payson', -111.325, 34.231, 0],
+    ['斯普林格维尔', 'Springerville', -109.288, 34.134, 0], ['加纳多', 'Ganado', -109.541, 35.711, 0], ['皮农', 'Pinon', -110.222, 36.101, 0],
+    ['迪尔康', 'Dilkon', -110.318, 35.385, 0], ['佩吉', 'Page', -111.456, 36.914, 0]
+  ],
+  // 周边 / neighbours. county = county polygon name; res = reservation name
   regions: [
-    { id: 'Sacramento', zh: '萨克拉门托县', en: 'Sacramento County', stance: 'calema', cases: 412, ref: 9800, seen: true, date: '2009-10-14',
-      note: ['州议会大厦和 Cal EMA 总部（马瑟）都在这里。加州博览会场改成了临时安置营。', 'Home of the Capitol and Cal EMA headquarters at Mather. Cal Expo is now a temporary camp.'] },
-    { id: 'Solano', zh: '索拉诺县', en: 'Solano County', stance: 'gov', cases: 188, ref: 6300, seen: true, date: '2009-10-13',
-      note: ['湾区来的车都从 I-80 经过这里，县里在瓦列霍设了分流点。', 'Bay Area traffic comes up I-80 through here; the county runs a sorting point in Vallejo.'] },
-    { id: 'Sutter', zh: '萨特县', en: 'Sutter County', stance: 'council', cases: 21, ref: 400, seen: true, date: '2009-10-13',
-      note: ['农业县，愿意用稻米换医生。', 'Farm county. Willing to trade rice for doctors.'] },
-    { id: 'Colusa', zh: '科卢萨县', en: 'Colusa County', stance: 'council', cases: 4, ref: 90, seen: true, date: '2009-10-11',
-      note: ['人少，县里只有两名卫生官员。', 'Small; the county has two health officers.'] },
-    { id: 'Napa', zh: '纳帕县', en: 'Napa County', stance: 'gov', cases: 39, ref: 1100, seen: true, date: '2009-10-12',
-      note: ['酒庄暂停接待游客，改成了志愿者宿舍。', 'Wineries closed to tourists and opened as volunteer housing.'] },
-    { id: 'Placer', zh: '普莱瑟县', en: 'Placer County', stance: 'calema', cases: 76, ref: 1500, seen: true, date: '2009-10-13',
-      note: ['县议会全票支持 Cal EMA 的统一调度。', 'The board voted unanimously for Cal EMA coordination.'] },
-    { id: 'Yuba', zh: '尤巴县', en: 'Yuba County', stance: 'council', cases: 30, ref: 300, seen: true, date: '2009-10-12',
-      note: ['比尔空军基地在县内，联邦方面态度不明。', 'Beale AFB is here; the federal side has said little.'] },
-    { id: 'Lake', zh: '莱克县', en: 'Lake County', stance: 'gov', cases: 9, ref: 150, seen: true, date: '2009-10-09',
-      note: ['信息不多，最近一次通话在五天前。', 'Not much to go on; last call was five days ago.'] },
-    { id: 'Contra Costa', zh: '康特拉科斯塔县', en: 'Contra Costa County', seen: false, status: ['广播时断时续', 'Broadcasts intermittent'] },
-    { id: 'Marin', zh: '马林县', en: 'Marin County', seen: false, status: ['失去联系', 'No contact'] },
-    { id: 'Sonoma', zh: '索诺玛县', en: 'Sonoma County', seen: false, status: ['广播正常', 'Broadcasting'] },
-    { id: 'San Joaquin', zh: '圣华金县', en: 'San Joaquin County', seen: false, status: ['广播正常', 'Broadcasting'] },
-    { id: 'El Dorado', zh: '埃尔多拉多县', en: 'El Dorado County', seen: false, status: ['广播正常', 'Broadcasting'] },
-    { id: 'Amador', zh: '阿马多尔县', en: 'Amador County', seen: false, status: ['未知', 'Unknown'] },
-    { id: 'Nevada', zh: '内华达县', en: 'Nevada County', seen: false, status: ['未知', 'Unknown'] },
-    { id: 'Butte', zh: '比尤特县', en: 'Butte County', seen: false, status: ['杰斐逊州运动活跃', 'Jefferson movement active'] },
-    { id: 'Glenn', zh: '格伦县', en: 'Glenn County', seen: false, status: ['杰斐逊州运动活跃', 'Jefferson movement active'] }
+    { id: 'navajo_nation', res: 'Navajo Nation Reservation', zh: '纳瓦霍族', en: 'Navajo Nation', stance: 'navajo', seat: ['窗岩', 'Window Rock'], cases: 64, ref: 0, seen: true, date: '2009-10-13',
+      note: ['本县北半部是保留地。族政府自己发布病例标准，KTNN 660 AM 用纳瓦霍语播报。', "The north half of the county is reservation land. The Nation sets its own case criteria; KTNN 660 AM broadcasts in Navajo."] },
+    { id: 'hopi', res: 'Hopi Reservation', zh: '霍皮族', en: 'Hopi Tribe', stance: 'navajo', seat: ['基科茨莫维', 'Kykotsmovi'], cases: 3, ref: 0, seen: true, date: '2009-10-12',
+      note: ['三座台地上的村子关闭了外来车辆通道，第二台地的文化中心停业。', "The mesa villages are closed to outside traffic. The Second Mesa cultural center is shut."] },
+    { id: 'fort_apache', res: 'Fort Apache Reservation', zh: '白山阿帕奇族', en: 'White Mountain Apache Tribe', stance: 'fed', seat: ['怀特里弗', 'Whiteriver'], cases: 12, ref: 0, seen: true, date: '2009-10-13',
+      note: ['怀特里弗的印第安卫生署医院人手不足，族里向联邦要了两批护士。', 'The IHS hospital in Whiteriver is short-staffed. The tribe has asked the federal side for two rounds of nurses.'] },
+    { id: 'Apache', county: 'Apache', zh: '阿帕奇县', en: 'Apache County', stance: 'lds', seat: ['圣约翰斯', 'St. Johns'], cases: 7, ref: 140, seen: true, date: '2009-10-12',
+      note: ['县里缺护士，有柴油。圣约翰斯和斯普林格维尔都在 US 180/191 上。', 'Short on nurses, has diesel. St. Johns and Springerville sit on US 180/191.'] },
+    { id: 'Coconino', county: 'Coconino', zh: '科科尼诺县', en: 'Coconino County', stance: 'fed', seat: ['弗拉格斯塔夫', 'Flagstaff'], cases: 88, ref: 2300, seen: true, date: '2009-10-13',
+      note: ['北亚利桑那大学停课。I-40 和 I-17 上的车都经过弗拉格斯塔夫。', 'Northern Arizona University has suspended classes. Traffic off I-40 and I-17 comes through Flagstaff.'] },
+    { id: 'Gila', county: 'Gila', zh: '希拉县', en: 'Gila County', stance: 'fed', seat: ['格洛布', 'Globe'], cases: 41, ref: 1700, seen: true, date: '2009-10-12',
+      note: ['从凤凰城往北走 SR 87 和 US 60 的车，很多在佩森停下。', 'Many cars heading north from Phoenix on SR 87 and US 60 stop in Payson.'] },
+    { id: 'Maricopa', county: 'Maricopa', zh: '联邦控制区', en: 'Federal zone', stance: 'fed', seat: ['凤凰城', 'Phoenix'], cases: 2310, ref: 0, seen: true, date: '2009-10-14', fed: true,
+      note: ['州政府和亚利桑那州应急管理局都在凤凰城，归联邦调度。', 'The state government and the Arizona Division of Emergency Management are in Phoenix, under federal direction.'] },
+    { id: 'Pinal', county: 'Pinal', zh: '联邦控制区', en: 'Federal zone', stance: 'fed', seen: true, fed: true, cases: 390, ref: 0, date: '2009-10-14', note: ['', ''] },
+    { id: 'Graham', county: 'Graham', zh: '联邦控制区', en: 'Federal zone', stance: 'fed', seen: true, fed: true, cases: 35, ref: 0, date: '2009-10-13', note: ['', ''] },
+    { id: 'Greenlee', county: 'Greenlee', zh: '联邦控制区', en: 'Federal zone', stance: 'fed', seen: true, fed: true, cases: 6, ref: 0, date: '2009-10-11', note: ['', ''] },
+    { id: 'McKinley', county: 'McKinley', zh: '麦金利县', en: 'McKinley County', seen: false, status: ['广播正常', 'Broadcasting'] },
+    { id: 'Cibola', county: 'Cibola', zh: '锡沃拉县', en: 'Cibola County', seen: false, status: ['未知', 'Unknown'] },
+    { id: 'Catron', county: 'Catron', zh: '卡特伦县', en: 'Catron County', seen: false, status: ['未知', 'Unknown'] },
+    { id: 'San Juan NM', county: 'San Juan NM', zh: '圣胡安县', en: 'San Juan County', seen: false, status: ['广播正常', 'Broadcasting'] },
+    { id: 'San Juan UT', county: 'San Juan UT', zh: '圣胡安县', en: 'San Juan County', seen: false, status: ['未知', 'Unknown'] },
+    { id: 'Kane', county: 'Kane', zh: '凯恩县', en: 'Kane County', seen: false, status: ['未知', 'Unknown'] },
+    { id: 'Montezuma', county: 'Montezuma', zh: '蒙特苏马县', en: 'Montezuma County', seen: false, status: ['未知', 'Unknown'] },
+    { id: 'Yavapai', county: 'Yavapai', zh: '亚瓦派县', en: 'Yavapai County', seen: false, status: ['广播时断时续', 'Broadcasts intermittent'] }
   ],
-  roads: [
-    { ref: 'I-80', k: 'fwy', pts: [[-122.05,38.30],[-121.98,38.356],[-121.83,38.445],[-121.74,38.548],[-121.66,38.562],[-121.585,38.572],[-121.53,38.582],[-121.49,38.59],[-121.41,38.64],[-121.29,38.75]] },
-    { ref: 'I-5', k: 'fwy', pts: [[-121.43,38.40],[-121.48,38.50],[-121.505,38.58],[-121.53,38.64],[-121.6,38.672],[-121.69,38.676],[-121.75,38.685],[-121.81,38.74],[-121.88,38.80],[-121.97,38.885],[-122.06,39.02]] },
-    { ref: 'I-505', k: 'fwy', pts: [[-121.97,38.36],[-121.96,38.53],[-121.97,38.68],[-121.97,38.885]] },
-    { ref: 'US-50', k: 'fwy', pts: [[-121.53,38.582],[-121.51,38.573],[-121.48,38.568],[-121.30,38.59]] },
-    { ref: 'CA-113', k: 'hwy', pts: [[-121.82,38.445],[-121.775,38.54],[-121.77,38.66],[-121.75,38.72],[-121.72,38.80],[-121.62,39.13]] },
-    { ref: 'CA-16', k: 'hwy', pts: [[-121.77,38.678],[-121.9,38.683],[-122.02,38.692],[-122.04,38.71],[-122.13,38.80],[-122.24,38.89]] },
-    { ref: 'CA-128', k: 'hwy', pts: [[-121.97,38.525],[-122.08,38.52],[-122.2,38.51],[-122.30,38.50]] },
-    { ref: 'CA-84', k: 'hwy', pts: [[-121.53,38.582],[-121.56,38.49],[-121.6,38.40]] }
-  ],
-  river: [[-122.0,39.21],[-121.93,39.05],[-121.84,38.92],[-121.72,38.80],[-121.62,38.78],[-121.58,38.70],[-121.545,38.64],[-121.512,38.58],[-121.505,38.50],[-121.52,38.42],[-121.58,38.30],[-121.69,38.15]],
-  bypass: [[-121.62,38.78],[-121.63,38.68],[-121.62,38.58],[-121.6,38.45]],
-  // 建筑 / building catalogue. cost in thousands of USD; fund = who may pay
+  // 建筑。size = 米 / metres. convert = 只能改建现有建筑
   buildings: [
-    { id: 'clinic', cat: 'life', zh: '社区诊所', en: 'Community clinic', cost: 180, days: 4, fund: ['gov', 'county'], fx: ['信任 +3 · 本镇病例增长变慢', 'Trust +3 · slows case growth in town'], icon: '#C0392B' },
-    { id: 'housing', cat: 'life', zh: '安置小区', en: 'Resettlement housing', cost: 400, days: 7, fund: ['gov', 'council'], fx: ['可安置 800 人 · 新来的人能找工作', 'Houses 800 · arrivals can take local jobs'], icon: '#2E7D32' },
-    { id: 'grain', cat: 'life', zh: '粮食仓库', en: 'Grain depot', cost: 120, days: 3, fund: ['gov', 'county'], fx: ['粮食储备 +30 天 · 可与邻县交易', 'Food reserve +30 days · tradeable with neighbours'], icon: '#B8860B' },
-    { id: 'center', cat: 'life', zh: '社区中心', en: 'Community center', cost: 90, days: 3, fund: ['county'], fx: ['恐慌 −2 · 可办球赛直播、互助会', 'Panic −2 · hosts game broadcasts and mutual aid'], icon: '#6A8CC7' },
-    { id: 'check', cat: 'ctrl', zh: '检查站', en: 'Checkpoint', cost: 80, days: 1, fund: ['calema', 'county'], fx: ['控制进出 · 恐慌 −1 · 信任 −1', 'Controls entry · Panic −1 · Trust −1'], icon: '#555' },
-    { id: 'quar', cat: 'ctrl', zh: '隔离点', en: 'Quarantine site', cost: 250, days: 2, fund: ['calema'], fx: ['收治 200 人 · Cal EMA 派人验收', 'Holds 200 · inspected by Cal EMA'], icon: '#D9822B' },
-    { id: 'relay', cat: 'info', zh: '无线电中继站', en: 'Radio relay', cost: 150, days: 3, fund: ['council', 'county'], fx: ['揭开 40 公里内的迷雾 · 多收到 2 个频道', 'Reveals 40 km of fog · two more channels'], icon: '#7A5BB5' },
-    { id: 'liaison', cat: 'info', zh: '联络处', en: 'Liaison office', cost: 60, days: 2, fund: ['council'], fx: ['看到相邻政权的内部派系', 'Shows a neighbour\'s internal factions'], icon: '#4A6FA5' }
+    { id: 'clinic', cat: 'life', zh: '模块化诊所', en: 'Modular clinic', cost: 180, days: 4, fund: ['fed', 'county'], size: [24, 12], fx: ['信任 +3', 'Trust +3'], roof: '#d8d7d1' },
+    { id: 'trailers', cat: 'life', zh: '旅行拖车安置点', en: 'Travel trailer site', cost: 320, days: 5, fund: ['fed', 'lds'], size: [70, 46], fx: ['安置 120 人', 'Houses 120'], roof: '#e4e3de', grid: true },
+    { id: 'warehouse', cat: 'life', zh: '物资仓库', en: 'Supply warehouse', cost: 140, days: 3, fund: ['lds', 'county'], size: [40, 20], fx: ['储备 +20 天', 'Reserve +20 days'], roof: '#a9adad' },
+    { id: 'shelter', cat: 'life', zh: '改建为收容所', en: 'Convert to shelter', cost: 45, days: 2, fund: ['lds', 'county', 'navajo'], convert: true, fx: ['安置 80 人', 'Houses 80'] },
+    { id: 'check', cat: 'ctrl', zh: '体温检查点', en: 'Temperature checkpoint', cost: 60, days: 1, fund: ['fed', 'county'], size: [14, 8], fx: ['恐慌 −1 · 信任 −1', 'Panic −1 · Trust −1'], roof: '#f1efe8', road: true },
+    { id: 'isolation', cat: 'ctrl', zh: '改建为隔离点', en: 'Convert to isolation site', cost: 90, days: 2, fund: ['fed'], convert: true, fx: ['收治 40 人', 'Holds 40'] },
+    { id: 'tower', cat: 'info', zh: '无线电铁塔', en: 'Radio tower', cost: 110, days: 3, fund: ['navajo', 'county'], size: [4, 4], fx: ['视野 +40 公里', 'Sight +40 km'], roof: '#9a9a96', tower: true },
+    { id: 'office', cat: 'info', zh: '联络办公室', en: 'Liaison office', cost: 50, days: 2, fund: ['navajo', 'lds', 'fed'], convert: true, fx: ['可见对方内部派系', "Shows the other side's factions"] }
   ],
-  bcats: { life: ['民生', 'Public services'], ctrl: ['管控', 'Control'], info: ['通讯与情报', 'Comms & intel'] },
-  // existing facilities at start
+  bcats: { life: ['民生', 'Services'], ctrl: ['管控', 'Control'], info: ['通讯', 'Communications'] },
+  // 开局已有 / existing at start. ll = lon,lat
   facilities: [
-    { b: 'check', ll: [-121.585, 38.574], name: ['约洛堤道检查站', 'Yolo Causeway checkpoint'], fund: 'calema', done: true },
-    { b: 'clinic', ll: [-121.752, 38.542], name: ['戴维斯社区诊所', 'Davis community clinic'], fund: 'gov', done: true },
-    { b: 'quar', ll: [-121.79, 38.665], name: ['县集市场隔离点', 'Fairgrounds quarantine site'], fund: 'calema', done: true },
-    { b: 'housing', ll: [-121.55, 38.565], name: ['河滨安置小区', 'Riverfront housing'], fund: 'gov', done: false, eta: 3 }
+    { b: 'check', ll: [-110.1405, 34.9128], name: ['I-40 东口检查点', 'I-40 east exit checkpoint'], fund: 'fed', done: true },
+    { b: 'clinic', ll: [-110.1665, 34.8978], name: ['县卫生局临时诊所', 'Public Health temporary clinic'], fund: 'county', done: true },
+    { b: 'trailers', ll: [-110.1765, 34.9105], name: ['西霍皮大道拖车点', 'W Hopi Dr trailer site'], fund: 'fed', done: false, eta: 3 }
   ],
-  // ordinances / 县紧急条例
   laws: [
-    { id: 'mask', g: ['公共生活', 'Public life'], zh: '公共场所口罩令', en: 'Masks in public places', fx: ['恐慌 −3 · 信任 −1', 'Panic −3 · Trust −1'], on: true },
-    { id: 'school_open', g: ['公共生活', 'Public life'], zh: '学校照常上课', en: 'Schools stay open', fx: ['信任 +3 · 病例风险上升', 'Trust +3 · higher case risk'], ex: 'school_close' },
-    { id: 'school_close', g: ['公共生活', 'Public life'], zh: '全县学校停课', en: 'Close all schools', fx: ['病例风险下降 · 家长请假，劳动力 −8%', 'Lower case risk · parents stay home, labour −8%'], ex: 'school_open' },
-    { id: 'presser', g: ['信息', 'Information'], zh: '县每日新闻发布会', en: 'Daily county press briefing', fx: ['恐慌 −2 · 州里会盯着你说了什么', 'Panic −2 · the state watches what you say'], on: true },
-    { id: 'relayall', g: ['信息', 'Information'], zh: '全文转播州里广播', en: 'Relay all state broadcasts', fx: ['三方好感 +2 · 广播矛盾时恐慌 +4', 'All three +2 · Panic +4 when they disagree'] },
-    { id: 'std_gov', g: ['病例', 'Cases'], zh: '采用州长办公室的病例标准', en: "Use the Governor's case criteria", fx: ['州长 +6 · Cal EMA −6', 'Governor +6 · Cal EMA −6'], ex: 'std_calema' },
-    { id: 'std_calema', g: ['病例', 'Cases'], zh: '采用 Cal EMA 的病例标准', en: "Use Cal EMA's case criteria", fx: ['Cal EMA +6 · 州长 −6 · 隔离人数翻倍', 'Cal EMA +6 · Governor −6 · twice as many quarantined'], ex: 'std_gov' },
-    { id: 'volunteer', g: ['人力', 'Labour'], zh: '招募 UC Davis 学生志愿者', en: 'Recruit UC Davis student volunteers', fx: ['劳动力 +5% · 学生家长投诉', 'Labour +5% · parents complain'] },
-    { id: 'workstay', g: ['人力', 'Labour'], zh: '新来的人可以凭工作留下', en: 'Arrivals may stay if they work', fx: ['劳动力 +10% · 本地居民不满 +3', 'Labour +10% · locals unhappy +3'] },
-    { id: 'shift', g: ['人力', 'Labour'], zh: '县雇员 12 小时轮班', en: 'County staff on 12-hour shifts', fx: ['指挥中心效率 +30% · 每天信任 −1', 'EOC output +30% · Trust −1 per day'] }
+    { id: 'mask', g: ['公共场所', 'Public places'], zh: '县属建筑内须戴口罩', en: 'Masks in county buildings', fx: ['恐慌 −2', 'Panic −2'], on: true },
+    { id: 'school_open', g: ['公共场所', 'Public places'], zh: '霍尔布鲁克联合学区照常上课', en: 'Holbrook Unified stays open', fx: ['信任 +3 · 病例风险 +', 'Trust +3 · case risk +'], ex: 'school_close', on: true },
+    { id: 'school_close', g: ['公共场所', 'Public places'], zh: '全县公立学校停课两周', en: 'Close county public schools for two weeks', fx: ['病例风险 − · 劳动力 −8%', 'Case risk − · labour −8%'], ex: 'school_open' },
+    { id: 'presser', g: ['信息', 'Information'], zh: '每日县新闻发布会，KINO 1230 AM 转播', en: 'Daily county briefing, carried on KINO 1230 AM', fx: ['恐慌 −2', 'Panic −2'], on: true },
+    { id: 'std_fed', g: ['病例标准', 'Case criteria'], zh: '采用州应急管理局的病例标准', en: "Use the state's case criteria", fx: ['联邦 +6 · 纳瓦霍族 −6', 'Federal +6 · Navajo −6'], ex: 'std_navajo' },
+    { id: 'std_navajo', g: ['病例标准', 'Case criteria'], zh: '采用纳瓦霍族卫生部的病例标准', en: 'Use the Navajo Division of Health criteria', fx: ['纳瓦霍族 +6 · 联邦 −6', 'Navajo +6 · Federal −6'], ex: 'std_fed' },
+    { id: 'quota', g: ['人口', 'People'], zh: '接收从凤凰城北上的人，每周 300 人', en: 'Take people coming north from Phoenix, 300 a week', fx: ['劳动力 +4% · 住房 −300', 'Labour +4% · housing −300'] },
+    { id: 'hours', g: ['人口', 'People'], zh: '县雇员每周工作 50 小时', en: 'County staff on 50-hour weeks', fx: ['指挥中心 +25% · 每天信任 −1', 'EOC +25% · Trust −1 a day'] },
+    { id: 'bnsf', g: ['物资', 'Supplies'], zh: '请 BNSF 在霍尔布鲁克站停车卸货', en: 'Ask BNSF to stop and unload at Holbrook', fx: ['储备 +10 天 · 联邦 +2', 'Reserve +10 days · Federal +2'] }
   ],
   mail: [
-    { from: 'calema', id: '09-117', t: ['在 I-80 约洛堤道增设第二道检查站', 'Add a second checkpoint on the I-80 Yolo Causeway'], s: ['附拨款 $250,000，要求 48 小时内完成。', '$250,000 attached; to be done within 48 hours.'], time: '10:42', unread: true, acts: [['执行', 'Comply'], ['搁置', 'Hold'], ['回复', 'Reply']] },
-    { from: 'gov', id: 'GO-0931', t: ['请暂缓执行 Cal EMA 09-117 号令', 'Please hold off on Cal EMA order 09-117'], s: ['委员会周五开会前，任何新的检查站都不要设。', 'No new checkpoints until the Council meets on Friday.'], time: '11:15', unread: true, acts: [['同意', 'Agree'], ['回复', 'Reply']] },
-    { from: 'council', id: 'EC-14', t: ['邀请县代表出席周五委员会会议', 'County representative invited to Friday\'s Council session'], s: ['地点：州议会大厦 4203 室。请提前提交本县病例数。', 'Room 4203, State Capitol. Please file county case numbers in advance.'], time: '昨天 Yesterday', unread: true, acts: [['出席', 'Attend'], ['派副手', 'Send deputy'], ['回复', 'Reply']] },
-    { from: 'nb', nb: ['索拉诺县', 'Solano County'], id: '', t: ['请求帮忙安置 600 名湾区来的人', 'Asking for help housing 600 people from the Bay Area'], s: ['可以用两辆救护车和三名护士交换。', 'We can trade two ambulances and three nurses.'], time: '昨天 Yesterday', unread: false, acts: [['接受', 'Accept'], ['还价', 'Counter'], ['拒绝', 'Decline']] },
-    { from: 'nb', nb: ['伍德兰居民联名', 'Woodland residents\' petition'], id: '', t: ['希望一周内重开县图书馆', 'Reopen the county library within a week'], s: ['联署 1,312 人。', '1,312 signatures.'], time: '10月12日 Oct 12', unread: false, acts: [['承诺', 'Promise'], ['婉拒', 'Decline']] }
+    { from: 'fed', id: 'ADEM 09-0412', t: ['在 I-40 霍尔布鲁克西口增设体温检查点', 'Add a temperature checkpoint at the I-40 Holbrook west exit'], s: ['随文拨款 $180,000，10月16日前完成。', '$180,000 attached. Complete by Oct 16.'], time: '10:42', unread: true, acts: [['执行', 'Comply'], ['搁置', 'Hold'], ['回复', 'Reply']] },
+    { from: 'navajo', id: 'NNDEM-117', t: ['族人进城采购不应在检查点排队', 'Nation members should not queue at checkpoints to shop in town'], s: ['霍尔布鲁克的 Safeway 是很多家庭最近的超市。', "For many families the Safeway in Holbrook is the nearest supermarket."], time: '11:15', unread: true, acts: [['同意', 'Agree'], ['回复', 'Reply']] },
+    { from: 'lds', id: '', t: ['主教仓库可调出面粉和罐头', "The bishops' storehouse can release flour and canned goods"], s: ['约 40 吨。请县里定一个分发地点。', 'About 40 tons. Please name a distribution site.'], time: '昨天 Yesterday', unread: true, acts: [['接受', 'Accept'], ['回复', 'Reply']] },
+    { from: 'nb', nb: ['阿帕奇县监事会', 'Apache County Board of Supervisors'], id: '', t: ['借两名护士，可用柴油交换', 'Two nurses on loan, paid in diesel'], s: ['6,000 加仑，从圣约翰斯运过来。', '6,000 gallons, trucked from St. Johns.'], time: '昨天 Yesterday', unread: false, acts: [['接受', 'Accept'], ['还价', 'Counter'], ['拒绝', 'Decline']] },
+    { from: 'nb', nb: ['温斯洛市议会', 'Winslow City Council'], id: '', t: ['小科罗拉多医疗中心需要 20 张床位的钱', 'Little Colorado Medical Center needs funding for 20 beds'], s: ['$260,000。', '$260,000.'], time: '10月12日 Oct 12', unread: false, acts: [['拨款', 'Fund'], ['婉拒', 'Decline']] }
   ],
   promises: [
-    { zh: '一周内重开伍德兰县图书馆', en: 'Reopen the Woodland library within a week', left: 4, by: ['伍德兰居民', 'Woodland residents'] },
-    { zh: '本周五前公布全县病例地图', en: 'Publish the county case map by Friday', left: 2, by: ['戴维斯市议会', 'Davis City Council'] }
+    { zh: '霍尔布鲁克公共图书馆周六恢复开放', en: 'Reopen the Holbrook Public Library on Saturday', left: 3, cost: 15, by: ['霍尔布鲁克居民联署', 'Holbrook residents\' petition'] },
+    { zh: '周五前公布全县病例分布图', en: 'Publish the county case map by Friday', left: 2, cost: 5, by: ['《霍尔布鲁克论坛新闻》', 'Holbrook Tribune-News'] }
   ],
   broadcasts: [
-    { ch: 'calema', name: ['EAS · Cal EMA 应急广播', 'EAS · Cal EMA'], time: '14:00', t: ['明天上午 9 点将公布新的识别标准，请各县做好准备。', 'New identification criteria will be published at 9 am tomorrow. Counties should prepare.'] },
-    { ch: 'gov', name: ['KCRA 3 · 州长讲话', 'KCRA 3 · Governor'], time: '12:30', t: ['州长：任何病例标准都要经委员会审议后才能生效。', 'Governor: no case criteria take effect until the Council has reviewed them.'] },
-    { ch: 'council', name: ['KXJZ 88.9 · 委员会发言人', 'KXJZ 88.9 · Council spokesperson'], time: '09:10', t: ['委员会将在周五召开第二次全体会议。', 'The Council will hold its second full session on Friday.'] },
-    { ch: 'local', name: ['KDVS 90.3 · 戴维斯', 'KDVS 90.3 · Davis'], time: '08:00', t: ['今天的农夫市集照常，记得戴口罩。', 'The farmers market is on today. Bring a mask.'] }
+    { ch: 'fed', name: ['KPNX 12 · 凤凰城', 'KPNX 12 · Phoenix'], time: '14:00', t: ['州应急管理局：明天上午 9 点公布新的病例标准。', 'State emergency management: new case criteria at 9 am tomorrow.'] },
+    { ch: 'navajo', name: ['KTNN 660 AM · 窗岩', 'KTNN 660 AM · Window Rock'], time: '12:30', t: ['族长办公室：族内检测点周末照常开放。', "President's office: Nation testing sites stay open this weekend."] },
+    { ch: 'county', name: ['KINO 1230 AM · 温斯洛', 'KINO 1230 AM · Winslow'], time: '09:10', t: ['县新闻发布会：今日新增确诊 3 例，均在温斯洛。', 'County briefing: 3 new confirmed cases today, all in Winslow.'] },
+    { ch: 'lds', name: ['KNAZ 2 · 弗拉格斯塔夫', 'KNAZ 2 · Flagstaff'], time: '08:00', t: ['斯诺弗莱克的志愿者周六在泰勒分发食品。', 'Snowflake volunteers hand out food in Taylor on Saturday.'] }
   ],
   teams: [
-    { zh: '县警长车队', en: "Sheriff's convoy", where: ['待命 · 伍德兰', 'Standing by · Woodland'] },
-    { zh: '县卫生局采样组', en: 'Public Health sampling team', where: ['康特拉科斯塔县 · 还要 2 天', 'Contra Costa · 2 days out'] }
+    { zh: '县警长办公室巡逻车', en: "Sheriff's Office patrol units", where: ['待命 · 霍尔布鲁克', 'Standing by · Holbrook'] },
+    { zh: '县卫生局流调组', en: 'Public Health contact tracers', where: ['麦金利县 · 还要 2 天', 'McKinley County · 2 days out'] }
   ],
   event: {
-    title: ['周五晚上的橄榄球赛', 'Friday night football'],
-    body: ['伍德兰高中和戴维斯高中的比赛定在周五晚上 7 点，往年能来四千人。两边家长都在打电话问还办不办。Cal EMA 的联络官说他不建议办，州长办公室说这是县里自己的事。',
-           'Woodland High plays Davis High on Friday at 7 pm. It usually draws four thousand people. Parents on both sides keep calling to ask if it is on. The Cal EMA liaison advises against it; the Governor\'s Office says it is the county\'s call.'],
+    title: ['周五橄榄球赛', 'Friday football'],
+    body: ['霍尔布鲁克高中 Roadrunners 周五晚 7 点主场对温斯洛高中 Bulldogs。往年能来两千多人。州应急管理局建议取消，学区说听县里的。',
+           'Holbrook High plays Winslow High at home on Friday at 7 pm. It usually draws over two thousand people. The state recommends cancelling; the school district will follow the county.'],
     opts: [
-      { t: ['照常举行', 'Play as usual'], fx: ['信任 +5 · 病例风险上升 · Cal EMA −3', 'Trust +5 · higher case risk · Cal EMA −3'], d: { trust: 5, panic: -2, calema: -3 } },
-      { t: ['限 1,000 名观众，入场测体温', 'Cap at 1,000, temperature checks at the gate'], fx: ['信任 +2 · 恐慌 −1', 'Trust +2 · Panic −1'], d: { trust: 2, panic: -1 } },
-      { t: ['空场比赛，KDVS 电台直播', 'No crowd, live on KDVS radio'], fx: ['恐慌 −2 · Cal EMA +2', 'Panic −2 · Cal EMA +2'], d: { panic: -2, calema: 2 } }
+      { t: ['照常举行', 'Play as usual'], fx: ['信任 +5 · 联邦 −3', 'Trust +5 · Federal −3'], d: { trust: 5, fed: -3 } },
+      { t: ['限 800 人，入场测体温', 'Cap at 800, temperature checks at the gate'], fx: ['信任 +2 · 恐慌 −1', 'Trust +2 · Panic −1'], d: { trust: 2, panic: -1 } },
+      { t: ['不卖票，KINO 电台直播', 'No crowd, live on KINO'], fx: ['恐慌 −2 · 联邦 +2', 'Panic −2 · Federal +2'], d: { panic: -2, fed: 2 } }
     ]
   }
 };
