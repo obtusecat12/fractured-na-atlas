@@ -84,9 +84,27 @@
       var f = t.page.querySelector('iframe'); if (f && f.srcdoc) f.srcdoc = f.srcdoc;
     });
   });
+  // srcdoc 页面里的 "#xxx" 链接和 action="#" 表单会按外层地址解析，点了会把整个站点（连同游戏）加载进标签页：拦下来，只在页内滚动
+  function guardFrame(f) {
+    function hook() {
+      var d; try { d = f.contentDocument; } catch (e) { return; }
+      if (!d || d.__cwGuard || !/^about:srcdoc/.test(d.URL)) return; d.__cwGuard = true;
+      d.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href]'); if (!a || e.defaultPrevented) return;
+        var h = a.getAttribute('href') || '';
+        if (h.charAt(0) === '#' || h === '') {
+          e.preventDefault();
+          var id = decodeURIComponent(h.slice(1)), el = id && (d.getElementById(id) || d.getElementsByName(id)[0]);
+          if (el) el.scrollIntoView(); else if (h === '#' || h === '#top') d.documentElement.scrollTop = d.body.scrollTop = 0;
+        }
+      });
+      d.addEventListener('submit', function (e) { var a = (e.target.getAttribute('action') || ''); if (a === '' || a.charAt(0) === '#') e.preventDefault(); }, true);
+    }
+    f.addEventListener('load', hook);
+  }
   function open(o) {
     var t = { title: o.title, fav: o.fav || PAGEICO, host: o.host, path: o.path || '/', tab: document.createElement('div'), page: document.createElement('div') };
-    t.page.className = 'cwp'; if (o.html) t.page.innerHTML = o.html; if (o.node) { t.page.appendChild(o.node); if (o.node.tagName === 'IFRAME') t.page.className += ' ifr'; }
+    t.page.className = 'cwp'; if (o.html) t.page.innerHTML = o.html; if (o.node) { t.page.appendChild(o.node); if (o.node.tagName === 'IFRAME') { t.page.className += ' ifr'; guardFrame(o.node); } }
     strip.insertBefore(t.tab, nt); body.appendChild(t.page); tabs.push(t);
     t.tab.addEventListener('mousedown', function (e) { if (e.target.closest('.tx')) return; select(t); });
     t.tab.addEventListener('click', function (e) { if (e.target.closest('.tx')) close(t); });
