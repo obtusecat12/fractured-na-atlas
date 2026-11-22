@@ -19,6 +19,7 @@
     facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : Math.max(0, 1 - (f.eta || b.days) / b.days) }, f); }),
     laws: {}, mail: [], promises: D.promises.map(function (p) { return Object.assign({}, p); }),
     sim: { arr: 1240, cap0: 930, stock: 34, newT: 3, rec: 0, acc: { trust: 0, panic: 0 }, over: false },
+    staff: { county: 34, vol: 0, train: [], ot: false }, teams: [], trade: {}, aid: {}, press: [], presserDay: -9,
     st: { ctl: { gov: 46, sec: 22, adem: 32 }, rel: { gov: 50, sec: 45 }, fin: null },
     flags: {}, seen: {}, chain: [], votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
   };
@@ -122,7 +123,12 @@
       '<div>' + L('物资储备', 'Reserve') + '<b' + (sd < 10 ? ' class="bad"' : '') + '>' + L(sd + ' 天', sd + ' days') + '</b></div><div>' + L('安置容量', 'Housing') + '<b>' + simCap().toLocaleString() + '</b></div>' +
       '<div>' + L('失业率（10月）', 'Unemployment (Oct)') + '<b>15.7%</b></div><div>' + L('县财政', 'County funds') + '<b>' + money(Math.round(S.funds.county)) + '</b></div></div></div>';
     var c = S.st.ctl, r = S.st.rel, NM = { gov: ['州长办公室', "Governor's Office"], sec: ['州应急委员会', 'State Emergency Council'], adem: ['州应急管理局', 'ADEM'] }, WHO = { gov: ['州长 简·布鲁尔', 'Gov. Jan Brewer'], sec: ['州长任主席 · 14 名成员', 'Chaired by the governor · 14 members'], adem: ['隶属应急与军事事务部 · 联邦拨款渠道', 'Under DEMA · federal funding channel'] };
-    h += sect(L('凤凰城', 'Phoenix'), '<span>' + L('州层权力', 'State power') + '</span>') + '<div class="stbar">' + STK.map(function (k) { return '<i style="width:' + c[k].toFixed(1) + '%;background:' + P(k === 'adem' ? 'fed' : k).color + '"></i>'; }).join('') + '</div>';
+    var hol = holiday(), nh = nextHoliday(), wdz = '日一二三四五六'[S.date.getDay()];
+    h += '<div class="row calrow">' + ico('sheet') + '<div><div class="t">' + (hol ? L(hol[0] + ' · 县政府休息', hol[1] + ' · county offices closed') : ([0, 6].indexOf(S.date.getDay()) >= 0 ? L('周末 · 县员工半数到岗', 'Weekend · half the county staff in') : L('工作日', 'Workday'))) + '</div>' + (nh ? '<div class="s">' + L('下一个假日：' + (+nh[0].slice(5, 7)) + '月' + (+nh[0].slice(8)) + '日 ' + nh[1][0], 'Next holiday: ' + nh[0].slice(5) + ' ' + nh[1][1]) + '</div>' : '') + '</div></div>';
+    h += sect(L('报纸', 'Newspapers'), S.day - S.presserDay >= 3 ? '<a href="#" data-presser="1">' + L('开发布会', 'Hold a press conference') + '</a>' : '<span>' + L('发布会三天一次', 'One press conference every 3 days') + '</span>');
+    if (!S.press.length) h += '<div class="row"><div class="s">' + L('怀特山独立报周二、周五出版；论坛新闻报和纳瓦霍-霍皮观察家报周三出版。', 'White Mountain Independent comes out Tuesday and Friday; The Tribune-News and Navajo-Hopi Observer on Wednesday.') + '</div></div>';
+    S.press.slice(0, 4).forEach(function (n) { h += '<div class="row bc"><div class="tm">' + n.d.slice(5) + '</div><div><div class="t" style="font-size:12px">' + LA(PAPERS[n.p]) + '</div><div class="s">' + LA(n.t) + '</div></div></div>'; });
+    h += '</div>' + sect(L('凤凰城', 'Phoenix'), '<span>' + L('州层权力', 'State power') + '</span>') + '<div class="stbar">' + STK.map(function (k) { return '<i style="width:' + c[k].toFixed(1) + '%;background:' + P(k === 'adem' ? 'fed' : k).color + '"></i>'; }).join('') + '</div>';
     STK.forEach(function (k) { var rv = k === 'adem' ? S.stand.fed : r[k]; h += '<div class="row strow"><i class="sw" style="background:' + P(k === 'adem' ? 'fed' : k).color + '"></i><div><div class="t">' + LA(NM[k]) + ' <b>' + Math.round(c[k]) + '%</b></div><div class="s">' + LA(WHO[k]) + ' · ' + L('与本县关系 ', 'Relations ') + Math.round(rv) + '</div></div></div>'; });
     h += '</div>' + sect(L('承诺', 'Promises'));
     S.promises.forEach(function (p, i) { h += '<div class="row ri">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + LA(p.by) + ' · <span class="left">' + L('剩 ' + p.left + ' 天', p.left + ' days left') + '</span> · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
@@ -141,14 +147,15 @@
     var h = sect(L('相邻政府', 'Neighbouring governments'), '<span>' + L('共 ' + (seen.length + 1) + ' 个', (seen.length + 1) + ' total') + '</span>');
     seen.forEach(function (r) {
       h += '<div class="row ri" data-region="' + r.id + '">' + ico(r.res ? 'ppl' : 'globe') + '<div><div class="t"><a href="#">' + L(r.zh, r.en) + '</a></div><div class="s">' + LA(r.seat) + ' · ' + chip(r.stance) + L('病例 ', 'Cases ') + r.cases + (r.ref ? ' · ' + L('外来 ', 'Arrivals ') + r.ref.toLocaleString() : '') + '</div>' +
-        '<div class="lk"><a href="#" data-zr="' + r.id + '">' + L('放大', 'Zoom') + '</a> - <a href="#">' + L('贸易', 'Trade') + '</a> - <a href="#">' + L('派联络员', 'Send liaison') + '</a></div></div></div>';
+        '<div class="lk"><a href="#" data-zr="' + r.id + '">' + L('放大', 'Zoom') + '</a> - ' + (S.trade[r.id] > S.day - 7 ? '<span class="s">' + L('本周已买过', 'Bought this week') + '</span>' : '<a href="#" data-trade="' + r.id + '">' + L('买 3 天物资 $45K', 'Buy 3 days of supplies, $45K') + '</a>') + ' - ' + (S.teams.some(function (t) { return t.rid === r.id; }) ? '<span class="s">' + L('外勤队在途', 'Team on the road') + '</span>' : '<a href="#" data-team="' + r.id + '">' + L('派外勤队', 'Send a field team') + '</a>') + ' - ' + (S.aid[r.id] ? '<span class="s">' + L('已签互助协议', 'Mutual aid signed') + '</span>' : '<a href="#" data-aid="' + r.id + '">' + L('签互助协议', 'Sign mutual aid') + '</a>') + '</div></div></div>';
     });
     var f = region.Maricopa;
     h += '<div class="row" data-region="Maricopa"><div class="t"><a href="#">' + L('联邦控制区', 'Federal zone') + '</a></div><div class="s">' + L('凤凰城 · 马里科帕、皮纳尔、格雷厄姆、格林利', 'Phoenix · Maricopa, Pinal, Graham, Greenlee') + '</div></div>';
     h += '</div>' + sect(L('情况不明', 'No information'));
-    D.regions.filter(function (r) { return !r.seen; }).forEach(function (r) { h += '<div class="row"><div class="t" style="color:#676767">' + L(r.zh, r.en) + '</div><div class="s">' + LA(r.status) + ' · <a href="#">' + L('派外勤 »', 'Send team »') + '</a></div></div>'; });
+    D.regions.filter(function (r) { return !r.seen; }).forEach(function (r) { h += '<div class="row"><div class="t" style="color:#676767">' + L(r.zh, r.en) + '</div><div class="s">' + LA(r.status) + ' · ' + (S.teams.some(function (t) { return t.rid === r.id; }) ? L('外勤队在途', 'Team on the road') : '<a href="#" data-team="' + r.id + '">' + L('派外勤 »', 'Send team »')) + '</a></div></div>'; });
     h += '</div>' + sect(L('外勤', 'Field teams'));
-    D.teams.forEach(function (t) { h += '<div class="row"><div class="t">' + L(t.zh, t.en) + '</div><div class="s">' + LA(t.where) + '</div></div>'; });
+    if (!S.teams.length) h += '<div class="row"><div class="s">' + L('没有在外的外勤队。每队 4 人、$6K，保留地 2 天、邻县 3 天回来。', 'No teams out. Each takes 4 staff and $6K; 2 days to a reservation, 3 to a county.') + '</div></div>';
+    S.teams.forEach(function (t) { var r = region[t.rid]; h += '<div class="row"><div class="t">' + L('外勤队 → ' + r.zh, 'Team → ' + r.en) + '</div><div class="s">' + L('还要 ' + t.days + ' 天', t.days + ' days left') + '</div></div>'; });
     return h + '</div>';
   }
   function vt0(l) { var v = S.votes[l.id]; return v ? v.yes + '–' + (5 - v.yes) : ''; }
@@ -198,6 +205,10 @@
     var h = sect(L('资金', 'Funds')) + '<div class="funds">';
     ['fed', 'navajo', 'lds', 'county'].forEach(function (k) { h += '<span>' + LA(P(k).short) + '</span><span class="fb"><i style="width:' + Math.min(100, S.funds[k] / 10) + '%;background:' + P(k).color + '"></i></span><b>' + money(S.funds[k]) + '</b>'; });
     h += '</div></div>';
+    var sf = S.staff, ops = opsStaff(), busy = S.facilities.reduce(function (a, f) { return a + (!f.done && !f.wait ? (bdefOf(f.b) || {}).crew || 3 : 0); }, 0);
+    h += sect(L('人手', 'Staff'), '<span>' + (isNight() ? L('夜间', 'Night') : L('白天', 'Day')) + '</span>') + '<div class="stats"><div>' + L('县员工', 'County staff') + '<b>' + sf.county + '</b></div><div>' + L('志愿者', 'Volunteers') + '<b>' + Math.round(sf.vol) + '</b></div><div>' + L('设施运营', 'Running sites') + '<b' + (ops > staffTotal() ? ' class="bad"' : '') + '>' + ops + '</b></div><div>' + L('施工中', 'On builds') + '<b>' + busy + '</b></div><div>' + L('空闲', 'Free') + '<b>' + Math.max(0, staffTotal() - ops - busy) + '</b></div></div>' +
+      '<div class="lk" style="padding:4px 10px 8px"><a href="#" data-cert="1">' + L('开一期社区应急队（CERT）培训', 'Run a CERT class') + '</a> <span class="s">$8K · ' + L('3 天 · 志愿者 +6', '3 days · +6 volunteers') + (sf.train.length ? ' · ' + L('培训中 ' + sf.train.length + ' 期', sf.train.length + ' in class') : '') + '</span><br>' +
+      '<label style="color:#000"><input type="checkbox" data-ot="1"' + (sf.ot ? ' checked' : '') + '> ' + L('夜间加班施工', 'Night shifts on builds') + '</label> <span class="s">' + L('约 $53/人·小时', 'about $53 per worker-hour') + '</span></div></div>';
     var cat = null;
     D.buildings.forEach(function (b) {
       if (cat !== b.cat) { if (cat) h += '</div>'; cat = b.cat; h += sect(LA(D.bcats[cat])); }
@@ -261,17 +272,74 @@
   }
   var STAGE = [['放线', 'Staking'], ['场地平整', 'Grading'], ['基础', 'Foundation'], ['主体施工', 'Framing'], ['收尾', 'Finishing']];
   var CSTAGE = [['清场', 'Clearing out'], ['清场', 'Clearing out'], ['改造', 'Refitting'], ['改造', 'Refitting'], ['验收', 'Inspection']];
+  // ---------- 人手 · 昼夜 ----------
+  function isNight() { return S.hour >= 19 || S.hour < 6; }
+  function opsStaff() { return S.facilities.reduce(function (a, f) { var b = bdefOf(f.b); return a + (f.done && b ? b.ops || 0 : 0); }, 0) + S.teams.length * 4; }
+  function staffTotal() { var off = holiday() || [0, 6].indexOf(S.date.getDay()) >= 0; return Math.round(S.staff.county * (off && !S.staff.ot ? .5 : 1)) + Math.round(S.staff.vol); }
+  // ---------- 日历 ----------
+  var HOL = { '2009-11-11': ['退伍军人节', 'Veterans Day'], '2009-11-26': ['感恩节', 'Thanksgiving'], '2009-11-27': ['感恩节次日', 'Day after Thanksgiving'], '2009-12-25': ['圣诞节', 'Christmas Day'], '2010-01-01': ['元旦', "New Year's Day"] };
+  function holiday() { return HOL[ymdOf(S.date)]; }
+  function nextHoliday() { var t = ymdOf(S.date), k = Object.keys(HOL).filter(function (d) { return d > t; })[0]; return k ? [k, HOL[k]] : null; }
+  // ---------- 外勤队 · 贸易 · 互助协议 ----------
+  function teamsDay() {
+    S.teams = S.teams.filter(function (t) {
+      if (--t.days > 0) return true; var r = region[t.rid]; if (!r) return false;
+      r.seen = true; r.date = ymdOf(S.date); S.sim.stock = Math.min(stockMax(), S.sim.stock + 1);
+      notice(L('外勤队从' + r.zh + '回来：情况已更新，带回 1 天物资。', 'Field team back from ' + r.en + ': report updated, 1 day of supplies brought back.')); FOG.dirty(); return false;
+    });
+    if (S.date.getDay() === 1) Object.keys(S.aid).forEach(function () { S.sim.stock = Math.min(stockMax(), S.sim.stock + .6); S.funds.county -= 8; S.econ.wk.exp += 8; });
+  }
+  // ---------- 报纸 ----------
+  var PAPERS = { wmi: ['怀特山独立报', 'White Mountain Independent'], tn: ['论坛新闻报', 'The Tribune-News'], nho: ['纳瓦霍-霍皮观察家报', 'Navajo-Hopi Observer'] };
+  function headline(paper) {
+    var uh = unhoused(), sm = S.sim, hol = nextHoliday(), c = [], done = S.facilities.filter(function (f) { return f.done && f.got === undefined; })[0];
+    if (done) { done.got = S.day; c.push([[done.name[0] + '投入使用', done.name[1] + ' opens'], 1]); }
+    if (uh > 300) c.push([[uh + ' 人仍在等安置，县里说拖车还在路上', uh + ' still waiting for housing; county says trailers are coming'], -1]);
+    if (sm.stock < 10) c.push([['物资只够 ' + Math.round(sm.stock) + ' 天，超市限购瓶装水', 'Supplies down to ' + Math.round(sm.stock) + ' days; stores limit bottled water'], -1]);
+    if (sm.newT > 12) c.push([['新增病例上升，诊所排队到停车场', 'New cases rise; clinic line reaches the parking lot'], -1]);
+    if (S.flags.adem_cmd) c.push([['州应急管理局联络官接手县应急行动中心', 'ADEM liaison takes over county EOC'], -1]);
+    if (paper === 'nho') c.push([['窗岩：族议会讨论保留地边界的检查站', 'Window Rock: council debates checkpoints at the reservation line'], 0]);
+    if (paper === 'wmi') c.push([['肖洛商会：感恩节前客流比去年少', 'Show Low chamber: pre-holiday shoppers down from last year'], 0]);
+    if (paper === 'tn') c.push([['霍尔布鲁克镇议会延期讨论水费', 'Holbrook council puts off water rate talks'], 0]);
+    if (hol) c.push([[hol[1][0] + '活动照常举行，镇上募集罐头', hol[1][0] + ' events go ahead; towns collect canned food'], 1]);
+    c.push([['高中橄榄球周五晚照常比赛', 'High school football goes ahead Friday night'], 1]);
+    var last = S.press.filter(function (n) { return n.p === paper; })[0], k = ['wmi', 'tn', 'nho'].indexOf(paper), pick = c[k % c.length];
+    if (last && pick[0][0] === last.t[0]) pick = c[(k + 1) % c.length];
+    return pick;
+  }
+  function LA2(p, i) { return p[i] || p[0]; }
+  function pressDay() {
+    var wd = S.date.getDay(), list = []; if (wd === 2 || wd === 5) list.push('wmi'); if (wd === 3) list.push('tn', 'nho');
+    list.forEach(function (k) { var h = headline(k); S.press.unshift({ p: k, d: ymdOf(S.date), t: h[0] }); if (h[1] < 0) nudge('panic', .4); else nudge('trust', .3); });
+    S.press = S.press.slice(0, 6);
+  }
+  function crewFree() { return Math.max(0, staffTotal() - opsStaff()); }
+  function crewPlan() { // 按开工顺序分配施工人手；夜里不开加班就全部停工
+    var free = crewFree(), night = isNight();
+    S.facilities.forEach(function (f) { if (f.done) return; var c = (bdefOf(f.b) || {}).crew || 3; f.wait = night && !S.staff.ot ? 'night' : (free >= c ? '' : 'crew'); if (!f.wait) free -= c; });
+  }
+  function otCost() { return S.facilities.reduce(function (a, f) { return a + (!f.done && !f.wait ? (bdefOf(f.b) || {}).crew || 3 : 0); }, 0) * .053; } // 加班费约 $53/人·小时（含 1.5 倍）
+  function calDay() {
+    var h = holiday(); if (h) { notice(L('今天是' + h[0] + '，县政府休息，员工只有一半到岗。', 'Today is ' + h[1] + '. County offices are closed; half the staff is in.')); nudge('trust', .5); }
+    var t = ymdOf(S.date); if (t >= '2009-11-24' && t <= '2009-11-29') S.sim.arr += 6; // 感恩节前后 I-40 车流多
+  }
+  function staffDay() {
+    var s = S.staff; s.train = s.train.filter(function (t) { if (--t.days > 0) return true; s.vol += t.n; notice(L('社区应急队培训结业：志愿者 +', 'CERT class graduates: volunteers +') + t.n); return false; });
+    if (S.trust < 40) s.vol = Math.max(0, s.vol - .3); else if (S.trust > 65) s.vol += .1;
+    if (opsStaff() > staffTotal()) { nudge('trust', -.3); }
+  }
   function buildHour() {
-    var ch = false;
+    var ch = false; crewPlan();
+    if (isNight() && S.staff.ot) { var oc = otCost(); S.funds.county -= oc; S.econ.wk.exp += oc; }
     S.facilities.forEach(function (f) {
-      if (f.done) return; var bd = bdefOf(f.b), days = f.days || (bd && bd.days) || 2, k0 = MAP.stageKey(f);
+      if (f.done || f.wait) return; var bd = bdefOf(f.b), days = f.days || (bd && bd.days) || 2, k0 = MAP.stageKey(f);
       f.progress = Math.min(1, (f.progress || 0) + 1 / (days * 24)); f.eta = Math.ceil((1 - f.progress) * days);
       if (f.progress >= 1) { f.done = true; onBuilt(f); }
       if (MAP.stageKey(f) !== k0) { MAP.invalidate(f.ll); ch = true; }
     });
     if (ch) { syncFac(); draw(); if (S.tab === 'build') render(); }
   }
-  function stageName(f) { return LA((f.conv ? CSTAGE : STAGE)[MAP.stageOf(f.progress || 0)]); }
+  function stageName(f) { if (f.wait === 'night') return L('夜间停工', 'Stopped for the night'); if (f.wait === 'crew') return L('等人手', 'Waiting for crew'); return LA((f.conv ? CSTAGE : STAGE)[MAP.stageOf(f.progress || 0)]); }
   function onBuilt(f) {
     var b = f.b;
     if (b === 'clinic') apply({ trust: 3 }); if (b === 'check') apply({ panic: -1, trust: -1 });
@@ -446,6 +514,7 @@
     if (sat) satTiles(); else baseMap();
     // fog over unseen counties
     MAP.R.counties.forEach(function (c) { if (seen(c.n)) return; poly(c.p, true); cx.save(); cx.clip(); cx.fillStyle = '#DCD9D3'; cx.fillRect(0, 0, W, H); fogTiles(); cx.restore(); });
+    if (sat) nightShade();
     if (!sat || mode === 'hyb') overlay(sat);
     if (S.placing && hover) ghost();
     scale(); knob();
@@ -456,6 +525,22 @@
     cx.strokeStyle = '#CFCBC4'; cx.lineWidth = 1; cx.fillStyle = '#9C988F'; cx.font = '11px Arial'; cx.textAlign = 'center';
     for (var x = ox - 256; x < W; x += 256) for (var y = oy - 256; y < H; y += 256) { cx.strokeRect(x + .5, y + .5, 256, 256); cx.fillText(T('很抱歉，此缩放级别下', 'We are sorry, but we don\'t'), x + 128, y + 120); cx.fillText(T('该区域没有影像。', 'have imagery at this zoom level.'), x + 128, y + 135); }
   }
+  // 夜色：19 点到 6 点卫星图压暗，镇上的路灯和夜间施工的照明灯亮起；黄昏和清晨各一小时过渡
+  var lastNL = -1;
+  function nightLevel() { var h = S.hour; return h >= 20 || h < 5 ? 1 : h === 19 ? .55 : h === 5 ? .5 : h === 6 ? .2 : h === 18 ? .2 : 0; }
+  function nightShade() {
+    var a = nightLevel(); if (!a) return;
+    cx.save(); cx.globalCompositeOperation = 'multiply'; cx.fillStyle = 'rgba(' + Math.round(255 - 205 * a) + ',' + Math.round(255 - 195 * a) + ',' + Math.round(255 - 150 * a) + ',1)'; cx.fillRect(0, 0, W, H); cx.restore();
+    if (V.z < 12) return;
+    cx.save(); cx.globalCompositeOperation = 'lighter'; var m = MAP.mpp(V.z), step = Math.max(35, 45 * m / 3);
+    MAP.HW.forEach(function (h) {
+      if (h.h === 'track' || h.h === 'path' || h.h === 'footway') return;
+      for (var i = 0; i < h.ll.length; i++) { if (MAP.hash(i, h.ll.length, 31) > (h.h === 'residential' ? .45 : .8)) continue; var q = px(h.ll[i]); if (q[0] < -10 || q[1] < -10 || q[0] > W + 10 || q[1] > H + 10) continue; glow(q[0], q[1], Math.max(1.5, 14 / m), 'rgba(255,196,110,' + (.55 * a) + ')'); }
+    });
+    S.facilities.forEach(function (f) { var q = px(f.ll); if (!f.done && !f.wait) glow(q[0], q[1], Math.max(3, 40 / m), 'rgba(235,240,255,' + (.7 * a) + ')'); else if (f.done) glow(q[0], q[1], Math.max(2, 22 / m), 'rgba(255,210,140,' + (.5 * a) + ')'); });
+    cx.restore();
+  }
+  function glow(x, y, r, c) { var gr = cx.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, c); gr.addColorStop(1, 'rgba(0,0,0,0)'); cx.fillStyle = gr; cx.fillRect(x - r, y - r, r * 2, r * 2); }
   function satTiles() {
     var x0 = Math.floor((V.x - W / 2) / 256), y0 = Math.floor((V.y - H / 2) / 256), x1 = Math.floor((V.x + W / 2) / 256), y1 = Math.floor((V.y + H / 2) / 256);
     MAP.clearQueue();
@@ -685,13 +770,19 @@
   function startEvent() { return CONTENT.events.filter(function (e) { return e.start; })[0]; }
   function eventDialog(e) { e = e || startEvent(); S.curEv = e; taskDialog({ icon: e.icon || 'info', title: LA(e.title), body: LA(e.body), links: e.opts.map(function (o, i) { return { attr: 'data-ev="' + i + '"', t: LA(o.t), n: LA(o.fx || CONTENT.fx(o.do)) }; }), foot: e.foot ? LA(e.foot) : null }); }
   document.addEventListener('click', function (e) {
-    var a = e.target.closest('a,button,[data-town],[data-region],[data-b],[data-mail]'); if (!a || a.closest('#logon')) return;
+    var a = e.target.closest('a,button,[data-town],[data-region],[data-b],[data-mail],[data-ot]'); if (!a || a.closest('#logon')) return;
     var holder = e.target.closest('[data-b],[data-region],[data-town],[data-mail]'); if (a.tagName === 'A' && !Object.keys(a.dataset).length && holder && holder.contains(a)) { e.preventDefault(); a = holder; }
     var ds = a.dataset;
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
     if (ds.tab) { S.tab = ds.tab; render(); return; }
     if (a.id === 'openatm') { openAtm(); return; }
     if (a.id === 'savebtn') { var ok = saveGame(SAVE_KEY); $('#ntext').innerHTML = ok ? L('已保存：', 'Saved: ') + dateStr() : L('保存失败：浏览器不允许本地存储。', 'Could not save: local storage is blocked.'); $('#notice').hidden = false; return; }
+    if (ds.presser) { S.presserDay = S.day; var dv = Math.max(-4, Math.min(2, -(S.trust - 35) / 8)); nudge('panic', dv); notice(dv < 0 ? L('发布会开完，电话热线来电少了。', 'Press conference done; fewer calls to the hotline.') : L('发布会上被追问，记者不太买账。', 'Reporters pushed back hard at the press conference.')); render(); return; }
+    if (ds.trade) { if (S.funds.county < 45) return; S.funds.county -= 45; S.econ.wk.exp += 45; S.trade[ds.trade] = S.day; S.sim.stock = Math.min(stockMax(), S.sim.stock + 3); render(); return; }
+    if (ds.team) { if (crewFree() < 4 || S.funds.county < 6) { notice(L('人手或经费不够，派不出外勤队。', 'Not enough staff or money for a field team.')); return; } S.funds.county -= 6; var rr = region[ds.team]; S.teams.push({ rid: ds.team, days: rr && rr.res ? 2 : 3 }); render(); return; }
+    if (ds.aid) { S.aid[ds.aid] = S.day; var ra = region[ds.aid]; if (ra && ra.stance && S.stand[ra.stance] != null) apply((function () { var o = {}; o[ra.stance] = 2; return o; })()); render(); return; }
+    if (ds.cert) { if (S.funds.county < 8) return; S.funds.county -= 8; S.staff.train.push({ n: 6, days: 3 }); render(); return; }
+    if (ds.ot) { S.staff.ot = !S.staff.ot; crewPlan(); render(); return; }
     if (ds.endr) { location.reload(); return; }
     if (ds.endc) { $('#dlgwrap').hidden = true; return; }
     if (ds.atsw) { if (atm.st === 'busy') return; atm.mode = atm.mode === 'in' ? 'out' : 'in'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); return; }
@@ -747,6 +838,7 @@
     if (S.sim.over) return;
     S.hour++;
     buildHour();
+    if (nightLevel() !== lastNL) { lastNL = nightLevel(); draw(); }
     if (S.hour >= 24) {
       S.hour = 0; S.day++; S.date = new Date(S.date.getTime() + 864e5); S.dstand = { fed: 0, navajo: 0, lds: 0 };
       S.promises.forEach(function (p) { p.left--; if (p.left === 0) apply({ trust: -8 }); }); S.promises = S.promises.filter(function (p) { return p.left > 0; });
@@ -755,7 +847,7 @@
       simDay(); econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
       contentDay();
-      stateDay(); syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) saveGame(AUTO_KEY);
+      stateDay(); staffDay(); teamsDay(); pressDay(); calDay(); syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) saveGame(AUTO_KEY);
     }
     clock();
   }

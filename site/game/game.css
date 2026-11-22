@@ -243,3 +243,4 @@ body.l-en #barl.tabs a .en{display:inline!important}body.l-en #barl.tabs a .zh{d
 .stats b.bad{color:#c42b1c}
 .pbar{height:4px;margin:3px 0 1px;background:#e3e9f2;border:1px solid #c5d2e3;border-radius:2px;overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(#7fd36b,#2f9e2a)}
 .stbar{display:flex;height:10px;margin:6px 10px 6px;border:1px solid #9aa9bd;border-radius:2px;overflow:hidden}.stbar i{display:block;height:100%}.strow{display:flex;gap:6px;align-items:flex-start}.strow .sw{flex:none;width:9px;height:9px;margin-top:4px}
+.calrow{display:flex;gap:6px;align-items:flex-start}

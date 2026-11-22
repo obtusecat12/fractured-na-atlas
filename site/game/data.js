@@ -97,14 +97,14 @@ var DATA = {
   ],
   // 建筑。size = 米 / metres. convert = 只能改建现有建筑
   buildings: [
-    { id: 'clinic', cat: 'life', zh: '模块化诊所', en: 'Modular clinic', cost: 180, days: 4, fund: ['fed', 'county'], size: [24, 12], fx: ['信任 +3', 'Trust +3'], roof: '#d8d7d1' },
-    { id: 'trailers', cat: 'life', zh: '旅行拖车安置点', en: 'Travel trailer site', cost: 320, days: 5, fund: ['fed', 'lds'], size: [70, 46], fx: ['安置 120 人', 'Houses 120'], roof: '#e4e3de', grid: true },
-    { id: 'warehouse', cat: 'life', zh: '物资仓库', en: 'Supply warehouse', cost: 140, days: 3, fund: ['lds', 'county'], size: [40, 20], fx: ['储备 +20 天', 'Reserve +20 days'], roof: '#a9adad' },
-    { id: 'shelter', cat: 'life', zh: '改建为收容所', en: 'Convert to shelter', cost: 45, days: 2, fund: ['lds', 'county', 'navajo'], convert: true, fx: ['安置 80 人', 'Houses 80'] },
-    { id: 'check', cat: 'ctrl', zh: '体温检查点', en: 'Temperature checkpoint', cost: 60, days: 1, fund: ['fed', 'county'], size: [14, 8], fx: ['恐慌 −1 · 信任 −1', 'Panic −1 · Trust −1'], roof: '#f1efe8', road: true },
-    { id: 'isolation', cat: 'ctrl', zh: '改建为隔离点', en: 'Convert to isolation site', cost: 90, days: 2, fund: ['fed'], convert: true, fx: ['收治 40 人', 'Holds 40'] },
-    { id: 'tower', cat: 'info', zh: '无线电铁塔', en: 'Radio tower', cost: 110, days: 3, fund: ['navajo', 'county'], size: [4, 4], fx: ['视野 +40 公里', 'Sight +40 km'], roof: '#9a9a96', tower: true },
-    { id: 'office', cat: 'info', zh: '联络办公室', en: 'Liaison office', cost: 50, days: 2, fund: ['navajo', 'lds', 'fed'], convert: true, fx: ['可见对方内部派系', "Shows the other side's factions"] }
+    { id: 'clinic', crew: 6, ops: 4, cat: 'life', zh: '模块化诊所', en: 'Modular clinic', cost: 180, days: 4, fund: ['fed', 'county'], size: [24, 12], fx: ['信任 +3', 'Trust +3'], roof: '#d8d7d1' },
+    { id: 'trailers', crew: 8, ops: 2, cat: 'life', zh: '旅行拖车安置点', en: 'Travel trailer site', cost: 320, days: 5, fund: ['fed', 'lds'], size: [70, 46], fx: ['安置 120 人', 'Houses 120'], roof: '#e4e3de', grid: true },
+    { id: 'warehouse', crew: 6, ops: 2, cat: 'life', zh: '物资仓库', en: 'Supply warehouse', cost: 140, days: 3, fund: ['lds', 'county'], size: [40, 20], fx: ['储备 +20 天', 'Reserve +20 days'], roof: '#a9adad' },
+    { id: 'shelter', crew: 3, ops: 3, cat: 'life', zh: '改建为收容所', en: 'Convert to shelter', cost: 45, days: 2, fund: ['lds', 'county', 'navajo'], convert: true, fx: ['安置 80 人', 'Houses 80'] },
+    { id: 'check', crew: 4, ops: 4, cat: 'ctrl', zh: '体温检查点', en: 'Temperature checkpoint', cost: 60, days: 1, fund: ['fed', 'county'], size: [14, 8], fx: ['恐慌 −1 · 信任 −1', 'Panic −1 · Trust −1'], roof: '#f1efe8', road: true },
+    { id: 'isolation', crew: 3, ops: 3, cat: 'ctrl', zh: '改建为隔离点', en: 'Convert to isolation site', cost: 90, days: 2, fund: ['fed'], convert: true, fx: ['收治 40 人', 'Holds 40'] },
+    { id: 'tower', crew: 4, ops: 0, cat: 'info', zh: '无线电铁塔', en: 'Radio tower', cost: 110, days: 3, fund: ['navajo', 'county'], size: [4, 4], fx: ['视野 +40 公里', 'Sight +40 km'], roof: '#9a9a96', tower: true },
+    { id: 'office', crew: 2, ops: 1, cat: 'info', zh: '联络办公室', en: 'Liaison office', cost: 50, days: 2, fund: ['navajo', 'lds', 'fed'], convert: true, fx: ['可见对方内部派系', "Shows the other side's factions"] }
   ],
   bcats: { life: ['民生', 'Services'], ctrl: ['管控', 'Control'], info: ['通讯', 'Communications'] },
   // 开局已有 / existing at start. ll = lon,lat
