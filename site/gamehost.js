@@ -14,7 +14,7 @@
   var pr = null;
   function proj() { if (pr) return pr; var P = D.proj; pr = d3.geoConicEqualArea().parallels(P.parallels).rotate(P.rotate).scale(P.scale).translate(P.translate); return pr; }
   function toAtlas() {
-    if (!inGame) return; inGame = false;
+    if (!inGame) return; inGame = false; leftAt = performance.now();
     try { var G = GW().GAME; G.setSpeed && G.setSpeed(0); } catch (e) {}
     body.classList.add('fna-atlas');
     var p = proj(), a = p([NAV.w, NAV.n]), b = p([NAV.e, NAV.s]), cx = (a[0] + b[0]) / 2, cy = (a[1] + b[1]) / 2, hw = (b[0] - a[0]) * .6, hh = (b[1] - a[1]) * .6;
@@ -26,13 +26,19 @@
     if (inGame) return; inGame = true; body.classList.remove('fna-atlas');
     fr.style.visibility = ''; fr.classList.remove('out'); try { fr.focus(); GW().GAME && GW().GAME.fromAtlas && GW().GAME.fromAtlas(); } catch (e) {}
   }
-  // 在全国地图上放大到纳瓦霍县：进入游戏
+  // 在全国地图上放大回纳瓦霍县：只在用户正在放大时判断，刚缩出来的 1.5 秒内不判断；
+  // 视野宽度小于 6 经度、且纳瓦霍县落在视野中间区域就回到游戏（原来要求中心点恰好在县内且宽度 < 2.6，很难对准）
+  var leftAt = 0, lastK = 0;
   setInterval(function () {
-    if (inGame || !started || !S || !S.t || S.gesture) return;
-    var p = proj(), l = p.invert(S.t.invert([0, S.h / 2])), r = p.invert(S.t.invert([S.w, S.h / 2])), c = p.invert(S.t.invert([S.w / 2, S.h / 2]));
-    if (!l || !r || !c) return;
-    if (r[0] - l[0] < 2.6 && c[0] > NAV.w && c[0] < NAV.e && c[1] > NAV.s && c[1] < NAV.n) toGame();
-  }, 250);
+    if (inGame || !started || !S || !S.t || S.gesture) { lastK = S && S.t ? S.t.k : 0; return; }
+    var k = S.t.k, zoomingIn = k > lastK * 1.001; lastK = k;
+    if (!zoomingIn || performance.now() - leftAt < 1500) return;
+    var p = proj(), l = p.invert(S.t.invert([0, S.h / 2])), r = p.invert(S.t.invert([S.w, S.h / 2]));
+    if (!l || !r || r[0] - l[0] > 6) return;
+    var a = S.t.apply(p([NAV.w, NAV.n])), b = S.t.apply(p([NAV.e, NAV.s]));
+    var x0 = S.w * .2, x1 = S.w * .8, y0 = S.h * .2, y1 = S.h * .8;
+    if (b[0] > x0 && a[0] < x1 && b[1] > y0 && a[1] < y1) toGame();
+  }, 200);
   // Gmail 作为 Chrome 标签页
   var GM_FAV = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect x="1" y="3" width="14" height="10" fill="#fff" stroke="#b3b3b3"/><path d="M1.5 3.5 8 9l6.5-5.5" fill="none" stroke="#d93025" stroke-width="1.6"/></svg>');
   window.CWSITES = window.CWSITES || {};

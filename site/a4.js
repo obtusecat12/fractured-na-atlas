@@ -5,21 +5,8 @@
   document.querySelectorAll('#gnav a, #guser a, #sopts, #terms').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); });
   });
-  // ---- about / help / learn more: shown in the left panel ----
-  function about(e) {
-    if (e) e.preventDefault();
-    closeInfo();
-    $('results').innerHTML = '<div id="rhead"><b>关于此地图 About this map</b><span></span></div>' +
-      '<div style="padding:4px 8px 10px;line-height:17px">' +
-      '<p style="margin:0 0 8px">这是一张架空的北美政治地图：美国已分裂为十三个势力，其余地区陷入“无线电静默”。</p>' +
-      '<p style="margin:0 0 12px;color:#676767">An alternate-history political map of North America: the United States has split into thirteen factions; everything else has gone to radio silence.</p>' +
-      '<p style="margin:0 0 4px"><b>使用方法 How to use</b></p>' +
-      '<p style="margin:0 0 4px">拖动地图平移，滚轮或滑块缩放，点击势力查看资料。<br><span style="color:#676767">Drag to pan, scroll or use the slider to zoom, click a faction for details.</span></p>' +
-      '<p style="margin:0 0 4px">“夜景”使用 NASA 黑色大理石 2016 夜间灯光数据，按各势力的供电状况调整。<br><span style="color:#676767">“Night” uses NASA Black Marble 2016 night-lights data, adjusted for each faction\'s power situation.</span></p>' +
-      '<p style="margin:10px 0 0"><a href="#" id="backlist">&laquo; 返回势力列表 Back to factions</a></p></div>';
-    $('backlist').onclick = function (e) { e.preventDefault(); buildSidebar(''); };
-  }
-  ['help', 'aboutlink', 'learn'].forEach(function (id) { if ($(id)) $(id).onclick = about; });
+  // help / learn more: period chrome, do nothing
+  ['help', 'learn'].forEach(function (id) { if ($(id)) $(id).onclick = function (e) { e.preventDefault(); }; });
 
   // ---- link / print / send ----
   function viewStr() {
