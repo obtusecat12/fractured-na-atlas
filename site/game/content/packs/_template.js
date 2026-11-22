@@ -4,6 +4,24 @@ CONTENT.add({
   id: 'my-pack',                                   // 包名，全局唯一
   title: ['包的中文名', 'Pack title in English'],
   by: 'author',
+  // 新建筑（可选）。会出现在“建设”栏对应分类里，效果全部由下面的字段决定，不用改引擎。
+  // bcats: { med: ['医疗', 'Medical'] },          // 想要新分类时再加；默认可用 life / ctrl / info
+  buildings: [
+    {
+      id: 'my-building', cat: 'life',              // 小写加连字符，不能和已有建筑重名
+      zh: '建筑中文名', en: 'Building name',
+      cost: 60, days: 2,                           // 千美元；工期天数（按小时推进）
+      fund: ['fed', 'county'],                     // 可出资方：fed navajo lds county
+      size: [30, 14],                              // 新建的占地（米）；改建现有房子则写 convert: true，不写 size
+      // convert: true,
+      look: 'tents',                               // 卫星图外观：flat（默认平顶房）tents trailers tanks pad
+      roof: '#f0efe8',
+      crew: 3, ops: 2,                             // 施工队人数；建成后运营占用人数
+      fx: ['恐慌每天 −0.1', 'Panic −0.1/day'],     // 侧栏显示的效果说明，要和下面的数值一致
+      run: { daily: { panic: -.1 } },              // 建成后每天生效：house 安置人数 · hold 隔离床位 · stockCap 储备上限天数 · supply 每天物资 · use 每天消耗 · recover 康复率 · spread 传播（-0.1 = −10%） · sight 视野公里 · vol 每周志愿者 · otCut 加班费折扣 · daily {panic, trust}
+      onBuilt: { trust: 1 }                        // 完工时一次：trust panic fed navajo lds county stock
+    }
+  ],
   events: [
     {
       id: 'unique-event-id',                       // 全局唯一，小写加连字符

@@ -2,6 +2,9 @@
 (function () {
   'use strict';
   var D = DATA, $ = function (s) { return document.querySelector(s); };
+  (CONTENT.buildings || []).forEach(function (b) { if (!D.buildings.some(function (x) { return x.id === b.id; })) D.buildings.push(b); });
+  if (CONTENT.bcats) Object.keys(CONTENT.bcats).forEach(function (k) { if (!D.bcats[k]) D.bcats[k] = CONTENT.bcats[k]; });
+  D.buildings.sort(function (a, b) { var o = Object.keys(D.bcats); return o.indexOf(a.cat) - o.indexOf(b.cat); });
   function L(zh, en) { return '<span class="zh">' + zh + '</span><span class="bi"> </span><span class="en">' + en + '</span>'; }
   function LA(a) { return L(a[0], a[1]); }
   function T(zh, en) { return LANG.mode() === 'en' ? en : zh; }
@@ -16,7 +19,7 @@
     trust: 61, panic: 24, stand: { fed: 52, navajo: 47, lds: 58 }, dstand: { fed: 0, navajo: 0, lds: 0 },
     funds: { fed: 900, navajo: 250, lds: 400, county: ECON.checking },
     econ: { lgip: ECON.lgip, flood: ECON.flood, accr: 0, loans: [], pending: [], used: {}, wk: { rev: 0, exp: 0 }, last: null, decl: false },
-    facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : Math.max(0, 1 - (f.eta || b.days) / b.days) }, f); }),
+    facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, look: b.look, progress: f.done ? 1 : Math.max(0, 1 - (f.eta || b.days) / b.days) }, f); }),
     laws: {}, mail: [], promises: D.promises.map(function (p) { return Object.assign({}, p); }),
     sim: { arr: 1240, cap0: 930, stock: 34, newT: 3, rec: 0, acc: { trust: 0, panic: 0 }, over: false },
     staff: { county: 34, vol: 0, train: [], ot: false }, teams: [], trade: {}, aid: {}, press: [], presserDay: -9,
@@ -38,7 +41,7 @@
     if (d.funds) Object.keys(d.funds).forEach(function (k) { S.funds[k] += d.funds[k]; });
     [].concat(d.flag || []).forEach(function (f) { S.flags[f] = true; });
     [].concat(d.unflag || []).forEach(function (f) { delete S.flags[f]; });
-    if (d.build) { var b = d.build, bd = bdefOf(b.b); if (bd) { S.facilities.push({ b: b.b, ll: b.ll, name: b.name, fund: b.fund || bd.fund[0], done: false, eta: b.eta || bd.days, size: b.size || bd.size, roof: bd.roof, grid: bd.grid, tower: bd.tower, progress: 0 }); syncFac(); MAP.invalidate(b.ll); } }
+    if (d.build) { var b = d.build, bd = bdefOf(b.b); if (bd) { S.facilities.push({ b: b.b, ll: b.ll, name: b.name, fund: b.fund || bd.fund[0], done: false, eta: b.eta || bd.days, size: b.size || bd.size, roof: bd.roof, look: bd.look, grid: bd.grid, tower: bd.tower, conv: bd.convert, grid: bd.grid, tower: bd.tower, progress: 0 }); syncFac(); MAP.invalidate(b.ll); } }
     [].concat(d.mail || []).forEach(deliverMail);
     if (d.event) { var q = typeof d.event === 'string' ? { id: d.event, inDays: 0 } : d.event; S.chain.push({ id: q.id, at: S.day + (q.inDays || 0) }); }
     if (d.notice) { $('#ntext').innerHTML = LA(d.notice); $('#notice').hidden = false; }
@@ -229,10 +232,11 @@
   function revWk(r) { return r.lump && r.lump.months.indexOf(S.date.getMonth() + 1) >= 0 ? r.lump.wk : r.wk; }
 
   // ---------- 核心数值：人口、住房、物资、病例 ----------
-  var BUILT = { trailers: 120, shelter: 80 };
+  // 建筑效果全部来自 buildings[].run（每天生效）和 onBuilt（完工一次），内容包可以定义新建筑
+  function runSum(k) { return S.facilities.reduce(function (s, f) { var b = f.done && bdefOf(f.b); return s + (b && b.run && b.run[k] || 0); }, 0); }
   function nBuilt(id) { return S.facilities.filter(function (f) { return f.b === id && f.done; }).length; }
-  function simCap() { return S.sim.cap0 + S.facilities.reduce(function (s, f) { return s + (f.done ? BUILT[f.b] || 0 : 0); }, 0); }
-  function stockMax() { return 45 + 20 * nBuilt('warehouse'); }
+  function simCap() { return S.sim.cap0 + runSum('house'); }
+  function stockMax() { return 45 + runSum('stockCap'); }
   function unhoused() { return Math.max(0, S.sim.arr - simCap()); }
   function totalCases() { return D.towns.reduce(function (s, t) { return s + t.cases; }, 0); }
   function nudge(k, v) { var a = S.sim.acc; a[k] += v; var w = a[k] > 0 ? Math.floor(a[k]) : Math.ceil(a[k]); if (w) { a[k] -= w; var d = {}; d[k] = w; apply(d); } }
@@ -250,11 +254,11 @@
     var inn = Math.round(drift + quota + (MAP.hash(S.day, 3, 11) - .5) * 8); sm.arr += inn;
     // 物资（天数）
     var use = 1 + unhoused() / 2000;
-    var get = (L.bnsf ? .4 : 0) + .25 * nBuilt('warehouse') + (wd === 1 && S.stand.fed >= 40 ? 5 : 0);
+    var get = (L.bnsf ? .4 : 0) + runSum('supply') - runSum('use') + (wd === 1 && S.stand.fed >= 40 ? 5 : 0);
     sm.stock = Math.max(0, Math.min(stockMax(), sm.stock - use + get));
     // 病例：每个镇单独增长，隔离点收走一部分传染源，诊所加快康复
-    var iso = 40 * nBuilt('isolation'), act = totalCases(), spreadable = Math.max(0, act - iso) / Math.max(1, act);
-    var r = .055 * spreadMult(), rec = 1 / 18 + .01 * nBuilt('clinic'), newT = 0, recT = 0;
+    var iso = runSum('hold'), act = totalCases(), spreadable = Math.max(0, act - iso) / Math.max(1, act);
+    var r = .055 * spreadMult() * Math.max(.4, 1 + runSum('spread')), rec = 1 / 18 + runSum('recover'), newT = 0, recT = 0;
     D.towns.forEach(function (t, i) {
       var seed = t.cases > 0 ? t.cases : (MAP.hash(S.day, i, 5) < .04 * (1 + act / 200) ? 1 : 0);
       var n = Math.round(t.cases * spreadable * r * (.7 + MAP.hash(S.day, i, 9) * .6)) + (t.cases ? 0 : seed);
@@ -269,6 +273,8 @@
     if (sm.stock < 10) nudge('panic', .8); if (sm.stock < 3) { nudge('panic', 1.5); nudge('trust', -1.5); }
     if (newT > 12) nudge('panic', newT / 30); else if (S.panic > 20 && sm.stock >= 10 && uh <= 300) nudge('panic', -.4);
     if (L.presser) nudge('panic', -.2);
+    S.facilities.forEach(function (f) { var b = f.done && bdefOf(f.b); if (b && b.run && b.run.daily) Object.keys(b.run.daily).forEach(function (k) { nudge(k, b.run.daily[k]); }); });
+    if (wd === 1) S.staff.vol += runSum('vol');
   }
   var STAGE = [['放线', 'Staking'], ['场地平整', 'Grading'], ['基础', 'Foundation'], ['主体施工', 'Framing'], ['收尾', 'Finishing']];
   var CSTAGE = [['清场', 'Clearing out'], ['清场', 'Clearing out'], ['改造', 'Refitting'], ['改造', 'Refitting'], ['验收', 'Inspection']];
@@ -318,7 +324,7 @@
     var free = crewFree(), night = isNight();
     S.facilities.forEach(function (f) { if (f.done) return; var c = (bdefOf(f.b) || {}).crew || 3; f.wait = night && !S.staff.ot ? 'night' : (free >= c ? '' : 'crew'); if (!f.wait) free -= c; });
   }
-  function otCost() { return S.facilities.reduce(function (a, f) { return a + (!f.done && !f.wait ? (bdefOf(f.b) || {}).crew || 3 : 0); }, 0) * .053; } // 加班费约 $53/人·小时（含 1.5 倍）
+  function otCost() { return S.facilities.reduce(function (a, f) { return a + (!f.done && !f.wait ? (bdefOf(f.b) || {}).crew || 3 : 0); }, 0) * .053 * Math.max(.4, 1 - runSum('otCut')); } // 加班费约 $53/人·小时（含 1.5 倍）
   function calDay() {
     var h = holiday(); if (h) { notice(L('今天是' + h[0] + '，县政府休息，员工只有一半到岗。', 'Today is ' + h[1] + '. County offices are closed; half the staff is in.')); nudge('trust', .5); }
     var t = ymdOf(S.date); if (t >= '2009-11-24' && t <= '2009-11-29') S.sim.arr += 6; // 感恩节前后 I-40 车流多
@@ -341,10 +347,10 @@
   }
   function stageName(f) { if (f.wait === 'night') return L('夜间停工', 'Stopped for the night'); if (f.wait === 'crew') return L('等人手', 'Waiting for crew'); return LA((f.conv ? CSTAGE : STAGE)[MAP.stageOf(f.progress || 0)]); }
   function onBuilt(f) {
-    var b = f.b;
-    if (b === 'clinic') apply({ trust: 3 }); if (b === 'check') apply({ panic: -1, trust: -1 });
-    if (b === 'warehouse') S.sim.stock = Math.min(stockMax(), S.sim.stock + 5);
-    if (b === 'tower') D.regions.forEach(function (r) { var c = COUNTY[r.county]; if (c && !r.seen && Math.hypot((c.c[0] - f.ll[0]) * 91, (c.c[1] - f.ll[1]) * 111) < 90) r.seen = true; });
+    var b = bdefOf(f.b) || {}, o = b.onBuilt || {}, ap = {};
+    Object.keys(o).forEach(function (k) { if (k === 'stock') S.sim.stock = Math.min(stockMax(), S.sim.stock + o[k]); else ap[k] = o[k]; });
+    if (Object.keys(ap).length) apply(ap);
+    var km = b.run && b.run.sight; if (km) D.regions.forEach(function (r) { var c = COUNTY[r.county]; if (c && !r.seen && Math.hypot((c.c[0] - f.ll[0]) * 91, (c.c[1] - f.ll[1]) * 111) < km) r.seen = true; });
     FOG.dirty();
   }
   function checkEnd() {
@@ -742,7 +748,7 @@
     if (MAP.buildingAt(ll[0], ll[1])) return hint(L('这里已经有建筑了。', 'Something is already built here.'));
     if (S.funds[f] < b.cost) return hint(L(P(f).short[0] + '的钱不够。', 'Not enough ' + P(f).short[1] + ' money.'));
     S.funds[f] -= b.cost;
-    var nf = { b: b.id, ll: ll, name: [b.zh, b.en], fund: f, done: false, eta: b.days, size: b.size, roof: b.roof, grid: b.grid, tower: b.tower, progress: 0 };
+    var nf = { b: b.id, ll: ll, name: [b.zh, b.en], fund: f, done: false, eta: b.days, size: b.size, roof: b.roof, grid: b.grid, tower: b.tower, look: b.look, progress: 0 };
     S.facilities.push(nf); if (f !== 'county') { var d = {}; d[f] = 2; apply(d); }
     endPlace(); syncFac(); MAP.invalidate(ll); render(); draw();
   }

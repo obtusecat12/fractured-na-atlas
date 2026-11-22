@@ -107,3 +107,23 @@ when: {
 - 效果 `do.rel`：本县与州长办公室、委员会的关系，如 `rel: { sec: 2 }`。与应急管理局的关系仍用 `fed`。
 - 条件 `when.min/max` 可用 `gov` `sec` `adem`（权力百分比）和 `relgov` `relsec`。
 - 州层主线在 `packs/state-phoenix.js`，2009-12-22 由游戏按权力最高的一方结算。其他内容包不要写这条线。
+
+
+## 建筑（buildings）
+
+内容包可以加新建筑，格式见 `content/packs/_template.js` 的 `buildings`。效果只能用这些字段，引擎会自动计算：
+
+| 字段 | 意思 |
+|---|---|
+| `run.house` | 安置人数 |
+| `run.hold` | 隔离床位（这些病例不再传播） |
+| `run.stockCap` / `run.supply` / `run.use` | 物资储备上限（天）/ 每天补充 / 每天消耗 |
+| `run.recover` | 每天康复率加成（诊所是 0.01） |
+| `run.spread` | 传播倍率，−0.15 即 −15%，所有建筑合计最多 −60% |
+| `run.sight` | 完工时揭开多少公里内的邻居情报 |
+| `run.vol` | 每周一新增志愿者 |
+| `run.otCut` | 夜间加班费折扣 |
+| `run.daily` | 每天的 `panic` / `trust` 变化 |
+| `onBuilt` | 完工时一次：`trust` `panic` `fed` `navajo` `lds` `county` `stock` |
+
+`look` 决定卫星图外观：`flat` 平顶房（默认）、`tents` 帐篷、`trailers` 拖车、`tanks` 储罐、`pad` 停机坪。`crew` 是施工队人数，`ops` 是建成后要占用的运营人手。`fx` 是侧栏的效果说明，要和数值一致。事件里的 `do.build.b` 也可以用包里定义的新建筑。

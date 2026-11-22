@@ -2,7 +2,7 @@
 // 格式说明见 docs/CONTENT_GUIDE.md；node tools/validate_content.js 可离线检查。
 (function (root) {
   'use strict';
-  var C = { events: [], mail: [], broadcasts: [], errors: [], packs: [] };
+  var C = { events: [], mail: [], broadcasts: [], buildings: [], bcats: {}, errors: [], packs: [] };
   var POWERS = ['fed', 'navajo', 'lds', 'county', 'nb', 'gov', 'sec'];
   var STATS = ['trust', 'panic', 'fed', 'navajo', 'lds'];
   var ICONS = ['info', 'warn', 'q', 'err', 'imp', 'ppl', 'globe', 'build', 'law', 'bank', 'mail', 'pkg', 'sheet'];
@@ -52,6 +52,22 @@
       if (m.date && !isDate(m.date)) err(pid, w, 'date 格式应为 YYYY-MM-DD');
       (m.acts || []).forEach(function (a, j) { if (!isPair(a.t)) err(pid, w + ' acts[' + j + ']', 't 需要 [中,英]'); checkDo(pid, w + ' acts[' + j + ']', a.do); });
       C.mail.push(m);
+    });
+    var RUN = ['house', 'hold', 'stockCap', 'supply', 'use', 'recover', 'spread', 'sight', 'vol', 'otCut', 'daily'], LOOKS = ['flat', 'tents', 'trailers', 'tanks', 'pad'];
+    Object.keys(pack.bcats || {}).forEach(function (k) { if (!isPair(pack.bcats[k])) err(pid, 'bcats.' + k, '需要 [中,英]'); else C.bcats[k] = pack.bcats[k]; });
+    (pack.buildings || []).forEach(function (b, i) {
+      var w = 'buildings[' + i + '] ' + (b.id || '');
+      if (!b.id || !/^[a-z0-9_-]+$/.test(b.id)) err(pid, w, 'id 只用小写字母、数字、-、_'); else if (ids['b:' + b.id]) err(pid, w, 'id 重复'); ids['b:' + b.id] = 1;
+      if (typeof b.zh !== 'string' || typeof b.en !== 'string') err(pid, w, '需要 zh、en 名称');
+      if (!(b.cost >= 0) || !(b.days >= 1)) err(pid, w, 'cost ≥ 0（千美元），days ≥ 1');
+      if (!Array.isArray(b.fund) || !b.fund.length || b.fund.some(function (f) { return ['fed', 'navajo', 'lds', 'county'].indexOf(f) < 0; })) err(pid, w, 'fund 只能用 fed/navajo/lds/county');
+      if (!b.convert && !(Array.isArray(b.size) && b.size.length === 2)) err(pid, w, '新建需要 size [长,宽]（米）；改建现有房子用 convert:true');
+      if (b.look && LOOKS.indexOf(b.look) < 0) err(pid, w, 'look 只能是 ' + LOOKS.join('/'));
+      if (!isPair(b.fx)) err(pid, w, 'fx 需要 [中,英]（侧栏显示的效果说明）');
+      Object.keys(b.run || {}).forEach(function (k) { if (RUN.indexOf(k) < 0) err(pid, w, '未知 run 字段 "' + k + '"，可用：' + RUN.join('/')); });
+      if (b.run && b.run.daily) Object.keys(b.run.daily).forEach(function (k) { if (['panic', 'trust'].indexOf(k) < 0) err(pid, w, 'run.daily 只能用 panic/trust'); });
+      Object.keys(b.onBuilt || {}).forEach(function (k) { if (STATS.indexOf(k) < 0 && k !== 'stock' && k !== 'county') err(pid, w, 'onBuilt 只能用 ' + STATS.join('/') + '/stock/county'); });
+      C.buildings.push(b);
     });
     (pack.broadcasts || []).forEach(function (b, i) { if (!isPair(b.name) || !isPair(b.t)) err(pid, 'broadcasts[' + i + ']', '需要 name、t [中,英]'); C.broadcasts.push(b); });
     if (root.console && C.errors.length) C.errors.forEach(function (e) { console.warn('[content] ' + e); });

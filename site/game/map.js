@@ -213,6 +213,12 @@ var MAP = (function () {
     function fence(pad) { g.save(); g.setLineDash([2 * u, 1.2 * u]); g.strokeStyle = 'rgba(70,70,70,.75)'; g.lineWidth = Math.max(.5, .4 * u); g.strokeRect(x0 - pad, y0 - pad, w + pad * 2, h + pad * 2); g.restore(); }
     function dirt(pad) { rect('rgba(205,186,152,.96)', x0 - pad, y0 - pad, w + pad * 2, h + pad * 2); g.strokeStyle = 'rgba(150,128,98,.55)'; g.lineWidth = Math.max(.4, .5 * u); for (var i = 0; i < 6; i++) { var yy = y0 - pad + (h + pad * 2) * (i + .5) / 6 + (hash(sd, i, 1) - .5) * 2 * u; g.beginPath(); g.moveTo(x0 - pad, yy); g.bezierCurveTo(x0 + w * .3, yy + 2 * u, x0 + w * .7, yy - 2 * u, x0 + w + pad, yy + (hash(sd, i, 2) - .5) * 3 * u); g.stroke(); } }
     function shadow() { rect('rgba(38,34,30,.5)', x0 - 2.2 * u, y0 - 3 * u, w, h); }
+    function look(k, fr) {
+      if (k === 'tents') { var n = Math.max(1, Math.round(Math.floor(w / (7 * u)) * fr)); for (var i = 0; i < n; i++) { var tx = x0 + 1.5 * u + i * 7 * u; rect('rgba(30,28,24,.4)', tx - .8 * u, y0 + 1.2 * u, 5.5 * u, 5.5 * u); rect(i % 3 === 1 ? '#3f6fb0' : '#f4f3ee', tx, y0 + 2 * u, 5.5 * u, 5.5 * u); } for (var j = 0; j < 6 * fr; j++) rect('#33302b', x0 + (3 + j * 3.5) * u, y0 + h - 3 * u, 1 * u, 1 * u); }
+      else if (k === 'trailers') { var m2 = Math.max(1, Math.round(Math.floor(w / (9 * u)) * fr)); for (var i2 = 0; i2 < m2; i2++) { var ax = x0 + 1.5 * u + i2 * 9 * u; rect('rgba(30,28,24,.45)', ax - .8 * u, y0 + 1 * u, 3 * u, h - 2 * u); rect(f.roof || '#ecece7', ax, y0 + 1.5 * u, 3 * u, h - 3 * u); rect('#7a7f86', ax + .8 * u, y0 + 2 * u, 1.4 * u, 1.4 * u); } }
+      else if (k === 'tanks') { var t = Math.max(1, Math.round(3 * fr)); for (var i3 = 0; i3 < t; i3++) { var cx2 = x0 + w * (.2 + .3 * i3), cy2 = y0 + h * .35; g.fillStyle = 'rgba(30,28,24,.45)'; g.beginPath(); g.arc(cx2 - .8 * u, cy2 - 1 * u, 3 * u, 0, 7); g.fill(); g.fillStyle = '#e8e6df'; g.beginPath(); g.arc(cx2, cy2, 3 * u, 0, 7); g.fill(); } if (fr > .6) { rect('#3c5a3a', x0 + w * .15, y0 + h * .72, 7 * u, 3 * u); rect('#3c5a3a', x0 + w * .55, y0 + h * .72, 7 * u, 3 * u); } }
+      else if (k === 'pad') { g.strokeStyle = 'rgba(250,248,240,.9)'; g.lineWidth = Math.max(.6, .6 * u); g.beginPath(); g.arc(q[0], q[1], Math.min(w, h) * .38 * Math.max(.3, fr), 0, 7); g.stroke(); if (fr > .5) { g.fillStyle = 'rgba(250,248,240,.95)'; g.font = 'bold ' + Math.max(6, 9 * u) + 'px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('H', q[0], q[1]); } }
+    }
 
     // ---- 改建现有建筑：施工时屋顶盖蓝色防水布、旁边停垃圾箱和货车；完工后各有标识 ----
     if (f.conv) {
@@ -226,6 +232,8 @@ var MAP = (function () {
       }
       if (f.b === 'isolation') { g.save(); g.setLineDash([1.5 * u, 1 * u]); g.strokeStyle = 'rgba(240,210,60,.9)'; g.lineWidth = Math.max(.6, .5 * u); g.strokeRect(x0 - 6 * u, y0 - 6 * u, w + 12 * u, h + 12 * u); g.restore(); veh(x0 + w + 2 * u, y0 + 2 * u, '#f2f2ee', 7); }
       else if (f.b === 'shelter') { for (var k = 0; k < 3; k++) { rect('rgba(30,28,24,.4)', x0 + w + 3 * u + k * 6 * u - .6 * u, y0 + 2 * u - .4 * u, 4.6 * u, 4.6 * u); rect('#f4f3ef', x0 + w + 3 * u + k * 6 * u, y0 + 2 * u, 4.6 * u, 4.6 * u); } veh(x0 - 12 * u, y0 + h + 3 * u, '#e5c64a', 11); }
+      else if (f.b === 'vaccine') { for (var v = 0; v < 8; v++) rect('#2d2a26', x0 + w + 2 * u, y0 + v * 2 * u, .9 * u, .9 * u); rect('#f4f3ee', x0 - 7 * u, y0 + 1 * u, 5 * u, 5 * u); rect('#c8302c', x0 - 5 * u, y0 + 2 * u, 1 * u, 3 * u); rect('#c8302c', x0 - 6 * u, y0 + 3 * u, 3 * u, 1 * u); }
+      else if (f.b === 'volcenter') { veh(x0 - 7 * u, y0 + h + 2 * u, '#c9c3b2'); veh(x0 - 1 * u, y0 + h + 2 * u, '#7f2a24'); veh(x0 + 5 * u, y0 + h + 2 * u, '#efefea'); }
       else if (f.b === 'office') { g.fillStyle = '#e8e8e4'; g.beginPath(); g.arc(x0 + w * .75, y0 + h * .3, 1.2 * u, 0, 7); g.fill(); veh(x0 - 7 * u, y0 + h + 2 * u, '#2f3a52'); }
       return;
     }
@@ -254,6 +262,11 @@ var MAP = (function () {
         if (fr > 0) { g.strokeStyle = 'rgba(30,28,26,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(q[0] - 30 * u * fr, q[1] - 40 * u * fr); g.stroke(); rect('#9a9a96', q[0] - 1.2 * u, q[1] - 1.2 * u, 2.4 * u, 2.4 * u); }
         veh(q[0] + 8 * u, q[1] + 6 * u, '#d9a21e', 9); return;
       }
+      if (f.look === 'tents' || f.look === 'pad' || f.look === 'tanks' || f.look === 'trailers') { // 简易设施：场地铺好后逐个摆放
+        rect(f.look === 'pad' ? '#9a9892' : 'rgba(184,172,148,.97)', x0, y0, w, h);
+        if (fr > 0) look(f.look, fr);
+        veh(x0 - 8 * u, y0 + h + 3 * u, '#efefea', 8); return;
+      }
       if (f.b === 'check') { // 检查点：先铺路面，再搭帐篷、摆锥桶
         rect('#8d8b86', x0, y0, w, h); g.strokeStyle = 'rgba(250,250,245,.8)'; g.lineWidth = Math.max(.4, .25 * u); g.beginPath(); g.moveTo(x0, q[1]); g.lineTo(x0 + w, q[1]); g.stroke();
         if (fr > 0) rect('#f1efe6', x0 + 2 * u, y0 + 1 * u, (w - 4 * u) * fr, h * .4);
@@ -276,6 +289,7 @@ var MAP = (function () {
       return;
     }
     if (f.tower) { g.strokeStyle = 'rgba(30,28,26,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(q[0] - 30 * u, q[1] - 40 * u); g.stroke(); g.strokeStyle = 'rgba(30,28,26,.25)'; [[0, -1], [.87, .5], [-.87, .5]].forEach(function (d) { g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(q[0] + d[0] * 20 * u, q[1] + d[1] * 20 * u); g.stroke(); }); rect('#9a9a96', q[0] - 2 * u, q[1] - 2 * u, 4 * u, 4 * u); return; }
+    if (f.look === 'tents' || f.look === 'pad' || f.look === 'tanks' || f.look === 'trailers') { rect(f.look === 'pad' ? '#9a9892' : 'rgba(190,178,152,.95)', x0, y0, w, h); look(f.look, 1); return; }
     if (f.b === 'check') { rect('#8d8b86', x0 - 2 * u, y0, w + 4 * u, h); shadow(); rect(f.roof || '#f1efe6', x0, y0, w, h * .5); for (var c3 = 0; c3 < 5; c3++) rect('#e8662a', x0 - 6 * u + c3 * 2.5 * u, y0 + h * .75, .9 * u, .9 * u); veh(x0 + w + 2 * u, y0 + h * .55, '#f4f4f0'); return; }
     shadow(); rect(f.roof || '#d8d7d1', x0, y0, w, h);
     g.strokeStyle = 'rgba(80,76,70,.6)'; g.lineWidth = .8; g.strokeRect(x0, y0, w, h);
