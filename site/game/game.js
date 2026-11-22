@@ -239,7 +239,7 @@
     var inn = Math.round(drift + quota + (MAP.hash(S.day, 3, 11) - .5) * 8); sm.arr += inn;
     // 物资（天数）
     var use = 1 + unhoused() / 2000;
-    var get = (L.bnsf ? .4 : 0) + .25 * nBuilt('warehouse') + (wd === 1 && S.stand.fed >= 40 ? 4 : 0);
+    var get = (L.bnsf ? .4 : 0) + .25 * nBuilt('warehouse') + (wd === 1 && S.stand.fed >= 40 ? 5 : 0);
     sm.stock = Math.max(0, Math.min(stockMax(), sm.stock - use + get));
     // 病例：每个镇单独增长，隔离点收走一部分传染源，诊所加快康复
     var iso = 40 * nBuilt('isolation'), act = totalCases(), spreadable = Math.max(0, act - iso) / Math.max(1, act);
@@ -254,9 +254,9 @@
     sm.newT = newT; sm.rec += recT;
     // 对民心的影响
     var uh = unhoused();
-    if (uh > 200) { nudge('panic', uh / 600); nudge('trust', -uh / 900); }
-    if (sm.stock < 10) nudge('panic', 1); if (sm.stock < 3) { nudge('panic', 2); nudge('trust', -2); }
-    if (newT > 10) nudge('panic', newT / 15); else if (newT === 0 && S.panic > 15) nudge('panic', -.5);
+    if (uh > 300) { nudge('panic', (uh - 300) / 500 + .2); nudge('trust', -(uh - 300) / 900 - .1); }
+    if (sm.stock < 10) nudge('panic', .8); if (sm.stock < 3) { nudge('panic', 1.5); nudge('trust', -1.5); }
+    if (newT > 12) nudge('panic', newT / 30); else if (S.panic > 20 && sm.stock >= 10 && uh <= 300) nudge('panic', -.4);
     if (L.presser) nudge('panic', -.2);
   }
   var STAGE = [['放线', 'Staking'], ['场地平整', 'Grading'], ['基础', 'Foundation'], ['主体施工', 'Framing'], ['收尾', 'Finishing']];
