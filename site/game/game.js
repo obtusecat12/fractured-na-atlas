@@ -19,6 +19,7 @@
     facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : Math.max(0, 1 - (f.eta || b.days) / b.days) }, f); }),
     laws: {}, mail: [], promises: D.promises.map(function (p) { return Object.assign({}, p); }),
     sim: { arr: 1240, cap0: 930, stock: 34, newT: 3, rec: 0, acc: { trust: 0, panic: 0 }, over: false },
+    st: { ctl: { gov: 46, sec: 22, adem: 32 }, rel: { gov: 50, sec: 45 }, fin: null },
     flags: {}, seen: {}, chain: [], votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
   };
   function bdefOf(id) { return D.buildings.filter(function (b) { return b.id === id; })[0]; }
@@ -42,6 +43,30 @@
     if (d.notice) { $('#ntext').innerHTML = LA(d.notice); $('#notice').hidden = false; }
     if (d.promise) S.promises.push(Object.assign({ by: ['', ''] }, d.promise));
     if (d.broadcast) CONTENT.broadcasts.unshift(d.broadcast);
+    if (d.rel) Object.keys(d.rel).forEach(function (k) { S.st.rel[k] = clamp(S.st.rel[k] + d.rel[k]); });
+    if (d.ctl) ctlShift(d.ctl);
+  }
+  // ---------- 州层：州长办公室 · 州应急委员会 · 州应急管理局（联邦渠道） ----------
+  var STK = ['gov', 'sec', 'adem'];
+  function ctlShift(d) {
+    var c = S.st.ctl; STK.forEach(function (k) { if (d[k]) c[k] = Math.max(3, c[k] + d[k]); });
+    var sum = c.gov + c.sec + c.adem; STK.forEach(function (k) { c[k] = c[k] * 100 / sum; });
+  }
+  function stLead() { var c = S.st.ctl; return STK.reduce(function (a, k) { return c[k] > c[a] ? k : a; }, 'gov'); }
+  function stateDay() {
+    // 应急管理局每天从州长办公室和委员会手里拿走一点权力：恐慌越高越快，派驻联络官后更快，委员会关系好时慢一些
+    var creep = .12 + Math.max(0, S.panic - 40) / 250 + (S.flags.adem_embed ? .1 : 0) - (S.st.rel.sec > 60 ? .05 : 0) - (S.flags.oversight ? .08 : 0);
+    if (creep > 0) ctlShift({ adem: creep, gov: -creep * .7, sec: -creep * .3 });
+    if (ymdOf(S.date) === '2009-12-22' && !S.st.fin) stateFinale();
+  }
+  function stateFinale() {
+    var k = stLead(); S.st.fin = k; S.flags['lead_' + k] = true;
+    var T = {
+      gov: { t: ['州长公告续期', "Governor renews the proclamation"], b: ['布鲁尔州长签署续期公告，州应急行动中心继续由州长办公室统一协调。应急管理局局长调回国民警卫队总部任职，委员会改为每两周开会一次。', "Governor Brewer signs a renewal of the proclamation. The State EOC stays under her office's coordination. The ADEM director is reassigned to Guard headquarters, and the council moves to meeting every two weeks."] },
+      sec: { t: ['州应急委员会接手资金审批', 'State Emergency Council takes over spending approval'], b: ['委员会以 8 票对 3 票通过决议：所有超过 20 万美元的拨款和应急管理局的指令都要先经委员会审查。司法部长特里·戈达德主持日常会议。', 'The council votes 8–3: every allocation above $200,000 and every ADEM directive now goes through council review first. Attorney General Terry Goddard chairs the regular sessions.'] },
+      adem: { t: ['应急管理局统一指挥', 'ADEM takes unified command'], b: ['国务卿肯·贝内特在州长出州期间代行职务时签署的授权没有被撤回。应急管理局据此统一指挥全州 15 个县的应急行动中心，联邦拨款只走应急管理局的账户。', "The authorization Secretary of State Ken Bennett signed as acting governor while the governor was out of state is never withdrawn. ADEM now directs all 15 county EOCs, and federal money moves only through ADEM's accounts."] }
+    }[k];
+    fireEvent({ id: 'st-finale', icon: 'law', title: T.t, body: T.b, opts: [{ t: ['知道了', 'Noted'], do: k === 'adem' ? { fed: 3, trust: -2 } : k === 'sec' ? { rel: { sec: 3 } } : { rel: { gov: 3 } } }] });
   }
   function mailById(id) { return CONTENT.mail.filter(function (m) { return m.id === id; })[0]; }
   function evById(id) { return CONTENT.events.filter(function (e) { return e.id === id; })[0]; }
@@ -51,7 +76,7 @@
     if (w.after && ymd < w.after) return false; if (w.before && ymd > w.before) return false;
     if (w.flags && !w.flags.every(function (f) { return S.flags[f]; })) return false;
     if (w.notFlags && w.notFlags.some(function (f) { return S.flags[f]; })) return false;
-    var cur = { trust: S.trust, panic: S.panic, fed: S.stand.fed, navajo: S.stand.navajo, lds: S.stand.lds, county: S.funds.county, stock: S.sim.stock, unhoused: unhoused(), cases: totalCases(), arrivals: S.sim.arr };
+    var cur = { trust: S.trust, panic: S.panic, fed: S.stand.fed, navajo: S.stand.navajo, lds: S.stand.lds, county: S.funds.county, stock: S.sim.stock, unhoused: unhoused(), cases: totalCases(), arrivals: S.sim.arr, gov: S.st.ctl.gov, sec: S.st.ctl.sec, adem: S.st.ctl.adem, relgov: S.st.rel.gov, relsec: S.st.rel.sec };
     if (w.min && Object.keys(w.min).some(function (k) { return cur[k] < w.min[k]; })) return false;
     if (w.max && Object.keys(w.max).some(function (k) { return cur[k] > w.max[k]; })) return false;
     if (w.chance != null && MAP.hash(S.day, w.chance * 997, 7) > w.chance) return false;
@@ -96,7 +121,10 @@
       '<div>' + L('外来人员', 'Arrivals') + '<b>' + sm.arr.toLocaleString() + '</b></div><div>' + L('等待安置', 'Unhoused') + '<b' + (uh > 200 ? ' class="bad"' : '') + '>' + uh.toLocaleString() + '</b></div>' +
       '<div>' + L('物资储备', 'Reserve') + '<b' + (sd < 10 ? ' class="bad"' : '') + '>' + L(sd + ' 天', sd + ' days') + '</b></div><div>' + L('安置容量', 'Housing') + '<b>' + simCap().toLocaleString() + '</b></div>' +
       '<div>' + L('失业率（10月）', 'Unemployment (Oct)') + '<b>15.7%</b></div><div>' + L('县财政', 'County funds') + '<b>' + money(Math.round(S.funds.county)) + '</b></div></div></div>';
-    h += sect(L('承诺', 'Promises'));
+    var c = S.st.ctl, r = S.st.rel, NM = { gov: ['州长办公室', "Governor's Office"], sec: ['州应急委员会', 'State Emergency Council'], adem: ['州应急管理局', 'ADEM'] }, WHO = { gov: ['州长 简·布鲁尔', 'Gov. Jan Brewer'], sec: ['州长任主席 · 14 名成员', 'Chaired by the governor · 14 members'], adem: ['隶属应急与军事事务部 · 联邦拨款渠道', 'Under DEMA · federal funding channel'] };
+    h += sect(L('凤凰城', 'Phoenix'), '<span>' + L('州层权力', 'State power') + '</span>') + '<div class="stbar">' + STK.map(function (k) { return '<i style="width:' + c[k].toFixed(1) + '%;background:' + P(k === 'adem' ? 'fed' : k).color + '"></i>'; }).join('') + '</div>';
+    STK.forEach(function (k) { var rv = k === 'adem' ? S.stand.fed : r[k]; h += '<div class="row strow"><i class="sw" style="background:' + P(k === 'adem' ? 'fed' : k).color + '"></i><div><div class="t">' + LA(NM[k]) + ' <b>' + Math.round(c[k]) + '%</b></div><div class="s">' + LA(WHO[k]) + ' · ' + L('与本县关系 ', 'Relations ') + Math.round(rv) + '</div></div></div>'; });
+    h += '</div>' + sect(L('承诺', 'Promises'));
     S.promises.forEach(function (p, i) { h += '<div class="row ri">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + LA(p.by) + ' · <span class="left">' + L('剩 ' + p.left + ' 天', p.left + ' days left') + '</span> · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
     h += '</div>' + sect(L('广播', 'Broadcasts'));
     CONTENT.broadcasts.forEach(function (b) { h += '<div class="row bc"><div class="tm">' + b.time + '</div><div><div class="t" style="font-size:12px"><i class="sw" style="display:inline-block;width:8px;height:8px;margin-right:4px;background:' + P(b.ch).color + '"></i>' + LA(b.name) + '</div><div style="font-size:12px">' + LA(b.t) + '</div></div></div>'; });
@@ -254,8 +282,10 @@
   function checkEnd() {
     if (S.sim.over) return; var e = null;
     if (S.trust <= 0) e = { icon: 'err', t: ['纳瓦霍县监事会召开特别会议', 'Navajo County Board of Supervisors holds a special meeting'], b: ['监事会通过决议，免去你的县应急管理主任职务，由副主任暂代。', 'The board votes to remove you as county emergency management director. Your deputy takes over.'] };
+    else if (S.panic >= 100 && stLead() === 'sec') e = { icon: 'err', t: ['州应急委员会派员进驻县应急行动中心', 'State Emergency Council sends a team into the county EOC'], b: ['委员会在州长缺席的情况下宣布纳瓦霍县进入州紧急状态，派出的工作组接管县里的资金审批和安置工作。', 'With the governor absent, the council declares a state emergency in Navajo County. Its team takes over county spending approval and housing.'] };
+    else if (S.panic >= 100 && stLead() === 'adem') e = { icon: 'err', t: ['应急管理局接管县应急行动中心', 'ADEM takes over the county EOC'], b: ['应急管理局依据代理州长签署的授权，直接指挥县应急行动中心。县监事会的决议改为报备。', "ADEM takes direct command of the county EOC under the acting governor's authorization. Board resolutions now only need to be filed with it."] };
     else if (S.panic >= 100) e = { icon: 'err', t: ['州应急管理局接管县应急行动中心', 'State takes over the county EOC'], b: ['州长依据《亚利桑那州修订法规》第 26-303 条宣布纳瓦霍县进入州紧急状态，县应急行动中心改由亚利桑那州应急管理局指挥。', 'The governor declares a state of emergency in Navajo County under A.R.S. § 26-303. The Arizona Division of Emergency Management takes command of the county EOC.'] };
-    else if (ymdOf(S.date) === '2010-01-01') e = { icon: 'info', t: ['2009 年结束', 'End of 2009'], b: ['你撑过了 2009 年。', 'You made it through 2009.'], go: true };
+    else if (ymdOf(S.date) === '2010-01-01') e = { icon: 'info', t: ['2009 年结束', 'End of 2009'], b: [{ gov: '你撑过了 2009 年。州长办公室仍在主导州里的应急工作。', sec: '你撑过了 2009 年。州里的应急拨款现在要先经过委员会。', adem: '你撑过了 2009 年。县里的应急行动现在要向州应急管理局报备。' }[stLead()], { gov: "You made it through 2009. The governor's office still leads the state response.", sec: 'You made it through 2009. State emergency money now goes through the council first.', adem: 'You made it through 2009. County operations now report to ADEM.' }[stLead()]], go: true };
     if (!e) return;
     S.sim.over = !e.go; S.speed = 0;
     var st = L('信任 ' + S.trust + ' · 恐慌 ' + S.panic + ' · 现有病例 ' + totalCases() + ' · 外来人员 ' + S.sim.arr.toLocaleString() + ' · 等待安置 ' + unhoused() + ' · 物资 ' + Math.round(S.sim.stock) + ' 天', 'Trust ' + S.trust + ' · Panic ' + S.panic + ' · Active cases ' + totalCases() + ' · Arrivals ' + S.sim.arr.toLocaleString() + ' · Unhoused ' + unhoused() + ' · Supplies ' + Math.round(S.sim.stock) + ' days');
@@ -725,7 +755,7 @@
       simDay(); econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
       contentDay();
-      syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) saveGame(AUTO_KEY);
+      stateDay(); syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) saveGame(AUTO_KEY);
     }
     clock();
   }

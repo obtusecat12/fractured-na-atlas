@@ -3,10 +3,10 @@
 (function (root) {
   'use strict';
   var C = { events: [], mail: [], broadcasts: [], errors: [], packs: [] };
-  var POWERS = ['fed', 'navajo', 'lds', 'county', 'nb'];
+  var POWERS = ['fed', 'navajo', 'lds', 'county', 'nb', 'gov', 'sec'];
   var STATS = ['trust', 'panic', 'fed', 'navajo', 'lds'];
   var ICONS = ['info', 'warn', 'q', 'err', 'imp', 'ppl', 'globe', 'build', 'law', 'bank', 'mail', 'pkg', 'sheet'];
-  var DO_KEYS = STATS.concat(['county', 'funds', 'flag', 'unflag', 'build', 'mail', 'event', 'notice', 'promise', 'broadcast']);
+  var DO_KEYS = STATS.concat(['county', 'funds', 'flag', 'unflag', 'build', 'mail', 'event', 'notice', 'promise', 'broadcast', 'ctl', 'rel']);
   var ids = {};
   function err(pack, where, msg) { C.errors.push(pack + ' › ' + where + ': ' + msg); }
   function isPair(a) { return Array.isArray(a) && a.length === 2 && typeof a[0] === 'string' && typeof a[1] === 'string' && a[0] && a[1]; }
@@ -17,6 +17,8 @@
       if (DO_KEYS.indexOf(k) < 0) err(p, w, '未知效果 "' + k + '"');
       else if (STATS.indexOf(k) >= 0 || k === 'county') { if (typeof d[k] !== 'number') err(p, w, k + ' 必须是数字'); }
     });
+    if (d.ctl) Object.keys(d.ctl).forEach(function (k) { if (['gov', 'sec', 'adem'].indexOf(k) < 0 || typeof d.ctl[k] !== 'number') err(p, w, 'ctl 只能用 gov/sec/adem，值为数字'); });
+    if (d.rel) Object.keys(d.rel).forEach(function (k) { if (['gov', 'sec'].indexOf(k) < 0 || typeof d.rel[k] !== 'number') err(p, w, 'rel 只能用 gov/sec，值为数字'); });
     if (d.funds) Object.keys(d.funds).forEach(function (k) { if (['fed', 'navajo', 'lds', 'county'].indexOf(k) < 0) err(p, w, 'funds 只能用 fed/navajo/lds/county'); });
     if (d.build && (!d.build.b || !Array.isArray(d.build.ll) || !isPair(d.build.name))) err(p, w, 'build 需要 b、ll[经度,纬度]、name[中,英]');
     if (d.event && !(typeof d.event === 'string' || d.event.id)) err(p, w, 'event 需要事件 id');
@@ -62,6 +64,9 @@
     STATS.forEach(function (k) { if (d[k]) { var s = (d[k] > 0 ? '+' : '−') + Math.abs(d[k]); zh.push(NAMES[k][0] + ' ' + s); en.push(NAMES[k][1] + ' ' + s); } });
     if (d.county) { var m = (d.county > 0 ? '+$' : '$') + Math.abs(d.county) + 'K'; zh.push(m); en.push(m); }
     if (d.funds) Object.keys(d.funds).forEach(function (k) { var v = d.funds[k], s = (v > 0 ? '+$' : '−$') + Math.abs(v) + 'K'; zh.push(NAMES[k] ? NAMES[k][0] + s : s); en.push(NAMES[k] ? NAMES[k][1] + ' ' + s : s); });
+    var CN = { gov: ['州长', 'Governor'], sec: ['委员会', 'Council'], adem: ['应急管理局', 'ADEM'] };
+    if (d.rel) Object.keys(d.rel).forEach(function (k) { var s = (d.rel[k] > 0 ? '+' : '−') + Math.abs(d.rel[k]); zh.push(CN[k][0] + '关系 ' + s); en.push(CN[k][1] + ' ' + s); });
+    if (d.ctl) Object.keys(d.ctl).forEach(function (k) { var s = (d.ctl[k] > 0 ? '+' : '−') + Math.abs(d.ctl[k]); zh.push(CN[k][0] + '权力 ' + s); en.push(CN[k][1] + ' power ' + s); });
     if (d.build) { zh.push('开工：' + d.build.name[0]); en.push('Builds ' + d.build.name[1]); }
     return zh.length ? [zh.join(' · '), en.join(' · ')] : ['无变化', 'No change'];
   }

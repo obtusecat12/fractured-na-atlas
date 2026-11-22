@@ -9,6 +9,9 @@ var DATA = {
     fed:    { zh: '联邦政府', en: 'Federal government', short: ['联邦', 'Federal'], color: '#2F6FDB', via: ['亚利桑那州应急管理局 · 凤凰城', 'Arizona Division of Emergency Management · Phoenix'] },
     navajo: { zh: '纳瓦霍族政府', en: 'Navajo Nation', short: ['纳瓦霍族', 'Navajo Nation'], color: '#B5552B', via: ['纳瓦霍族应急管理部 · 窗岩', 'Navajo Nation Dept. of Emergency Management · Window Rock'] },
     lds:    { zh: '后期圣徒教会', en: 'LDS Church', short: ['教会', 'LDS'], color: '#7A5BB5', via: ['斯诺弗莱克、泰勒、肖洛、霍尔布鲁克、温斯洛、派恩托普-莱克赛德六个支联会', 'Snowflake, Taylor, Show Low, Holbrook, Winslow and Pinetop-Lakeside stakes'] },
+    gov:    { zh: '州长办公室', en: "Governor's Office", short: ['州长', 'Governor'], color: '#B07D1A', via: ['亚利桑那州州长办公室 · 凤凰城西华盛顿街 1700 号', "Arizona Governor's Office · 1700 W Washington St, Phoenix"] },
+    sec:    { zh: '州应急委员会', en: 'State Emergency Council', short: ['委员会', 'Council'], color: '#2C8A84', via: ['亚利桑那州应急委员会 · 凤凰城东麦克道尔路 5636 号', 'Arizona State Emergency Council · 5636 E McDowell Rd, Phoenix'] },
+    nb:     { zh: '邻近机构', en: 'Neighbouring agency', short: ['邻近', 'Nearby'], color: '#7b2f8e' },
     county: { zh: '本县财政', en: 'County general fund', short: ['本县', 'County'], color: '#3A8A3A' }
   },
   // 本县实际能管的城镇（保留地以外）/ towns under county jurisdiction

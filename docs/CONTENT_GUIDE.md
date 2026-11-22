@@ -99,3 +99,11 @@ when: {
 ## 新增可用的条件字段（2026-11-22）
 
 `when.min` / `when.max` 现在还可以用：`stock`（物资储备天数）、`unhoused`（等待安置人数）、`cases`（全县现有病例）、`arrivals`（外来人员累计）。例：`when: { min: { unhoused: 300 } }`。
+
+## 州层字段（2026-11-22）
+
+- 公文 `from` 新增 `gov`（州长办公室）和 `sec`（州应急委员会）。州应急管理局仍用 `fed`。
+- 效果 `do.ctl`：三方权力增减，如 `ctl: { gov: 3, adem: -2 }`（键 gov/sec/adem，游戏会归一到 100%）。
+- 效果 `do.rel`：本县与州长办公室、委员会的关系，如 `rel: { sec: 2 }`。与应急管理局的关系仍用 `fed`。
+- 条件 `when.min/max` 可用 `gov` `sec` `adem`（权力百分比）和 `relgov` `relsec`。
+- 州层主线在 `packs/state-phoenix.js`，2009-12-22 由游戏按权力最高的一方结算。其他内容包不要写这条线。
