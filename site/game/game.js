@@ -647,7 +647,7 @@
     g2.beginPath(); MAP.R.counties.forEach(function (c) { if (!seen(c.n)) return; fogRings(c).forEach(function (r) { r.forEach(function (p, i) { var q = px(p); i ? g2.lineTo(q[0], q[1]) : g2.moveTo(q[0], q[1]); }); g2.closePath(); }); }); g2.fill('nonzero'); g2.lineWidth = 3; g2.strokeStyle = '#fff'; g2.stroke();
     S.facilities.forEach(function (f) { var b = f.done && bdefOf(f.b), km = b && b.run && b.run.sight; if (!km) return; var q = px(f.ll), r = px([f.ll[0] + km / (111.32 * Math.cos(f.ll[1] * Math.PI / 180)), f.ll[1]])[0] - q[0]; g2.beginPath(); g2.arc(q[0], q[1], r, 0, 7); g2.fill(); });
   }
-  FOG.init($('#fogcv'), { view: function () { return V; }, visible: fogVisible });
+  FOG.init($('#fogcv'), { view: function () { return V; }, visible: fogVisible, tint: function () { if (mode === 'map') return null; var n = nightState(); return n.am ? n.am.c.map(function (v) { return v / 255; }) : null; } });
   var NAVAJO = COUNTY.Navajo;
   function seen(n) { if (n === 'Navajo') return true; var r = region[n]; return !!(r && r.seen); }
   function poly(rings, close) { cx.beginPath(); rings.forEach(function (r) { r.forEach(function (p, i) { var q = px(p); i ? cx.lineTo(q[0], q[1]) : cx.moveTo(q[0], q[1]); }); if (close) cx.closePath(); }); }
