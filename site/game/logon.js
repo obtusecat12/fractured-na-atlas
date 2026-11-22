@@ -25,12 +25,23 @@
     clearInterval(spinT);
     if (on) spinT = setInterval(function () { f = (f + 1) % 18; $('#lu-wel .spin').style.backgroundImage = 'url(../cursors/busy_' + (f < 10 ? '0' : '') + f + '.png)'; }, 50);
   }
-  function pick(id) {
+  function pick(id, opt) {
     var u = USERS.filter(function (x) { return x.id === id; })[0];
+    if (u.ok && !opt) {
+      var sv = window.GAME_SAVEINFO && window.GAME_SAVEINFO();
+      if (sv) {
+        $('#lu-one .fr i').style.backgroundImage = 'url(' + u.pic + ')';
+        $('#lu-one .nm').innerHTML = Z(u.zh, u.en);
+        var d = sv.ymd.split('-');
+        $('#lu-one .msg').innerHTML = Z('上次保存：' + d[0] + '年' + (+d[1]) + '月' + (+d[2]) + '日', 'Last saved: ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d[1] - 1] + ' ' + (+d[2]) + ', ' + d[0]);
+        $('#lu-one .lu-row').innerHTML = '<button class="w7b" id="lu-cont">' + Z('继续', 'Continue') + '</button><button class="w7b" id="lu-new">' + Z('新游戏', 'New game') + '</button><button class="w7b" id="lu-back">' + Z('返回', 'Back') + '</button>';
+        show('#lu-one'); $('#lu-cont').focus(); return;
+      }
+    }
     if (u.ok) {
       show('#lu-wel'); spin(true);
       setTimeout(function () { el.classList.add('out'); }, 2200);
-      setTimeout(function () { spin(false); el.hidden = true; if (window.GAME_START) window.GAME_START(u.id); }, 2900);
+      setTimeout(function () { spin(false); el.hidden = true; if (window.GAME_START) window.GAME_START(u.id, { load: opt === 'load' }); }, 2900);
       return;
     }
     $('#lu-one .fr i').style.backgroundImage = 'url(' + u.pic + ')';
@@ -42,7 +53,9 @@
   }
   el.addEventListener('click', function (e) {
     var t = e.target.closest('[data-u]'); if (t) return pick(t.dataset.u);
-    if (e.target.closest('#lu-ok')) return show('#lu-list');
+    if (e.target.closest('#lu-ok') || e.target.closest('#lu-back')) return show('#lu-list');
+    if (e.target.closest('#lu-cont')) return pick('navajo', 'load');
+    if (e.target.closest('#lu-new')) return pick('navajo', 'new');
   });
   el.addEventListener('keydown', function (e) { var t = e.target.closest('[data-u]'); if (t && e.key === 'Enter') pick(t.dataset.u); });
   document.body.classList.add('l-logon');

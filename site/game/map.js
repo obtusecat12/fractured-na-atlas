@@ -202,26 +202,88 @@ var MAP = (function () {
   }
   function mid(a, b) { return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; }
   function cen(a) { var x = 0, y = 0; a.forEach(function (q) { x += q[0]; y += q[1]; }); return [x / a.length, y / a.length]; }
+  // 玩家建筑：按进度分阶段绘制（卫星图俯视）。阶段：放线 → 平整 → 基础 → 主体 → 收尾 → 完工
+  function stageOf(p) { return p < .12 ? 0 : p < .3 ? 1 : p < .5 ? 2 : p < .85 ? 3 : 4; }
   function drawFacility(g, f, q, M) {
-    var w = f.size[0] / M, h = f.size[1] / M;
-    if (f.conv) return; // conversions reuse an existing roof
-    if (!f.done) { // graded pad with tyre tracks, then framing
-      g.fillStyle = 'rgba(212,196,168,.95)'; g.fillRect(q[0] - w / 2 - 3 / M, q[1] - h / 2 - 3 / M, w + 6 / M, h + 6 / M);
-      g.strokeStyle = 'rgba(150,130,104,.6)'; g.lineWidth = .8 / M + .3; for (var i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(q[0] - w / 2, q[1] + i * h / 5); g.lineTo(q[0] + w / 2, q[1] + i * h / 5 + 2 / M); g.stroke(); }
-      if (f.progress > .4) { g.strokeStyle = 'rgba(140,128,110,.9)'; g.lineWidth = .6 / M + .4; g.strokeRect(q[0] - w / 2 + 2 / M, q[1] - h / 2 + 2 / M, w - 4 / M, h - 4 / M); }
+    var w = f.size[0] / M, h = f.size[1] / M, x0 = q[0] - w / 2, y0 = q[1] - h / 2, p = f.done ? 1 : (f.progress || 0), st = stageOf(p);
+    var sd = Math.round(f.ll[0] * 1e4) ^ Math.round(f.ll[1] * 1e4), u = 1 / M; // u = 1 米
+    function rect(c, x, y, ww, hh) { g.fillStyle = c; g.fillRect(x, y, ww, hh); }
+    function veh(x, y, c, len) { rect('rgba(30,28,24,.45)', x - .4 * u, y - .3 * u, (len || 5) * u, 2.2 * u); rect(c, x, y, (len || 5) * u, 2 * u); }
+    function dozer(x, y) { rect('rgba(30,28,24,.5)', x - .5 * u, y - .4 * u, 4 * u, 3 * u); rect('#e2b52a', x, y, 3.6 * u, 2.6 * u); rect('#5a5348', x + 3.6 * u, y - .3 * u, .8 * u, 3.2 * u); }
+    function fence(pad) { g.save(); g.setLineDash([2 * u, 1.2 * u]); g.strokeStyle = 'rgba(70,70,70,.75)'; g.lineWidth = Math.max(.5, .4 * u); g.strokeRect(x0 - pad, y0 - pad, w + pad * 2, h + pad * 2); g.restore(); }
+    function dirt(pad) { rect('rgba(205,186,152,.96)', x0 - pad, y0 - pad, w + pad * 2, h + pad * 2); g.strokeStyle = 'rgba(150,128,98,.55)'; g.lineWidth = Math.max(.4, .5 * u); for (var i = 0; i < 6; i++) { var yy = y0 - pad + (h + pad * 2) * (i + .5) / 6 + (hash(sd, i, 1) - .5) * 2 * u; g.beginPath(); g.moveTo(x0 - pad, yy); g.bezierCurveTo(x0 + w * .3, yy + 2 * u, x0 + w * .7, yy - 2 * u, x0 + w + pad, yy + (hash(sd, i, 2) - .5) * 3 * u); g.stroke(); } }
+    function shadow() { rect('rgba(38,34,30,.5)', x0 - 2.2 * u, y0 - 3 * u, w, h); }
+
+    // ---- 改建现有建筑：施工时屋顶盖蓝色防水布、旁边停垃圾箱和货车；完工后各有标识 ----
+    if (f.conv) {
+      if (!f.done) {
+        var cov = Math.max(.25, p);
+        rect('rgba(46,104,170,.85)', x0, y0, w * cov, h * .55);
+        g.strokeStyle = 'rgba(220,220,215,.8)'; g.lineWidth = Math.max(.4, .3 * u); for (var s = 0; s < w * cov; s += 2 * u) { g.beginPath(); g.moveTo(x0 + s, y0); g.lineTo(x0 + s, y0 + h * .55); g.stroke(); }
+        rect('#3f6d3a', x0 + w + 2 * u, y0 + h - 3 * u, 6 * u, 2.4 * u); veh(x0 - 8 * u, y0 + h + 2 * u, '#efefea', 6);
+        if (st >= 2) veh(x0 + w * .4, y0 + h + 2.5 * u, '#c9c3b2');
+        return;
+      }
+      if (f.b === 'isolation') { g.save(); g.setLineDash([1.5 * u, 1 * u]); g.strokeStyle = 'rgba(240,210,60,.9)'; g.lineWidth = Math.max(.6, .5 * u); g.strokeRect(x0 - 6 * u, y0 - 6 * u, w + 12 * u, h + 12 * u); g.restore(); veh(x0 + w + 2 * u, y0 + 2 * u, '#f2f2ee', 7); }
+      else if (f.b === 'shelter') { for (var k = 0; k < 3; k++) { rect('rgba(30,28,24,.4)', x0 + w + 3 * u + k * 6 * u - .6 * u, y0 + 2 * u - .4 * u, 4.6 * u, 4.6 * u); rect('#f4f3ef', x0 + w + 3 * u + k * 6 * u, y0 + 2 * u, 4.6 * u, 4.6 * u); } veh(x0 - 12 * u, y0 + h + 3 * u, '#e5c64a', 11); }
+      else if (f.b === 'office') { g.fillStyle = '#e8e8e4'; g.beginPath(); g.arc(x0 + w * .75, y0 + h * .3, 1.2 * u, 0, 7); g.fill(); veh(x0 - 7 * u, y0 + h + 2 * u, '#2f3a52'); }
       return;
     }
-    if (f.grid) { // rows of travel trailers
-      g.fillStyle = 'rgba(190,178,152,.95)'; g.fillRect(q[0] - w / 2, q[1] - h / 2, w, h);
-      for (var r = 0; r < 4; r++) for (var cc = 0; cc < 7; cc++) { var x = q[0] - w / 2 + (4 + cc * 9.5) / M, y = q[1] - h / 2 + (4 + r * 11) / M; g.fillStyle = 'rgba(40,36,30,.45)'; g.fillRect(x - 1.5 / M, y - 1.5 / M, 3 / M, 8.5 / M); g.fillStyle = '#e7e6e1'; g.fillRect(x, y, 3 / M, 8.5 / M); }
+
+    // ---- 新建 ----
+    if (!f.done) {
+      if (st === 0) { // 放线：草地上四角木桩和白灰线
+        g.save(); g.setLineDash([2.5 * u, 2 * u]); g.strokeStyle = 'rgba(245,245,240,.85)'; g.lineWidth = Math.max(.5, .35 * u); g.strokeRect(x0, y0, w, h); g.restore();
+        [[x0, y0], [x0 + w, y0], [x0, y0 + h], [x0 + w, y0 + h]].forEach(function (c) { rect('#f6f0d8', c[0] - .6 * u, c[1] - .6 * u, 1.2 * u, 1.2 * u); });
+        veh(x0 - 9 * u, y0 + h + 3 * u, '#efefea'); return;
+      }
+      dirt(3 * u);
+      if (st === 1) { dozer(x0 + w * (.2 + .6 * hash(sd, 0, 7)), y0 + h * .35); dozer(x0 + w * .55, y0 + h * .7); veh(x0 - 10 * u, y0 + h + 4 * u, '#d9d2bf', 7); return; }
+      fence(4 * u);
+      var fr = st === 2 ? 0 : st === 3 ? (p - .5) / .35 : 1;
+      if (f.grid) { // 拖车点：碎石场地 + 水电桩，拖车一排排进场
+        rect('rgba(184,172,148,.97)', x0, y0, w, h);
+        var tot = 28, n = Math.floor(tot * Math.max(0, (p - .45) / .55));
+        for (var r = 0; r < 4; r++) for (var cc = 0; cc < 7; cc++) { var tx = x0 + (4 + cc * 9.5) * u, ty = y0 + (4 + r * 11) * u, idx = r * 7 + cc; rect('#6c675d', tx + 4 * u, ty + 3 * u, .8 * u, .8 * u); if (idx < n) { rect('rgba(40,36,30,.45)', tx - 1.5 * u, ty - 1.5 * u, 3 * u, 8.5 * u); rect('#e7e6e1', tx, ty, 3 * u, 8.5 * u); } }
+        if (n < tot) veh(x0 + w + 3 * u, y0 + h * .4, '#f2f2ee', 12);
+        return;
+      }
+      if (f.tower) { // 铁塔：方形基础 + 三个拉线锚 + 逐渐变长的影子
+        rect('#c9c5bb', q[0] - 2.5 * u, q[1] - 2.5 * u, 5 * u, 5 * u);
+        [[0, -1], [.87, .5], [-.87, .5]].forEach(function (d) { rect('#b8b3a7', q[0] + d[0] * 20 * u - u, q[1] + d[1] * 20 * u - u, 2 * u, 2 * u); });
+        if (fr > 0) { g.strokeStyle = 'rgba(30,28,26,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(q[0] - 30 * u * fr, q[1] - 40 * u * fr); g.stroke(); rect('#9a9a96', q[0] - 1.2 * u, q[1] - 1.2 * u, 2.4 * u, 2.4 * u); }
+        veh(q[0] + 8 * u, q[1] + 6 * u, '#d9a21e', 9); return;
+      }
+      if (f.b === 'check') { // 检查点：先铺路面，再搭帐篷、摆锥桶
+        rect('#8d8b86', x0, y0, w, h); g.strokeStyle = 'rgba(250,250,245,.8)'; g.lineWidth = Math.max(.4, .25 * u); g.beginPath(); g.moveTo(x0, q[1]); g.lineTo(x0 + w, q[1]); g.stroke();
+        if (fr > 0) rect('#f1efe6', x0 + 2 * u, y0 + 1 * u, (w - 4 * u) * fr, h * .4);
+        return;
+      }
+      // 普通房屋：混凝土板 → 钢架 → 屋面从一头铺到另一头
+      rect('#cfcac0', x0, y0, w, h);
+      g.strokeStyle = st === 2 ? 'rgba(120,96,70,.5)' : 'rgba(70,72,76,.75)'; g.lineWidth = Math.max(.4, .3 * u);
+      var step = st === 2 ? 1.5 * u : 4 * u; for (var gx = x0 + step; gx < x0 + w; gx += step) { g.beginPath(); g.moveTo(gx, y0); g.lineTo(gx, y0 + h); g.stroke(); }
+      if (st === 2) for (var gy = y0 + step; gy < y0 + h; gy += step) { g.beginPath(); g.moveTo(x0, gy); g.lineTo(x0 + w, gy); g.stroke(); }
+      if (fr > 0) { rect('rgba(38,34,30,.35)', x0 - 2 * u, y0 - 2.5 * u, w * fr, h); rect(f.roof || '#d8d7d1', x0, y0, w * fr, h); }
+      if (st === 3 && fr < .9) { g.strokeStyle = 'rgba(200,60,40,.9)'; g.lineWidth = Math.max(.6, .4 * u); g.beginPath(); g.moveTo(x0 + w * fr, y0 - 6 * u); g.lineTo(x0 + w * fr + 10 * u, y0 - 12 * u); g.stroke(); } // 吊车臂
+      veh(x0 - 9 * u, y0 + h + 4 * u, '#efefea'); if (st === 4) veh(x0 + w * .5, y0 + h + 4 * u, '#5a6a7a');
       return;
     }
-    if (f.tower) { g.strokeStyle = 'rgba(30,28,26,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(q[0] - 30 / M, q[1] - 40 / M); g.stroke(); g.fillStyle = '#9a9a96'; g.fillRect(q[0] - 2 / M, q[1] - 2 / M, 4 / M, 4 / M); return; }
-    g.fillStyle = 'rgba(38,34,30,.5)'; g.fillRect(q[0] - w / 2 - 2.2 / M, q[1] - h / 2 - 3 / M, w, h);
-    g.fillStyle = f.roof; g.fillRect(q[0] - w / 2, q[1] - h / 2, w, h);
-    g.strokeStyle = 'rgba(80,76,70,.6)'; g.lineWidth = .8; g.strokeRect(q[0] - w / 2, q[1] - h / 2, w, h);
+    // ---- 完工 ----
+    if (f.grid) {
+      rect('rgba(190,178,152,.95)', x0, y0, w, h);
+      for (var r2 = 0; r2 < 4; r2++) for (var c2 = 0; c2 < 7; c2++) { var x = x0 + (4 + c2 * 9.5) * u, y = y0 + (4 + r2 * 11) * u; rect('rgba(40,36,30,.45)', x - 1.5 * u, y - 1.5 * u, 3 * u, 8.5 * u); rect('#e7e6e1', x, y, 3 * u, 8.5 * u); }
+      return;
+    }
+    if (f.tower) { g.strokeStyle = 'rgba(30,28,26,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(q[0] - 30 * u, q[1] - 40 * u); g.stroke(); g.strokeStyle = 'rgba(30,28,26,.25)'; [[0, -1], [.87, .5], [-.87, .5]].forEach(function (d) { g.beginPath(); g.moveTo(q[0], q[1]); g.lineTo(q[0] + d[0] * 20 * u, q[1] + d[1] * 20 * u); g.stroke(); }); rect('#9a9a96', q[0] - 2 * u, q[1] - 2 * u, 4 * u, 4 * u); return; }
+    if (f.b === 'check') { rect('#8d8b86', x0 - 2 * u, y0, w + 4 * u, h); shadow(); rect(f.roof || '#f1efe6', x0, y0, w, h * .5); for (var c3 = 0; c3 < 5; c3++) rect('#e8662a', x0 - 6 * u + c3 * 2.5 * u, y0 + h * .75, .9 * u, .9 * u); veh(x0 + w + 2 * u, y0 + h * .55, '#f4f4f0'); return; }
+    shadow(); rect(f.roof || '#d8d7d1', x0, y0, w, h);
+    g.strokeStyle = 'rgba(80,76,70,.6)'; g.lineWidth = .8; g.strokeRect(x0, y0, w, h);
+    if (f.b === 'clinic') { rect('#b9b8b2', x0 + w * .2, y0 + h * .3, 2 * u, 2 * u); rect('#b9b8b2', x0 + w * .6, y0 + h * .3, 2 * u, 2 * u); veh(x0 + w + 2 * u, y0 + h * .2, '#f4f4f0', 6); }
+    if (f.b === 'warehouse') { g.strokeStyle = 'rgba(80,80,80,.35)'; for (var s2 = x0 + 2 * u; s2 < x0 + w; s2 += 2 * u) { g.beginPath(); g.moveTo(s2, y0); g.lineTo(s2, y0 + h); g.stroke(); } veh(x0 + w * .2, y0 + h + 3 * u, '#efefea', 14); }
   }
+  function stageKey(f) { return f.done ? 99 : Math.floor((f.progress || 0) * 20); }
 
   return { R: R, BLD: BLD, HW: HW, RAIL: RAIL, WAT: WAT, AREA: AREA, POI: POI, m2ll: m2ll, ll2m: ll2m, wx: wx, wy: wy, xlon: xlon, ylat: ylat, mpp: mpp, pip: pip, hash: hash,
-    buildingAt: buildingAt, inTown: inTown, townAt: townAt, TOWN_BOXES: TOWN_BOXES, boxHitsTown: boxHitsTown, tile: tile, pump: pump, setFacilities: setFacilities, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
+    buildingAt: buildingAt, inTown: inTown, townAt: townAt, TOWN_BOXES: TOWN_BOXES, boxHitsTown: boxHitsTown, tile: tile, pump: pump, setFacilities: setFacilities, stageOf: stageOf, stageKey: stageKey, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
 })();

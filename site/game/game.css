@@ -241,3 +241,4 @@ body.l-en #barl.tabs a .en{display:inline!important}body.l-en #barl.tabs a .zh{d
 #mappane{position:relative}#fogcv{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
 #notice,#ctl,#scale,#imgdate,#maptype,#info,#buildhint{z-index:2}
 .stats b.bad{color:#c42b1c}
+.pbar{height:4px;margin:3px 0 1px;background:#e3e9f2;border:1px solid #c5d2e3;border-radius:2px;overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(#7fd36b,#2f9e2a)}

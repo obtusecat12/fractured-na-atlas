@@ -16,7 +16,7 @@
     trust: 61, panic: 24, stand: { fed: 52, navajo: 47, lds: 58 }, dstand: { fed: 0, navajo: 0, lds: 0 },
     funds: { fed: 900, navajo: 250, lds: 400, county: ECON.checking },
     econ: { lgip: ECON.lgip, flood: ECON.flood, accr: 0, loans: [], pending: [], used: {}, wk: { rev: 0, exp: 0 }, last: null, decl: false },
-    facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : .5 }, f); }),
+    facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : Math.max(0, 1 - (f.eta || b.days) / b.days) }, f); }),
     laws: {}, mail: [], promises: D.promises.map(function (p) { return Object.assign({}, p); }),
     sim: { arr: 1240, cap0: 930, stock: 34, newT: 3, rec: 0, acc: { trust: 0, panic: 0 }, over: false },
     flags: {}, seen: {}, chain: [], votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
@@ -180,7 +180,7 @@
       h += '</div></div>';
     });
     h += '</div>' + sect(L('施工中', 'Under construction'));
-    S.facilities.filter(function (f) { return !f.done; }).forEach(function (f) { h += '<div class="row"><div class="t">' + LA(f.name) + '</div><div class="s">' + chip(f.fund) + L('还要 ' + f.eta + ' 天', f.eta + ' days left') + '</div></div>'; });
+    S.facilities.filter(function (f) { return !f.done; }).forEach(function (f) { var pc = Math.floor((f.progress || 0) * 100); h += '<div class="row"><div class="t">' + LA(f.name) + '</div><div class="s">' + chip(f.fund) + stageName(f) + ' · ' + L('还要 ' + f.eta + ' 天', f.eta + ' days left') + '</div><div class="pbar"><i style="width:' + pc + '%"></i></div></div>'; });
     return h + '</div>';
   }
 
@@ -231,6 +231,19 @@
     if (newT > 10) nudge('panic', newT / 15); else if (newT === 0 && S.panic > 15) nudge('panic', -.5);
     if (L.presser) nudge('panic', -.2);
   }
+  var STAGE = [['放线', 'Staking'], ['场地平整', 'Grading'], ['基础', 'Foundation'], ['主体施工', 'Framing'], ['收尾', 'Finishing']];
+  var CSTAGE = [['清场', 'Clearing out'], ['清场', 'Clearing out'], ['改造', 'Refitting'], ['改造', 'Refitting'], ['验收', 'Inspection']];
+  function buildHour() {
+    var ch = false;
+    S.facilities.forEach(function (f) {
+      if (f.done) return; var bd = bdefOf(f.b), days = f.days || (bd && bd.days) || 2, k0 = MAP.stageKey(f);
+      f.progress = Math.min(1, (f.progress || 0) + 1 / (days * 24)); f.eta = Math.ceil((1 - f.progress) * days);
+      if (f.progress >= 1) { f.done = true; onBuilt(f); }
+      if (MAP.stageKey(f) !== k0) { MAP.invalidate(f.ll); ch = true; }
+    });
+    if (ch) { syncFac(); draw(); if (S.tab === 'build') render(); }
+  }
+  function stageName(f) { return LA((f.conv ? CSTAGE : STAGE)[MAP.stageOf(f.progress || 0)]); }
   function onBuilt(f) {
     var b = f.b;
     if (b === 'clinic') apply({ trust: 3 }); if (b === 'check') apply({ panic: -1, trust: -1 });
@@ -546,7 +559,7 @@
   }
   function facMarker(x, y, f) {
     var b = bdefOf(f.b); cx.lineWidth = 1.5;
-    if (!f.done) { cx.setLineDash([3, 2]); cx.strokeStyle = P(f.fund).color; cx.fillStyle = 'rgba(255,255,255,.85)'; rrect(x - 7, y - 7, 14, 14, 2); cx.fill(); cx.stroke(); cx.setLineDash([]); }
+    if (!f.done) { cx.setLineDash([3, 2]); cx.strokeStyle = P(f.fund).color; cx.fillStyle = 'rgba(255,255,255,.85)'; rrect(x - 7, y - 7, 14, 14, 2); cx.fill(); cx.stroke(); cx.setLineDash([]); cx.fillStyle = P(f.fund).color; cx.fillRect(x - 5, y + 3, 10 * (f.progress || 0), 2); cx.strokeStyle = 'rgba(0,0,0,.25)'; cx.lineWidth = .5; cx.strokeRect(x - 5.5, y + 2.5, 11, 3); cx.lineWidth = 1.5; }
     else { cx.fillStyle = P(f.fund).color; cx.strokeStyle = '#fff'; rrect(x - 7, y - 7, 14, 14, 2); cx.fill(); cx.stroke(); }
     if (V.z >= 14) label(x, y + 20, f.name[0], f.name[1], '11px Arial', mode === 'map' ? '#333' : '#fff', 'center', mode === 'map' ? null : 'rgba(0,0,0,.6)');
   }
@@ -622,7 +635,7 @@
     if (S.funds[f] < b.cost) return hint(L(P(f).short[0] + '的钱不够。', 'Not enough ' + P(f).short[1] + ' money.'));
     S.funds[f] -= b.cost;
     var ll = MAP.m2ll([(bl.box[0] + bl.box[2]) / 2, (bl.box[1] + bl.box[3]) / 2]);
-    S.facilities.push({ b: b.id, ll: ll, name: [(bl.name || '') + ' ' + b.zh.replace('改建为', ''), (bl.name || 'Building') + ' (' + b.en.replace('Convert to ', '') + ')'], fund: f, done: false, eta: b.days, conv: true, size: [10, 10] });
+    S.facilities.push({ b: b.id, ll: ll, name: [(bl.name || '') + ' ' + b.zh.replace('改建为', ''), (bl.name || 'Building') + ' (' + b.en.replace('Convert to ', '') + ')'], fund: f, done: false, eta: b.days, conv: true, progress: 0, size: [Math.max(6, bl.box[2] - bl.box[0]), Math.max(6, bl.box[3] - bl.box[1])] });
     endPlace(); syncFac(); render(); draw(); closeInfo();
   }
   function endPlace() { S.placing = false; hover = null; $('#buildhint').hidden = true; cv.style.cursor = ''; }
@@ -648,6 +661,7 @@
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
     if (ds.tab) { S.tab = ds.tab; render(); return; }
     if (a.id === 'openatm') { openAtm(); return; }
+    if (a.id === 'savebtn') { var ok = saveGame(SAVE_KEY); $('#ntext').innerHTML = ok ? L('已保存：', 'Saved: ') + dateStr() : L('保存失败：浏览器不允许本地存储。', 'Could not save: local storage is blocked.'); $('#notice').hidden = false; return; }
     if (ds.endr) { location.reload(); return; }
     if (ds.endc) { $('#dlgwrap').hidden = true; return; }
     if (ds.atsw) { if (atm.st === 'busy') return; atm.mode = atm.mode === 'in' ? 'out' : 'in'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); return; }
@@ -702,24 +716,48 @@
   function tick() {
     if (S.sim.over) return;
     S.hour++;
+    buildHour();
     if (S.hour >= 24) {
       S.hour = 0; S.day++; S.date = new Date(S.date.getTime() + 864e5); S.dstand = { fed: 0, navajo: 0, lds: 0 };
-      S.facilities.forEach(function (f) { if (!f.done) { f.eta--; f.progress = Math.min(1, f.progress + 1 / Math.max(1, f.eta + 1)); if (f.eta <= 0) { f.done = true; onBuilt(f); } MAP.invalidate(f.ll); } });
       S.promises.forEach(function (p) { p.left--; if (p.left === 0) apply({ trust: -8 }); }); S.promises = S.promises.filter(function (p) { return p.left > 0; });
       D.towns.forEach(function (t) { if (t.cases) t.cases += Math.round(MAP.hash(S.day, t.pop, 1) * 2); });
       if (S.laws.hours) apply({ trust: -1 });
       simDay(); econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
       contentDay();
-      syncFac(); render(); draw(); checkEnd();
+      syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) saveGame(AUTO_KEY);
     }
     clock();
   }
   setInterval(function () { for (var i = 0; i < S.speed; i++) tick(); }, 1000);
 
+
+  // ---------- 存档 ----------
+  var SAVE_KEY = 'fna-navajo-save', AUTO_KEY = 'fna-navajo-auto';
+  function snapshot() {
+    var s = {}; Object.keys(S).forEach(function (k) { if (['curEv', 'placing', 'openMail', 'date'].indexOf(k) < 0) s[k] = S[k]; });
+    return { v: 1, at: Date.now(), ymd: ymdOf(S.date), date: S.date.getTime(), S: s,
+      towns: D.towns.map(function (t) { return [t.id, t.cases, t.mood]; }),
+      regions: D.regions.filter(function (r) { return r.seen; }).map(function (r) { return r.id; }),
+      bc: CONTENT.broadcasts };
+  }
+  function saveGame(key) { try { localStorage.setItem(key || SAVE_KEY, JSON.stringify(snapshot())); return true; } catch (e) { return false; } }
+  function readSave() { var a = null, b = null; try { a = JSON.parse(localStorage.getItem(SAVE_KEY)); b = JSON.parse(localStorage.getItem(AUTO_KEY)); } catch (e) {} if (!a) return b; if (!b) return a; return b.at > a.at ? b : a; }
+  function restore(o) {
+    Object.keys(o.S).forEach(function (k) { S[k] = o.S[k]; });
+    S.date = new Date(o.date); S.speed = 0; S.curEv = null; S.placing = false; S.openMail = -1; S.evq = S.evq || [];
+    o.towns.forEach(function (a) { var t = town[a[0]]; if (t) { t.cases = a[1]; t.mood = a[2]; } });
+    D.regions.forEach(function (r) { r.seen = o.regions.indexOf(r.id) >= 0; });
+    if (o.bc) { CONTENT.broadcasts.length = 0; o.bc.forEach(function (b) { CONTENT.broadcasts.push(b); }); }
+  }
+  window.GAME_SAVEINFO = function () { var o = readSave(); return o ? { ymd: o.ymd, day: o.S.day } : null; };
+
   // ---------- boot ----------
-  window.GAME_START = function () {
-    syncFac(); render(); clock(); resize(); center(-110.3, 34.75, 8); draw();
+  window.GAME_START = function (id, opt) {
+    var loaded = opt && opt.load ? readSave() : null;
+    if (loaded) restore(loaded);
+    syncFac(); render(); clock(); meters(); resize(); center(-110.3, 34.75, 8); draw();
+    if (loaded) { $('#ntext').innerHTML = L('已读取存档：', 'Loaded save: ') + dateStr(); $('#notice').hidden = false; return; }
     $('#ntext').innerHTML = '<b>' + L('州应急管理局：', 'State emergency management: ') + '</b>' + L('明天上午 9 点公布新的病例标准。', 'New case criteria at 9 am tomorrow.'); $('#notice').hidden = false;
     setTimeout(function () { eventDialog(startEvent()); }, 900);
   };
@@ -727,5 +765,5 @@
   $('#gearmenu').addEventListener('click', function () { setTimeout(function () { render(); clock(); draw(); }, 0); });
   window.addEventListener('resize', resize);
   syncFac(); render(); clock(); resize(); center(-110.3, 34.75, 8);
-  window.GAME = { S: S, tick: function (n) { for (var i = 0; i < n; i++) tick(); }, cap: function () { return simCap(); }, V: V, center: center, setMode: setMode, draw: draw, render: render, eventDialog: eventDialog };
+  window.GAME = { S: S, redrawFac: function () { S.facilities.forEach(function (f) { MAP.invalidate(f.ll); }); syncFac(); draw(); }, tick: function (n) { for (var i = 0; i < n; i++) tick(); }, cap: function () { return simCap(); }, V: V, center: center, setMode: setMode, draw: draw, render: render, eventDialog: eventDialog };
 })();
