@@ -112,8 +112,9 @@
   }
   function gauge(id, k, label, v, d, warn, lose) {
     var dd = d ? '<span class="gd ' + ((k === 'panic' ? -d : d) > 0 ? 'up' : 'dn') + '">' + (d > 0 ? '▲' : '▼') + Math.abs(d) + '</span>' : '';
-    return '<div class="g1' + (warn ? ' warn' : '') + '" id="' + id + '" title="' + whyTip(k) + '"><div class="gtop"><span class="gl">' + label + '</span><span class="gv">' + v + '</span>' + dd + '</div>' +
-      '<div class="gb ' + k + '"><b style="' + lose + '"></b><i style="width:' + v + '%"></i></div></div>';
+    // Win7 进度条（.meter .mb，绿色；恐慌用红色）
+    return '<div class="g1 meter' + (k === 'panic' ? ' red' : '') + (warn ? ' warn' : '') + '" id="' + id + '" title="' + whyTip(k) + '"><div class="gtop"><span class="gl">' + label + '</span><span class="gv">' + v + '</span>' + dd + '</div>' +
+      '<span class="mb"><i style="width:' + v + '%"></i></span></div>';
   }
   function tile(tab, label, val, sub, warn, tip) { return '<a href="#" class="g2' + (warn ? ' warn' : '') + '" data-tab="' + tab + '"' + (tip ? ' title="' + tip + '"' : '') + '><span class="gl">' + label + '</span><span class="gv2">' + val + '</span><span class="gs">' + sub + '</span></a>'; }
   function meters() {
@@ -664,6 +665,7 @@
   function draw(quick) { if (!quick) needFull = true; if (drawPending) return; drawPending = true; requestAnimationFrame(function () { drawPending = false; if (ZA) return; var full = needFull || !canQuick(); needFull = false; if (full) drawNow(); else drawQuick(); }); }
   function canQuick() { return snapV && snapV.z === V.z && snapV.w === W && snapV.h === H && Math.abs(snapV.x - V.x) < W * .35 && Math.abs(snapV.y - V.y) < H * .35; }
   function saveSnap() {
+    if (!cv.width || !cv.height) return;   // 游戏框隐藏时画布是 0×0
     if (SNAP.width !== cv.width || SNAP.height !== cv.height) { SNAP.width = cv.width; SNAP.height = cv.height; }
     SG.setTransform(1, 0, 0, 1, 0, 0); SG.clearRect(0, 0, SNAP.width, SNAP.height); SG.drawImage(cv, 0, 0);
     snapV = { x: V.x, y: V.y, z: V.z, w: W, h: H };
@@ -712,10 +714,15 @@
     fogTiles(0, 0, W, H);
     if (sat) satTiles(); else baseMap();
     // fog over unseen counties：所有没见过的县合成一条路径，裁剪一次
-    cx.save(); cx.beginPath(); var anyUnseen = false;
-    MAP.R.counties.forEach(function (c) { if (seen(c.n)) return; anyUnseen = true; fogRings(c).forEach(function (r) { r.forEach(function (p, i) { var q = px(p); i ? cx.lineTo(q[0], q[1]) : cx.moveTo(q[0], q[1]); }); cx.closePath(); }); });
-    if (anyUnseen) { cx.clip('nonzero'); fogTiles(0, 0, W, H); }
-    cx.restore();
+    // 反过来做：整屏先铺“没有影像”，再把看得见的地方（纳瓦霍县、已探明的县、设施视野）挖掉。
+    // 原来是逐个给“没见过的县”铺灰，县界经过有机化变形后县与县之间会漏缝，州外和列表外的地方也没人盖，卫星图就从烟底下露出来。
+    if (FGC.width !== cv.width || FGC.height !== cv.height) { FGC.width = cv.width; FGC.height = cv.height; }
+    if (FGC.width && FGC.height) {
+      FGG.setTransform(DPR, 0, 0, DPR, 0, 0); FGG.globalCompositeOperation = 'source-over'; FGG.clearRect(0, 0, W, H);
+      FGG.fillStyle = fogPat(); FGG.fillRect(0, 0, W, H);
+      FGG.globalCompositeOperation = 'destination-out'; FGG.fillStyle = '#000'; fogVisible(FGG); FGG.globalCompositeOperation = 'source-over';
+      cx.save(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.drawImage(FGC, 0, 0); cx.restore();
+    }
     if (sat) nightShade();
     if (!sat || mode === 'hyb') overlay(sat);
     saveSnap();
@@ -725,7 +732,7 @@
     if (t !== lastImgDate) { lastImgDate = t; $('#imgdate').innerHTML = t; }
   }
   // “没有影像”的灰格：预先画好一张 256 px 的图块，用图案平铺，一次 fillRect（原来每块两行字、每个没见过的县各重画一遍）
-  var FOGT = { key: '' };
+  var FOGT = { key: '' }, FGC = document.createElement('canvas'), FGG = FGC.getContext('2d');
   function fogPat() {
     var key = LANG.mode() + DPR;
     if (FOGT.key !== key) {
@@ -789,6 +796,9 @@
     // 施工照明和建成设施的灯
     var m = MAP.mpp(V.z);
     S.facilities.forEach(function (f) { var q = px(f.ll), r, c, a; if (!f.done && !f.wait) { r = Math.max(3, 40 / m); c = '235,240,255'; a = .75; } else if (f.done) { r = Math.max(2, 22 / m); c = '255,200,130'; a = .55; } else return; g.globalAlpha = a * n.lon; g.drawImage(glowSprite(c), q[0] - r, q[1] - r, r * 2, r * 2); });
+    // 灯光图块是在 satTiles() 之后才排进队列的；原来只有 satTiles 会启动生成，卫星图块齐了以后队列里只剩灯光图块却没人处理，下次重画又被 clearQueue 清掉，所以烘焙灯光一直不显示
+    if (MAP.queueLen() && !pumpT) pumpT = setTimeout(function () { pumpT = 0; MAP.pump(6, redrawFull, 10); }, 0);
+    if (!IL.width || !IL.height) return;
     cx.save(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.globalCompositeOperation = 'multiply'; cx.drawImage(IL, 0, 0);
     if (n.am.d > .01) { cx.globalCompositeOperation = 'saturation'; cx.globalAlpha = n.am.d; cx.fillStyle = '#808080'; cx.fillRect(0, 0, cv.width, cv.height); }
     cx.restore();
@@ -813,9 +823,10 @@
       var sx = t[0] * 256 - V.x + W / 2, sy = t[1] * 256 - V.y + H / 2, im = MAP.tile(V.z, t[0], t[1]);
       if (im) cx.drawImage(im, sx, sy, 256, 256); else if (!fallbackTile(t[0], t[1], sx, sy)) { cx.fillStyle = '#7d7466'; cx.fillRect(sx, sy, 256, 256); }
     });
-    if (MAP.queueLen() && !pumpT) pumpT = setTimeout(function () { pumpT = 0; MAP.pump(6, draw, 10); }, 0);
+    if (MAP.queueLen() && !pumpT) pumpT = setTimeout(function () { pumpT = 0; MAP.pump(6, redrawFull, 10); }, 0);
   }
   var pumpT = 0;
+  function redrawFull() { draw(); }   // 图块做好后的回调会带参数，直接传 draw 会被当成 quick 重画，后面的灯光图块就再也排不上队
   // 新级别的图块还没做好时，先用上一级（放大）或下一级（缩小）已缓存的图块顶上，不再闪成空格
   function fallbackTile(tx, ty, sx, sy) {
     for (var dz = 1; dz <= 4 && V.z - dz >= 0; dz++) {

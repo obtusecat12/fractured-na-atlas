@@ -310,3 +310,11 @@ body.collapsed #barl.tabs a{pointer-events:auto}
 .bitem.rec .why{color:#8a5a00}
 ul.help{margin:4px 0 0 18px;padding:0}
 ul.help li{margin:0 0 6px;line-height:17px}
+
+/* 2026-11-22：信任/恐慌换回 Win7 进度条；各格按内容宽度排列，去掉右边大间距 */
+#hud .g1.meter{display:flex;width:136px;gap:4px}
+#hud .g1 .mb{display:block;width:100%!important;height:12px!important;margin:0}
+#hud .g2{flex:none;max-width:none;padding:0 9px}
+#hud .g2 .gl,#hud .g2 .gs{line-height:12px}
+#hud .g2 .gv2{line-height:17px}
+#hud .hmail{margin-left:2px}
