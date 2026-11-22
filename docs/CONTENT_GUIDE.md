@@ -94,3 +94,8 @@ when: {
 ```
 
 生成后运行 `node tools/validate_content.js 新文件.js`，把报错原样贴回给 AI 修改，直到全部通过。
+
+
+## 新增可用的条件字段（2026-11-22）
+
+`when.min` / `when.max` 现在还可以用：`stock`（物资储备天数）、`unhoused`（等待安置人数）、`cases`（全县现有病例）、`arrivals`（外来人员累计）。例：`when: { min: { unhoused: 300 } }`。

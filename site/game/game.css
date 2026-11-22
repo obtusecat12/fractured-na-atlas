@@ -238,3 +238,6 @@ body.l-en #barl.tabs a .en{display:inline!important}body.l-en #barl.tabs a .zh{d
 .at-foot{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#f0f0f0;border-top:1px solid #dfdfdf}
 .at-foot #atmmsg{flex:1;color:#c42b1c;margin:0}
 .win7 .at-swap i{font-size:10px!important;line-height:12px}
+#mappane{position:relative}#fogcv{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
+#notice,#ctl,#scale,#imgdate,#maptype,#info,#buildhint{z-index:2}
+.stats b.bad{color:#c42b1c}

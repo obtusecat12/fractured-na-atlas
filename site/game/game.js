@@ -18,6 +18,7 @@
     econ: { lgip: ECON.lgip, flood: ECON.flood, accr: 0, loans: [], pending: [], used: {}, wk: { rev: 0, exp: 0 }, last: null, decl: false },
     facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : .5 }, f); }),
     laws: {}, mail: [], promises: D.promises.map(function (p) { return Object.assign({}, p); }),
+    sim: { arr: 1240, cap0: 930, stock: 34, newT: 3, rec: 0, acc: { trust: 0, panic: 0 }, over: false },
     flags: {}, seen: {}, chain: [], votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
   };
   function bdefOf(id) { return D.buildings.filter(function (b) { return b.id === id; })[0]; }
@@ -50,7 +51,7 @@
     if (w.after && ymd < w.after) return false; if (w.before && ymd > w.before) return false;
     if (w.flags && !w.flags.every(function (f) { return S.flags[f]; })) return false;
     if (w.notFlags && w.notFlags.some(function (f) { return S.flags[f]; })) return false;
-    var cur = { trust: S.trust, panic: S.panic, fed: S.stand.fed, navajo: S.stand.navajo, lds: S.stand.lds, county: S.funds.county };
+    var cur = { trust: S.trust, panic: S.panic, fed: S.stand.fed, navajo: S.stand.navajo, lds: S.stand.lds, county: S.funds.county, stock: S.sim.stock, unhoused: unhoused(), cases: totalCases(), arrivals: S.sim.arr };
     if (w.min && Object.keys(w.min).some(function (k) { return cur[k] < w.min[k]; })) return false;
     if (w.max && Object.keys(w.max).some(function (k) { return cur[k] > w.max[k]; })) return false;
     if (w.chance != null && MAP.hash(S.day, w.chance * 997, 7) > w.chance) return false;
@@ -89,12 +90,12 @@
   }
   function ico(n) { return '<img src="icons/' + n + '16.png" width="16" height="16" alt="">'; }
   function tabOverview() {
-    var cases = 0; D.towns.forEach(function (t) { cases += t.cases; });
+    var sm = S.sim, cases = totalCases(), uh = unhoused(), sd = Math.round(sm.stock);
     var h = sect(L('纳瓦霍县', 'Navajo County'), '<span>' + L('人口 107,449（2010）', 'Pop. 107,449 (2010)') + '</span>') +
-      '<div class="stats"><div>' + L('确诊（县辖区）', 'Confirmed (county)') + '<b>' + cases + '</b></div><div>' + L('今日新增', 'New today') + '<b>+3</b></div>' +
-      '<div>' + L('外来人员', 'Arrivals') + '<b>1,240</b></div><div>' + L('等待安置', 'Unhoused') + '<b>310</b></div>' +
-      '<div>' + L('物资储备', 'Reserve') + '<b>' + L('34 天', '34 days') + '</b></div><div>' + L('县雇员到岗', 'Staff on duty') + '<b>91%</b></div>' +
-      '<div>' + L('失业率（10月）', 'Unemployment (Oct)') + '<b>15.7%</b></div><div>' + L('县财政', 'County funds') + '<b>' + money(S.funds.county) + '</b></div></div></div>';
+      '<div class="stats"><div>' + L('现有病例', 'Active cases') + '<b>' + cases + '</b></div><div>' + L('今日新增', 'New today') + '<b>+' + sm.newT + '</b></div>' +
+      '<div>' + L('外来人员', 'Arrivals') + '<b>' + sm.arr.toLocaleString() + '</b></div><div>' + L('等待安置', 'Unhoused') + '<b' + (uh > 200 ? ' class="bad"' : '') + '>' + uh.toLocaleString() + '</b></div>' +
+      '<div>' + L('物资储备', 'Reserve') + '<b' + (sd < 10 ? ' class="bad"' : '') + '>' + L(sd + ' 天', sd + ' days') + '</b></div><div>' + L('安置容量', 'Housing') + '<b>' + simCap().toLocaleString() + '</b></div>' +
+      '<div>' + L('失业率（10月）', 'Unemployment (Oct)') + '<b>15.7%</b></div><div>' + L('县财政', 'County funds') + '<b>' + money(Math.round(S.funds.county)) + '</b></div></div></div>';
     h += sect(L('承诺', 'Promises'));
     S.promises.forEach(function (p, i) { h += '<div class="row ri">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + LA(p.by) + ' · <span class="left">' + L('剩 ' + p.left + ' 天', p.left + ' days left') + '</span> · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
     h += '</div>' + sect(L('广播', 'Broadcasts'));
@@ -187,7 +188,67 @@
   var E = ECON;
   function fmtK(k) { var s = Math.round(Math.abs(k)).toLocaleString('en-US'); return (k < 0 ? '−$' : '$') + s + 'K'; }
   function revWk(r) { return r.lump && r.lump.months.indexOf(S.date.getMonth() + 1) >= 0 ? r.lump.wk : r.wk; }
-  function shortage() { return Math.max(0, (S.panic - 20) / 100); }
+
+  // ---------- 核心数值：人口、住房、物资、病例 ----------
+  var BUILT = { trailers: 120, shelter: 80 };
+  function nBuilt(id) { return S.facilities.filter(function (f) { return f.b === id && f.done; }).length; }
+  function simCap() { return S.sim.cap0 + S.facilities.reduce(function (s, f) { return s + (f.done ? BUILT[f.b] || 0 : 0); }, 0); }
+  function stockMax() { return 45 + 20 * nBuilt('warehouse'); }
+  function unhoused() { return Math.max(0, S.sim.arr - simCap()); }
+  function totalCases() { return D.towns.reduce(function (s, t) { return s + t.cases; }, 0); }
+  function nudge(k, v) { var a = S.sim.acc; a[k] += v; var w = a[k] > 0 ? Math.floor(a[k]) : Math.ceil(a[k]); if (w) { a[k] -= w; var d = {}; d[k] = w; apply(d); } }
+  function spreadMult() {
+    var m = 1, L = S.laws;
+    if (L.mask) m *= .85; if (L.school_close) m *= .7; if (L.school_open) m *= 1.1; if (L.mill_crew) m *= .85;
+    m *= Math.pow(.96, Math.min(4, nBuilt('check')));
+    m *= 1 + Math.min(.3, unhoused() / 3000);
+    return m;
+  }
+  function simDay() {
+    var sm = S.sim, L = S.laws, wd = S.date.getDay();
+    // 人口：沿 I-40 和 77 号公路北上的人，检查点会分流一部分；配额条例按周接收
+    var drift = Math.max(4, 18 - 4 * nBuilt('check')), quota = L.quota ? 300 / 7 : 0;
+    var inn = Math.round(drift + quota + (MAP.hash(S.day, 3, 11) - .5) * 8); sm.arr += inn;
+    // 物资（天数）
+    var use = 1 + unhoused() / 2000;
+    var get = (L.bnsf ? .4 : 0) + .25 * nBuilt('warehouse') + (wd === 1 && S.stand.fed >= 40 ? 4 : 0);
+    sm.stock = Math.max(0, Math.min(stockMax(), sm.stock - use + get));
+    // 病例：每个镇单独增长，隔离点收走一部分传染源，诊所加快康复
+    var iso = 40 * nBuilt('isolation'), act = totalCases(), spreadable = Math.max(0, act - iso) / Math.max(1, act);
+    var r = .055 * spreadMult(), rec = 1 / 18 + .01 * nBuilt('clinic'), newT = 0, recT = 0;
+    D.towns.forEach(function (t, i) {
+      var seed = t.cases > 0 ? t.cases : (MAP.hash(S.day, i, 5) < .04 * (1 + act / 200) ? 1 : 0);
+      var n = Math.round(t.cases * spreadable * r * (.7 + MAP.hash(S.day, i, 9) * .6)) + (t.cases ? 0 : seed);
+      var rc = Math.round(t.cases * rec * (.6 + MAP.hash(S.day, i, 13) * .8));
+      t.cases = Math.max(0, t.cases + n - rc); newT += n; recT += rc;
+      t.mood = clamp(Math.round(t.mood + (sm.stock < 10 ? -1 : 0) + (n > 3 ? -1 : 0) + (S.trust > 60 && MAP.hash(S.day, i, 17) < .2 ? 1 : 0)));
+    });
+    sm.newT = newT; sm.rec += recT;
+    // 对民心的影响
+    var uh = unhoused();
+    if (uh > 200) { nudge('panic', uh / 600); nudge('trust', -uh / 900); }
+    if (sm.stock < 10) nudge('panic', 1); if (sm.stock < 3) { nudge('panic', 2); nudge('trust', -2); }
+    if (newT > 10) nudge('panic', newT / 15); else if (newT === 0 && S.panic > 15) nudge('panic', -.5);
+    if (L.presser) nudge('panic', -.2);
+  }
+  function onBuilt(f) {
+    var b = f.b;
+    if (b === 'clinic') apply({ trust: 3 }); if (b === 'check') apply({ panic: -1, trust: -1 });
+    if (b === 'warehouse') S.sim.stock = Math.min(stockMax(), S.sim.stock + 5);
+    if (b === 'tower') D.regions.forEach(function (r) { var c = COUNTY[r.county]; if (c && !r.seen && Math.hypot((c.c[0] - f.ll[0]) * 91, (c.c[1] - f.ll[1]) * 111) < 90) r.seen = true; });
+    FOG.dirty();
+  }
+  function checkEnd() {
+    if (S.sim.over) return; var e = null;
+    if (S.trust <= 0) e = { icon: 'err', t: ['纳瓦霍县监事会召开特别会议', 'Navajo County Board of Supervisors holds a special meeting'], b: ['监事会通过决议，免去你的县应急管理主任职务，由副主任暂代。', 'The board votes to remove you as county emergency management director. Your deputy takes over.'] };
+    else if (S.panic >= 100) e = { icon: 'err', t: ['州应急管理局接管县应急行动中心', 'State takes over the county EOC'], b: ['州长依据《亚利桑那州修订法规》第 26-303 条宣布纳瓦霍县进入州紧急状态，县应急行动中心改由亚利桑那州应急管理局指挥。', 'The governor declares a state of emergency in Navajo County under A.R.S. § 26-303. The Arizona Division of Emergency Management takes command of the county EOC.'] };
+    else if (ymdOf(S.date) === '2010-01-01') e = { icon: 'info', t: ['2009 年结束', 'End of 2009'], b: ['你撑过了 2009 年。', 'You made it through 2009.'], go: true };
+    if (!e) return;
+    S.sim.over = !e.go; S.speed = 0;
+    var st = L('信任 ' + S.trust + ' · 恐慌 ' + S.panic + ' · 现有病例 ' + totalCases() + ' · 外来人员 ' + S.sim.arr.toLocaleString() + ' · 等待安置 ' + unhoused() + ' · 物资 ' + Math.round(S.sim.stock) + ' 天', 'Trust ' + S.trust + ' · Panic ' + S.panic + ' · Active cases ' + totalCases() + ' · Arrivals ' + S.sim.arr.toLocaleString() + ' · Unhoused ' + unhoused() + ' · Supplies ' + Math.round(S.sim.stock) + ' days');
+    taskDialog({ icon: e.icon, title: LA(e.t), body: LA(e.b) + '<p style="color:#555;margin-top:8px">' + st + '</p>', links: (e.go ? [{ attr: 'data-endc="1"', t: L('继续', 'Keep going') }] : []).concat([{ attr: 'data-endr="1"', t: L('重新开始', 'Start over') }]) });
+  }
+  function shortage() { return Math.max(0, (12 - S.sim.stock) / 24); }
   function econDay() {
     var ec = S.econ, inn = 0, out = 0;
     E.rev.forEach(function (r) { inn += revWk(r) / 7; }); E.exp.forEach(function (x) { out += x.wk / 7; });
@@ -316,8 +377,13 @@
   function center(lon, lat, z) { V.z = z; V.x = MAP.wx(lon, z); V.y = MAP.wy(lat, z); }
   function px(ll) { return [MAP.wx(ll[0], V.z) - V.x + W / 2, MAP.wy(ll[1], V.z) - V.y + H / 2]; }
   function unpx(x, y) { return [MAP.xlon(V.x - W / 2 + x, V.z), MAP.ylat(V.y - H / 2 + y, V.z)]; }
-  function resize() { W = pane.clientWidth; H = pane.clientHeight; cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px'; draw(); }
+  function resize() { W = pane.clientWidth; H = pane.clientHeight; cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px'; FOG.resize(W, H, DPR); draw(); }
   var COUNTY = {}; MAP.R.counties.forEach(function (c) { COUNTY[c.n] = c; });
+  function fogVisible(g2) {
+    g2.beginPath(); MAP.R.counties.forEach(function (c) { if (!seen(c.n)) return; c.p.forEach(function (r) { r.forEach(function (p, i) { var q = px(p); i ? g2.lineTo(q[0], q[1]) : g2.moveTo(q[0], q[1]); }); g2.closePath(); }); }); g2.fill('nonzero'); g2.lineWidth = 3; g2.strokeStyle = '#fff'; g2.stroke();
+    S.facilities.forEach(function (f) { if (f.b !== 'tower' || !f.done) return; var q = px(f.ll), r = px([f.ll[0] + 40 / (111.32 * Math.cos(f.ll[1] * Math.PI / 180)), f.ll[1]])[0] - q[0]; g2.beginPath(); g2.arc(q[0], q[1], r, 0, 7); g2.fill(); });
+  }
+  FOG.init($('#fogcv'), { view: function () { return V; }, visible: fogVisible });
   var NAVAJO = COUNTY.Navajo;
   function seen(n) { if (n === 'Navajo') return true; var r = region[n]; return !!(r && r.seen); }
   function poly(rings, close) { cx.beginPath(); rings.forEach(function (r) { r.forEach(function (p, i) { var q = px(p); i ? cx.lineTo(q[0], q[1]) : cx.moveTo(q[0], q[1]); }); if (close) cx.closePath(); }); }
@@ -329,6 +395,7 @@
   var drawPending = false;
   function draw() { if (drawPending) return; drawPending = true; requestAnimationFrame(function () { drawPending = false; drawNow(); }); }
   function drawNow() {
+    FOG.dirty();
     cx.setTransform(DPR, 0, 0, DPR, 0, 0);
     var sat = mode !== 'map';
     // base: fog everywhere
@@ -581,6 +648,8 @@
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
     if (ds.tab) { S.tab = ds.tab; render(); return; }
     if (a.id === 'openatm') { openAtm(); return; }
+    if (ds.endr) { location.reload(); return; }
+    if (ds.endc) { $('#dlgwrap').hidden = true; return; }
     if (ds.atsw) { if (atm.st === 'busy') return; atm.mode = atm.mode === 'in' ? 'out' : 'in'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); return; }
     if (ds.aq) { if (atm.st === 'busy') return; atm.entry = ds.aq; atm.st = 'amt'; atm.msg = ''; atmDraw(); return; }
     if (a.id === 'atmgo') { atm.st = 'amt'; atmDo(); return; }
@@ -619,7 +688,7 @@
     if (ds.town) { var t3 = town[ds.town]; center(t3.ll[0], t3.ll[1], t3.town ? 13 : 11); draw(); infoTown(t3); return; }
   });
   function centroidRes(n) { var r = MAP.R.res.filter(function (x) { return x.n === n; })[0], x = 0, y = 0, k = 0; r.p[0].forEach(function (p) { x += p[0]; y += p[1]; k++; }); return [x / k, y / k]; }
-  document.addEventListener('change', function (e) { if (e.target.name === 'bf') S.bfund = e.target.value; if (e.target.dataset.ly) { layers[e.target.dataset.ly] = e.target.checked; draw(); } });
+  document.addEventListener('change', function (e) { if (e.target.name === 'bf') S.bfund = e.target.value; if (e.target.dataset.ly) { layers[e.target.dataset.ly] = e.target.checked; if (e.target.dataset.ly === 'fog') FOG.setOn(e.target.checked); draw(); } });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { endPlace(); draw(); } });
   $('#searchform').addEventListener('submit', function () {
     var q = $('#q').value.trim().toLowerCase(); if (!q) return;
@@ -631,17 +700,18 @@
 
   // ---------- time ----------
   function tick() {
+    if (S.sim.over) return;
     S.hour++;
     if (S.hour >= 24) {
       S.hour = 0; S.day++; S.date = new Date(S.date.getTime() + 864e5); S.dstand = { fed: 0, navajo: 0, lds: 0 };
-      S.facilities.forEach(function (f) { if (!f.done) { f.eta--; f.progress = Math.min(1, f.progress + 1 / Math.max(1, f.eta + 1)); if (f.eta <= 0) f.done = true; MAP.invalidate(f.ll); } });
+      S.facilities.forEach(function (f) { if (!f.done) { f.eta--; f.progress = Math.min(1, f.progress + 1 / Math.max(1, f.eta + 1)); if (f.eta <= 0) { f.done = true; onBuilt(f); } MAP.invalidate(f.ll); } });
       S.promises.forEach(function (p) { p.left--; if (p.left === 0) apply({ trust: -8 }); }); S.promises = S.promises.filter(function (p) { return p.left > 0; });
       D.towns.forEach(function (t) { if (t.cases) t.cases += Math.round(MAP.hash(S.day, t.pop, 1) * 2); });
       if (S.laws.hours) apply({ trust: -1 });
-      econDay();
+      simDay(); econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
       contentDay();
-      syncFac(); render(); draw();
+      syncFac(); render(); draw(); checkEnd();
     }
     clock();
   }
@@ -657,5 +727,5 @@
   $('#gearmenu').addEventListener('click', function () { setTimeout(function () { render(); clock(); draw(); }, 0); });
   window.addEventListener('resize', resize);
   syncFac(); render(); clock(); resize(); center(-110.3, 34.75, 8);
-  window.GAME = { S: S, V: V, center: center, setMode: setMode, draw: draw, render: render, eventDialog: eventDialog };
+  window.GAME = { S: S, tick: function (n) { for (var i = 0; i < n; i++) tick(); }, cap: function () { return simCap(); }, V: V, center: center, setMode: setMode, draw: draw, render: render, eventDialog: eventDialog };
 })();
