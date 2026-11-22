@@ -35,7 +35,7 @@
   }
   function message() {
     var m = S.mail[view.open], sn = sender(m), st = view.star[m.id];
-    var acts = m.done ? '<div class="gm-done">' + LA(m.done) + '</div>' : (m.acts || []).map(function (a, j) { return '<button class="gm-b gm-act" data-act="' + view.open + ':' + j + '">' + LA(a.t) + '</button>'; }).join('');
+    var acts = m.done ? '<div class="gm-done">' + LA(m.done) + '</div>' : (m.acts || []).map(function (a, j) { var fx = GW.CONTENT && GW.CONTENT.fx ? LA(a.fx || GW.CONTENT.fx(a.do)) : ''; return '<span class="gm-ab"><button class="gm-b gm-act" data-act="' + view.open + ':' + j + '">' + LA(a.t) + '</button><span class="gm-fx">' + fx + '</span></span>'; }).join('');
     return '<div class="gm-box">' + tb() + '<div class="gm-msg"><div class="gm-subj">' + LA(m.subject) + ' <span class="gm-lbl">' + L('收件箱', 'Inbox') + ' <a href="#">x</a></span><img class="gm-st" src="gmail/star_' + (st ? 'on' : 'off') + '.gif" data-gms="' + m.id + '" width="15" height="15" alt=""></div>' +
       '<div class="gm-hd"><div><b class="gm-who" style="color:' + (m.from === 'nb' ? '#7b2f8e' : POW[m.from].color) + '">' + LA(sn) + '</b>' + (m.ref ? ' <span class="gm-ref2">' + m.ref + '</span>' : '') + '<div class="gm-to">' + L('收件人：我', 'to me') + ' <a href="#">' + L('显示详细信息', 'show details') + '</a></div></div><div class="gm-dt">' + when(m) + '<button class="gm-b gm-rep">' + L('回复', 'Reply') + ' ▾</button></div></div>' +
       '<div class="gm-body">' + LA(m.body) + (m.from !== 'nb' && POW[m.from].via ? '<div class="gm-sig">--<br>' + LA(POW[m.from].via) + '</div>' : '') + '</div>' +

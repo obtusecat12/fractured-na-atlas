@@ -19,6 +19,13 @@ function walk(where, d) {
 C.events.forEach(e => (e.opts || []).forEach((o, i) => walk(e.id + ' opts[' + i + ']', o.do)));
 C.mail.forEach(m => (m.acts || []).forEach((a, i) => walk(m.id + ' acts[' + i + ']', a.do)));
 C.events.filter(e => e.chained).forEach(e => { const used = JSON.stringify(C.events.concat(C.mail)).includes('"' + e.id + '"'); if (!used) C.errors.push(e.id + ': chained 事件没有被任何选项引用'); });
+// 警告（不算错误）：选项文字和效果对不上，例如文字提到钱但 do 里没有 county/funds（docs/HANDOFF.md 第三节 6）
+const warns = [];
+if (C.audit) {
+  C.events.forEach(e => (e.opts || []).forEach((o, i) => { const w = C.audit(o.t, o.do, o.fx); if (w) warns.push(e.id + ' opts[' + i + '] “' + o.t[0] + '”：' + w); }));
+  C.mail.forEach(m => (m.acts || []).forEach((a, i) => { const w = C.audit(a.t, a.do, a.fx); if (w) warns.push(m.id + ' acts[' + i + '] “' + a.t[0] + '”：' + w); }));
+}
 const starts = C.events.filter(e => e.start).length; if (starts !== 1) C.errors.push('需要恰好一个 start:true 的开局事件，现在有 ' + starts + ' 个');
 console.log(`内容包 ${C.packs.length} 个 · 事件 ${C.events.length} · 公文 ${C.mail.length} · 广播 ${C.broadcasts.length} · 建筑 ${C.buildings.length}`);
+if (warns.length) console.log('\n警告 ' + warns.length + ' 条（文字和效果可能对不上，请人工确认）：\n' + warns.map(w => '  - ' + w).join('\n'));
 if (C.errors.length) { console.log('\n错误 ' + C.errors.length + ' 条：\n' + C.errors.map(e => '  - ' + e).join('\n')); process.exit(1); } else console.log('全部通过。');

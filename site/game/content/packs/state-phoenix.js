@@ -16,7 +16,7 @@ CONTENT.add({
       foot: ['委员会每季度例会，特别会议需主席或三名成员提议。', 'The council meets quarterly; a special session needs the chair or three members.'],
       opts: [
         { t: ['按州长办公室的分配领取', "Take the share the governor's office set"], do: { county: 70, rel: { gov: 3 } } },
-        { t: ['向委员会申请追加拨款', 'Ask the council for more'], do: { rel: { sec: 3, gov: -1 }, ctl: { sec: 2 }, flag: 'asked_sec', event: { id: 'st-sec-approve', inDays: 9 } } },
+        { t: ['向委员会申请追加拨款', 'Ask the council for more'], do: { rel: { sec: 3, gov: -1 }, ctl: { sec: 2 }, flag: 'asked_sec', event: { id: 'st-sec-approve', inDays: 9 } }, fx: ['委员会关系 +3 · 州长关系 −1 · 委员会权力 +2 · 9 天后表决追加 $350K', 'Council +3 · Governor −1 · Council power +2 · vote on $350K in 9 days'] },
         { t: ['两边都报，先领分配的', 'File with both, take the share first'], do: { county: 70, rel: { gov: 1, sec: 1 } } }
       ]
     },

@@ -78,15 +78,34 @@
     if (!d) return ['无变化', 'No change'];
     var zh = [], en = [];
     STATS.forEach(function (k) { if (d[k]) { var s = (d[k] > 0 ? '+' : '−') + Math.abs(d[k]); zh.push(NAMES[k][0] + ' ' + s); en.push(NAMES[k][1] + ' ' + s); } });
-    if (d.county) { var m = (d.county > 0 ? '+$' : '$') + Math.abs(d.county) + 'K'; zh.push(m); en.push(m); }
-    if (d.funds) Object.keys(d.funds).forEach(function (k) { var v = d.funds[k], s = (v > 0 ? '+$' : '−$') + Math.abs(v) + 'K'; zh.push(NAMES[k] ? NAMES[k][0] + s : s); en.push(NAMES[k] ? NAMES[k][1] + ' ' + s : s); });
+    // 县支票账户：花钱显示 −$，进账显示 +$（原来花钱只显示 $120K，容易看成进账）
+    if (d.county) { var m = (d.county > 0 ? '+$' : '−$') + Math.abs(d.county) + 'K'; zh.push('县账户 ' + m); en.push('County ' + m); }
+    // 专项资金只能用于该方出资的建筑，和县账户分开写
+    var FN = { fed: ['联邦专款', 'Federal fund'], navajo: ['纳瓦霍族专款', 'Navajo fund'], lds: ['教会专款', 'LDS fund'], county: ['县账户', 'County'] };
+    if (d.funds) Object.keys(d.funds).forEach(function (k) { var v = d.funds[k], s = (v > 0 ? '+$' : '−$') + Math.abs(v) + 'K'; zh.push((FN[k] || [k])[0] + ' ' + s); en.push((FN[k] || [k, k])[1] + ' ' + s); });
     var CN = { gov: ['州长', 'Governor'], sec: ['委员会', 'Council'], adem: ['应急管理局', 'ADEM'] };
     if (d.rel) Object.keys(d.rel).forEach(function (k) { var s = (d.rel[k] > 0 ? '+' : '−') + Math.abs(d.rel[k]); zh.push(CN[k][0] + '关系 ' + s); en.push(CN[k][1] + ' ' + s); });
     if (d.ctl) Object.keys(d.ctl).forEach(function (k) { var s = (d.ctl[k] > 0 ? '+' : '−') + Math.abs(d.ctl[k]); zh.push(CN[k][0] + '权力 ' + s); en.push(CN[k][1] + ' power ' + s); });
-    if (d.build) { zh.push('开工：' + d.build.name[0]); en.push('Builds ' + d.build.name[1]); }
+    if (d.build) {
+      var BD = root.DATA && root.DATA.buildings ? root.DATA.buildings.filter(function (x) { return x.id === d.build.b; })[0] : null, bf = d.build.fund || (BD && BD.fund[0]), bc = d.build.cost != null ? d.build.cost : BD && BD.cost;
+      var FN2 = { fed: ['联邦专款', 'Federal fund'], navajo: ['纳瓦霍族专款', 'Navajo fund'], lds: ['教会专款', 'LDS fund'], county: ['县账户', 'County'] }, cs = bc && FN2[bf] ? [FN2[bf][0] + ' −$' + bc + 'K', FN2[bf][1] + ' −$' + bc + 'K'] : null;
+      zh.push('开工：' + d.build.name[0] + (cs ? '（' + cs[0] + '）' : '')); en.push('Builds ' + d.build.name[1] + (cs ? ' (' + cs[1] + ')' : ''));
+    }
+    if (d.event) { var n = typeof d.event === 'string' ? 0 : (d.event.inDays || 0); zh.push(n ? n + ' 天后有后续' : '马上有后续'); en.push(n ? 'follow-up in ' + n + ' days' : 'follow-up now'); }
+    if (d.mail && !zh.length) { zh.push('收到回函'); en.push('A reply arrives'); }
     return zh.length ? [zh.join(' · '), en.join(' · ')] : ['无变化', 'No change'];
   }
-  C.add = add; C.fx = fx; C.isDate = isDate;
+  // 文字和效果对不上的选项（validate_content.js 里作为警告列出）
+  var MONEY = /\$\s?\d|拨款|出钱|付钱|付清|垫付|买下|购买|租下|雇用?|加班费|\b(fund|pay|buy|rent|hire)\b/i, NOMONEY = /^(不|婉拒|拒绝|谢绝|暂不|没有|先不|维持)|^(no|decline|pass|do not|don't|not now)/i;
+  var BUILD = /^(建(?!议)|开设|搭建|改建|新建)|^(build|convert|set up a)\b/i;
+  function audit(t, d, fxText) {
+    if (fxText) return null; d = d || {};
+    var zh = t[0], en = t[1], s = zh + ' ' + en;
+    if (MONEY.test(s) && !NOMONEY.test(zh) && !NOMONEY.test(en) && d.county == null && d.funds == null && !d.event && !d.mail) return '文字提到钱，但 do 里没有 county/funds';
+    if (BUILD.test(zh) || BUILD.test(en)) { if (!d.build && !d.event) return '文字说要建，但 do 里没有 build'; }
+    return null;
+  }
+  C.add = add; C.fx = fx; C.isDate = isDate; C.audit = audit;
   root.CONTENT = C;
   if (typeof module !== 'undefined') module.exports = C;
 })(typeof window !== 'undefined' ? window : globalThis);

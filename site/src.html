@@ -26,18 +26,31 @@ body.fna-atlas #fnaback{display:block}
 </style>
 <div id="fnaboot"></div>
 <script>(function () {
+  // 开机动画（2026-11-22 改）：先把 boot.mp4（352 KB）整个下载成 Blob 再播，播放时不和页面其余脚本、游戏数据抢带宽，
+  // 也不靠主线程收网络数据；游戏 iframe 等 Windows 标志拼好之后（第 6.5 秒，之后只剩呼吸光）才开始加载，
+  // 免得游戏数据解析（同一主线程）打断前面的光点动画。原版就是 15 帧/秒（bootres.dll，105 帧 200×200），不插帧。
   var seen = false; try { seen = localStorage.getItem('fna-boot-seen') === '1'; } catch (e) {}
-  var b = document.getElementById('fnaboot');
+  var b = document.getElementById('fnaboot'), started = false;
   window.FNA_BOOT_DONE = false;
-  function done() { if (window.FNA_BOOT_DONE) return; window.FNA_BOOT_DONE = true; try { localStorage.setItem('fna-boot-seen', '1'); } catch (e) {} b.classList.add('out'); setTimeout(function () { b.remove(); }, 700); }
+  function loadGame() { var f = document.getElementById('gameframe'); if (f && !f.getAttribute('src')) f.setAttribute('src', f.getAttribute('data-src')); }
+  window.FNA_LOADGAME = loadGame;
+  function done() { if (window.FNA_BOOT_DONE) return; window.FNA_BOOT_DONE = true; loadGame(); try { localStorage.setItem('fna-boot-seen', '1'); } catch (e) {} b.classList.add('out'); setTimeout(function () { b.remove(); }, 700); }
   window.FNA_BOOTED = done;
-  if (seen) { setTimeout(done, 300); return; }
-  var v = document.createElement('video'); v.src = 'boot.mp4'; v.autoplay = true; v.muted = true; v.playsInline = true; v.preload = 'auto';
-  v.addEventListener('ended', done); v.addEventListener('error', done); b.appendChild(v);
-  var p = v.play(); if (p && p.catch) p.catch(function () { setTimeout(done, 1500); });
-  setTimeout(done, 26000);
+  if (seen) { window.FNA_BOOT_SKIP = true; setTimeout(done, 300); return; }
+  var v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto';
+  v.addEventListener('ended', done); v.addEventListener('error', done);
+  v.addEventListener('timeupdate', function () { if (v.currentTime > 6.5) loadGame(); });
+  b.appendChild(v);
+  var url = 'boot.mp4?v=__BOOT_V__';
+  function go(u) { if (started) return; started = true; v.src = u; var p = v.play(); if (p && p.catch) p.catch(function () { setTimeout(done, 1500); }); }
+  if (window.fetch && window.URL && URL.createObjectURL) {
+    fetch(url).then(function (r) { if (!r.ok) throw r.status; return r.blob(); }).then(function (bl) { go(URL.createObjectURL(bl)); }, function () { go(url); });
+    setTimeout(function () { go(url); }, 4000);   // 网太慢就直接边下边播
+  } else go(url);
+  setTimeout(done, 30000);
 })();</script>
-<iframe id="gameframe" src="game/index.html" title="Navajo County"></iframe>
+<iframe id="gameframe" data-src="game/index.html" title="Navajo County"></iframe>
+<script>if (window.FNA_BOOT_SKIP || window.FNA_BOOT_DONE) window.FNA_LOADGAME();</script>
 <div id="gbar">
   <div id="gnav"><a href="#">网页 Web</a><a href="#">图片 Images</a><a href="#">视频 Videos</a><b>地图 Maps</b><a href="#">新闻 News</a><a href="#">购物 Shopping</a><a href="#">邮件 Mail</a><a href="#" class="more">更多 more <span class="tri">&#9660;</span></a></div>
   <div id="guser"><a href="#" id="help">帮助 Help</a> | <a href="#">登录 Sign in</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><div class="gmh">显示器 Display</div><a href="#" data-lcd="on" class="gmi"><b class="ck"></b>液晶屏（标准） LCD (normal)</a><a href="#" data-lcd="strong" class="gmi"><b class="ck"></b>液晶屏（加强） LCD (strong)</a><a href="#" data-lcd="off" class="gmi"><b class="ck"></b>关闭 Off</a><div class="gms"></div><a href="#" class="gmi" id="gmhelp"><b class="ck"></b>地图帮助 Maps Help</a></div></div>

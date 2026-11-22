@@ -113,7 +113,10 @@ var MAP = (function () {
     var did = 0, t0 = NOWF();
     while (QUEUE.length && did < n && (did === 0 || !budget || NOWF() - t0 < budget)) {
       var k = QUEUE.shift(); if (PENDING[k] || (CACHE[k] && !CACHE[k].stale)) continue;
-      var p = k.split('/'); makeTile(+p[0], +p[1], +p[2], k, done); did++;
+      var p = k.split('/');
+      if (p[0] === 'L') { if (LCACHE[k]) continue; PENDING[k] = 1; makeLight(+p[1], +p[2], +p[3], k, done); }
+      else makeTile(+p[0], +p[1], +p[2], k, done);
+      did++;
     }
     return QUEUE.length;
   }
@@ -357,8 +360,110 @@ var MAP = (function () {
     if (f.b === 'clinic') { rect('#b9b8b2', x0 + w * .2, y0 + h * .3, 2 * u, 2 * u); rect('#b9b8b2', x0 + w * .6, y0 + h * .3, 2 * u, 2 * u); veh(x0 + w + 2 * u, y0 + h * .2, '#f4f4f0', 6); }
     if (f.b === 'warehouse') { g.strokeStyle = 'rgba(80,80,80,.35)'; for (var s2 = x0 + 2 * u; s2 < x0 + w; s2 += 2 * u) { g.beginPath(); g.moveTo(s2, y0); g.lineTo(s2, y0 + h); g.stroke(); } veh(x0 + w * .2, y0 + h + 3 * u, '#efefea', 14); }
   }
+
+  // ---- 夜间照明：预先烘焙（2026-11-22） ----
+  // 按 2009 年美国西南小镇的实际情况摆灯（米制，与 OSM 同一坐标系），每个图块烘焙三张透明图，和卫星图块一样缓存、分批生成：
+  //  st 路灯和停车场照明的地面照度（乘到白天影像上：沥青被钠灯照成橙褐色，屋顶、地面纹理都还在）
+  //  hm 住宅门廊和窗户漏到院子里的暖光（随钟点变化：晚上多，后半夜少）
+  //  em 灯具本身和加油站雨棚的亮点（叠加，不受地面颜色影响）
+  // 灯型：干道（primary/secondary/trunk/tertiary）高压钠灯眼镜蛇头路灯，间距约 45 米、两侧交错；住宅街只在路口和每 120 米一盏；
+  // I-40 主线不亮灯，只有匝道的高杆灯；停车场金卤灯，约 34 米一根；大型商业建筑四角壁灯；加油站雨棚；约一半住宅亮灯。
+  var LAMPS = null, LIX = null;
+  var LCOL = { hps: [255, 150, 52], hpsCore: [255, 206, 140], mh: [226, 232, 246], home: [255, 168, 84], mast: [255, 164, 70] };   // 高压钠灯约 2100 K；金卤灯偏冷白；白炽灯约 2700 K
+  function buildLamps() {
+    if (LAMPS) return LAMPS; LAMPS = [];
+    function add(p, k, r, i, core) { var ll = m2ll(p), dl = r * 2.6 / KX, dt = r * 2.6 / KY; LAMPS.push({ ll: ll, k: k, r: r, i: i, c: core || 0, bb: [ll[0] - dl, ll[1] - dt, ll[0] + dl, ll[1] + dt] }); }
+    var CLS = { trunk: [42, 9, 20, .95], primary: [44, 9, 20, .95], secondary: [52, 8, 18, .85], tertiary: [60, 8, 17, .8], motorway_link: [70, 0, 42, 1.1], trunk_link: [50, 6, 18, .85], primary_link: [50, 6, 18, .85] };
+    var deg = {}, key = function (p) { return Math.round(p[0]) + ',' + Math.round(p[1]); };
+    var DRIVE = /^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street)(_link)?$/;
+    HW.forEach(function (h) { if (DRIVE.test(h.h)) h.m.forEach(function (p) { var k = key(p); deg[k] = (deg[k] || 0) + 1; }); });
+    var done = {};
+    HW.forEach(function (h, hi) {
+      var c = CLS[h.h], res = /^(residential|unclassified|living_street)$/.test(h.h);
+      if (!c && !res) return;
+      var sp = c ? c[0] : 120, off = c ? c[1] : 6, r = c ? c[2] : 15, it = c ? c[3] : .7, kind = h.h === 'motorway_link' ? 'mast' : 'hps';
+      var acc = sp * (.35 + .3 * hash(hi, 1, 41)), side = 1;
+      for (var i = 1; i < h.m.length; i++) {
+        var a = h.m[i - 1], b = h.m[i], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy); if (!L) continue;
+        var nx = -dy / L, ny = dx / L;
+        while (acc <= L) {
+          var t = acc / L, p = [a[0] + dx * t + nx * off * side, a[1] + dy * t + ny * off * side];
+          if (hash(hi, i * 31 + (acc | 0), 43) > .08) add(p, kind, r * (.9 + .2 * hash(hi, i, 44)), it, kind === 'mast' ? 1.4 : 1);  // 少数灯坏了不亮
+          side = -side; acc += sp;
+        }
+        acc -= L;
+      }
+      // 住宅街：路口一盏
+      if (res) h.m.forEach(function (p, i) { var k = key(p); if (deg[k] >= 2 && !done[k] && hash(p[0] | 0, p[1] | 0, 45) < .78) { done[k] = 1; add([p[0] + 5, p[1] + 5], 'hps', 15, .75, 1); } });
+    });
+    // 停车场：金卤灯网格
+    AREA.forEach(function (a) {
+      if (a.v !== 'parking') return;
+      var bx = [1e9, 1e9, -1e9, -1e9]; a.m.forEach(function (q) { bx[0] = Math.min(bx[0], q[0]); bx[1] = Math.min(bx[1], q[1]); bx[2] = Math.max(bx[2], q[0]); bx[3] = Math.max(bx[3], q[1]); });
+      var n = 0;
+      for (var x = bx[0] + 12; x < bx[2] - 6; x += 34) for (var y = bx[1] + 12; y < bx[3] - 6; y += 34) if (pip([x, y], a.m)) { add([x, y], 'mh', 21, .9, 1.2); n++; }
+      if (!n) { var cxm = (bx[0] + bx[2]) / 2, cym = (bx[1] + bx[3]) / 2; if (pip([cxm, cym], a.m)) add([cxm, cym], 'mh', 16, .7, 1); }
+    });
+    BLD.forEach(function (b) {
+      var bx = b.box, cxm = (bx[0] + bx[2]) / 2, cym = (bx[1] + bx[3]) / 2;
+      var biz = /commercial|retail|motel|school|industrial|warehouse|public|train_station|church|hotel|supermarket/.test(b.b) || b.am, flat = b.area > 380 || biz || b.b === 'roof';
+      if (/fuel/.test(b.am)) { add([cxm, cym], 'mh', Math.max(14, Math.sqrt(b.area) * .9), 1.25, 2.2); return; }   // 加油站雨棚
+      if (flat) { // 商业建筑：四角壁灯，招牌一侧更亮
+        if (!biz) { if (b.area > 600 && hash(b.i, 9, 46) < .3) add([bx[0] - 2, bx[3] + 2], 'mh', 8, .45, .6); return; }   // 没有标注用途的大房子（谷仓、车库）：偶尔一盏
+        if (b.area < 250) return;
+        [[bx[0], bx[1]], [bx[2], bx[1]], [bx[0], bx[3]], [bx[2], bx[3]]].forEach(function (q, j) { if (hash(b.i, j, 46) < .5) add([q[0] + (q[0] < cxm ? -2 : 2), q[1] + (q[1] < cym ? -2 : 2)], 'mh', 9, .55, .8); });
+        if (/motel|retail|commercial/.test(b.b) || b.am) add([cxm, bx[3] + 4], 'hpsCore', 7, .5, 1.3);
+        return;
+      }
+      if (hash(b.i, 7, 47) < .56) add([cxm + (hash(b.i, 1, 48) - .5) * 6, cym + (hash(b.i, 2, 48) - .5) * 6], 'home', 7 + 3 * hash(b.i, 3, 48), .42, hash(b.i, 4, 48) < .35 ? .5 : 0);
+    });
+    LIX = mkIndex(LAMPS);
+    return LAMPS;
+  }
+  // 光斑贴图：地面照度按 (1 + (d/r)²)^-1.7 衰减，2.6 r 处截断（路灯在地面上的光斑边缘是渐变的，中心偏亮）
+  var SPR = {};
+  function sprite(kind, core) {
+    var key = kind + (core ? 'c' : ''); if (SPR[key]) return SPR[key];
+    var N2 = 64, c = document.createElement('canvas'); c.width = c.height = N2; var g = c.getContext('2d'), im = g.createImageData(N2, N2), d = im.data, col = LCOL[kind] || LCOL.hps;
+    for (var y = 0; y < N2; y++) for (var x = 0; x < N2; x++) {
+      var dx = (x + .5 - N2 / 2) / (N2 / 2) * 2.6, dy = (y + .5 - N2 / 2) / (N2 / 2) * 2.6, dd = dx * dx + dy * dy, v;
+      if (core) v = Math.exp(-dd * 2.2) + .18 * Math.exp(-dd * .35);                 // 灯具：亮核 + 一点光晕
+      else v = dd >= 6.76 ? 0 : (Math.pow(1 + dd, -1.7) - Math.pow(7.76, -1.7)) / (1 - Math.pow(7.76, -1.7));
+      var o = (y * N2 + x) * 4, a = Math.min(1, v); d[o] = col[0] * a; d[o + 1] = col[1] * a; d[o + 2] = col[2] * a; d[o + 3] = 255 * a;
+    }
+    g.putImageData(im, 0, 0); return (SPR[key] = c);
+  }
+  var LCACHE = {}, LORDER = [], LLIMIT = 180;
+  function light(z, tx, ty) {
+    var k = 'L/' + z + '/' + tx + '/' + ty, c = LCACHE[k];
+    if (!c && !PENDING[k] && QUEUE.indexOf(k) < 0) QUEUE.push(k);
+    return c || null;
+  }
+  function peekLight(z, tx, ty) { return LCACHE['L/' + z + '/' + tx + '/' + ty] || null; }
+  function makeLight(z, tx, ty, key, done) {
+    buildLamps();
+    var X0 = tx * 256, Y0 = ty * 256, M = mpp(z), mk = function () { var c = document.createElement('canvas'); c.width = c.height = 256; var g = c.getContext('2d'); g.globalCompositeOperation = 'lighter'; return [c, g]; };
+    var ST = mk(), HM = mk(), EM = mk(), any = false;
+    var lon0 = xlon(X0 - 64, z), lon1 = xlon(X0 + 320, z), lat1 = ylat(Y0 - 64, z), lat0 = ylat(Y0 + 320, z);
+    near(LIX, lon0, lat0, lon1, lat1).forEach(function (L) {
+      var x = wx(L.ll[0], z) - X0, y = wy(L.ll[1], z) - Y0, rp = L.r / M, i = L.i, glowK = z < 13 ? 3 : 1;   // 远看时一个镇子的灯连成一团光
+      if (rp < .9) { i *= (rp * rp) / .81; rp = .9; }                                    // 缩小后光斑小于一个像素：面积守恒，镇子整体成一团光
+      var s = rp * 2.6, tgt = L.k === 'home' ? HM : ST;
+      if (x < -s || y < -s || x > 256 + s || y > 256 + s) return;
+      var kind = L.k === 'mast' ? 'mast' : L.k === 'hpsCore' ? 'hps' : L.k, home = L.k === 'home';
+      tgt[1].globalAlpha = Math.min(1, i); tgt[1].drawImage(sprite(kind), x - s, y - s, s * 2, s * 2);
+      // 叠加层：钠灯在空气和地面上的散射光晕（照片里街道发橙的那一层），再加灯具本身的亮点
+      EM[1].globalAlpha = Math.min(1, i * (home ? .05 : .2) * glowK); EM[1].drawImage(sprite(kind), x - s * 1.25, y - s * 1.25, s * 2.5, s * 2.5);
+      if (L.c && z >= 13) { var cr = Math.max(.9, (home ? .7 : 1.4) / M * 2.4) * L.c; EM[1].globalAlpha = Math.min(1, (home ? .28 : .85) * Math.min(1, .5 + (z - 13) * .2)); EM[1].drawImage(sprite(L.k === 'mast' ? 'mast' : L.k === 'hpsCore' ? 'hpsCore' : L.k, true), x - cr * 2.6, y - cr * 2.6, cr * 5.2, cr * 5.2); }
+      any = true;
+    });
+    delete PENDING[key];
+    LCACHE[key] = any ? { st: ST[0], hm: HM[0], em: EM[0] } : { empty: true };
+    LORDER.push(key); if (LORDER.length > LLIMIT) delete LCACHE[LORDER.shift()];
+    done && done();
+  }
   function stageKey(f) { return f.done ? 99 : Math.floor((f.progress || 0) * 20); }
 
   return { R: R, BLD: BLD, HW: HW, RAIL: RAIL, WAT: WAT, AREA: AREA, POI: POI, m2ll: m2ll, ll2m: ll2m, wx: wx, wy: wy, xlon: xlon, ylat: ylat, mpp: mpp, pip: pip, hash: hash,
-    buildingAt: buildingAt, inTown: inTown, townAt: townAt, TOWN_BOXES: TOWN_BOXES, boxHitsTown: boxHitsTown, tile: tile, peek: peek, pump: pump, setFacilities: setFacilities, stageOf: stageOf, stageKey: stageKey, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
+    buildingAt: buildingAt, inTown: inTown, townAt: townAt, TOWN_BOXES: TOWN_BOXES, boxHitsTown: boxHitsTown, tile: tile, peek: peek, light: light, peekLight: peekLight, lamps: buildLamps, pump: pump, setFacilities: setFacilities, stageOf: stageOf, stageKey: stageKey, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
 })();
