@@ -76,3 +76,7 @@
 #gmbody button:not(:disabled):hover{border-color:#888 #666 #555 #888}
 #gmbody input[type=checkbox]{appearance:auto;-webkit-appearance:checkbox;opacity:1;position:static;width:13px;height:13px;margin:0}
 #gmbody input[type=text]{padding:0 3px;box-shadow:none;border-radius:0}
+
+/* 公文按钮下方的效果说明（与事件弹窗命令链接下方的灰字一致） */
+.gm-ab{display:inline-flex;flex-direction:column;align-items:flex-start;margin:0 8px 6px 0;vertical-align:top}
+.gm-fx{font-size:11px;color:#777;margin-top:3px;max-width:240px;line-height:1.3}

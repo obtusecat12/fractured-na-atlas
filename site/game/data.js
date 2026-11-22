@@ -121,17 +121,17 @@ var DATA = {
     { b: 'trailers', ll: [-110.1765, 34.9105], name: ['西霍皮大道拖车点', 'W Hopi Dr trailer site'], fund: 'fed', done: false, eta: 3 }
   ],
   laws: [
-    { id: 'mask', sup: [1, 1, 0, 0, 0], g: ['公共场所', 'Public places'], zh: '县属建筑内须戴口罩', en: 'Masks in county buildings', fx: ['恐慌 −2', 'Panic −2'], on: true },
-    { id: 'school_open', sup: [0, 0, 1, 1, 1], g: ['公共场所', 'Public places'], zh: '霍尔布鲁克联合学区照常上课', en: 'Holbrook Unified stays open', fx: ['信任 +3 · 病例风险 +', 'Trust +3 · case risk +'], ex: 'school_close', on: true },
-    { id: 'school_close', sup: [1, 1, -1, -1, -1], g: ['公共场所', 'Public places'], zh: '全县公立学校停课两周', en: 'Close county public schools for two weeks', fx: ['病例风险 − · 劳动力 −8%', 'Case risk − · labour −8%'], ex: 'school_open' },
-    { id: 'presser', sup: [1, 1, 1, 1, 1], g: ['信息', 'Information'], zh: '每日县新闻发布会，KINO 1230 AM 转播', en: 'Daily county briefing, carried on KINO 1230 AM', fx: ['恐慌 −2', 'Panic −2'], on: true },
+    { id: 'mask', sup: [1, 1, 0, 0, 0], g: ['公共场所', 'Public places'], zh: '县属建筑内须戴口罩', en: 'Masks in county buildings', fx: ['传播 −15%', 'Spread −15%'], on: true },
+    { id: 'school_open', sup: [0, 0, 1, 1, 1], g: ['公共场所', 'Public places'], zh: '霍尔布鲁克联合学区照常上课', en: 'Holbrook Unified stays open', fx: ['传播 +10%', 'Spread +10%'], ex: 'school_close', on: true },
+    { id: 'school_close', sup: [1, 1, -1, -1, -1], g: ['公共场所', 'Public places'], zh: '全县公立学校停课两周', en: 'Close county public schools for two weeks', fx: ['传播 −30% · 信任 −2', 'Spread −30% · Trust −2'], ex: 'school_open' },
+    { id: 'presser', sup: [1, 1, 1, 1, 1], g: ['信息', 'Information'], zh: '每日县新闻发布会，KINO 1230 AM 转播', en: 'Daily county briefing, carried on KINO 1230 AM', fx: ['每天恐慌 −0.2', 'Panic −0.2 a day'], on: true },
     { id: 'std_fed', sup: [-2, -2, 1, 0, 1], g: ['病例标准', 'Case criteria'], zh: '采用州应急管理局的病例标准', en: "Use the state's case criteria", fx: ['联邦 +6 · 纳瓦霍族 −6', 'Federal +6 · Navajo −6'], ex: 'std_navajo' },
     { id: 'std_navajo', sup: [2, 2, -1, -1, -1], g: ['病例标准', 'Case criteria'], zh: '采用纳瓦霍族卫生部的病例标准', en: 'Use the Navajo Division of Health criteria', fx: ['纳瓦霍族 +6 · 联邦 −6', 'Navajo +6 · Federal −6'], ex: 'std_fed' },
-    { id: 'quota', sup: [-1, -1, 0, -1, 1], g: ['人口', 'People'], zh: '接收从凤凰城北上的人，每周 300 人', en: 'Take people coming north from Phoenix, 300 a week', fx: ['劳动力 +4% · 住房 −300', 'Labour +4% · housing −300'] },
-    { id: 'hours', sup: [0, 0, 0, -1, 0], g: ['人口', 'People'], zh: '县雇员每周工作 50 小时', en: 'County staff on 50-hour weeks', fx: ['指挥中心 +25% · 每天信任 −1', 'EOC +25% · Trust −1 a day'] },
-    { id: 'deputize', g: ['治安', 'Law enforcement'], sup: [2, 2, 0, -1, 0], zh: '县警长副手在凯恩塔和皮农驻点，持纳瓦霍族委任', en: "Station sheriff's deputies in Kayenta and Piñon under Navajo Nation commissions", fx: ['纳瓦霍族 +5 · 巡逻车 −2', 'Navajo +5 · patrol units −2'], d: { navajo: 5 } },
-    { id: 'mill_crew', g: ['就业', 'Jobs'], sup: [0, 0, 1, 2, 1], zh: '雇用斯诺弗莱克纸厂停工工人做流调', en: 'Hire idled Snowflake mill workers as contact tracers', fx: ['每周 $40K · 信任 +3 · 教会 +2', '$40K a week · Trust +3 · LDS +2'], d: { trust: 3, lds: 2, money: -40 } },
-    { id: 'bnsf', sup: [0, 0, 1, 1, 1], g: ['物资', 'Supplies'], zh: '请 BNSF 在霍尔布鲁克站停车卸货', en: 'Ask BNSF to stop and unload at Holbrook', fx: ['储备 +10 天 · 联邦 +2', 'Reserve +10 days · Federal +2'] }
+    { id: 'quota', sup: [-1, -1, 0, -1, 1], g: ['人口', 'People'], zh: '接收从凤凰城北上的人，每周 300 人', en: 'Take people coming north from Phoenix, 300 a week', fx: ['每周多来 300 人 · 联邦 +3 · 信任 −1', '+300 arrivals a week · Federal +3 · Trust −1'] },
+    { id: 'hours', sup: [0, 0, 0, -1, 0], g: ['人口', 'People'], zh: '县雇员每周工作 50 小时', en: 'County staff on 50-hour weeks', fx: ['县雇员人手 +25% · 每天信任 −1', 'County staff +25% · Trust −1 a day'] },
+    { id: 'deputize', g: ['治安', 'Law enforcement'], sup: [2, 2, 0, -1, 0], zh: '县警长副手在凯恩塔和皮农驻点，持纳瓦霍族委任', en: "Station sheriff's deputies in Kayenta and Piñon under Navajo Nation commissions", fx: ['纳瓦霍族 +5 · 两辆巡逻车调去凯恩塔和皮农', 'Navajo +5 · two patrol units move to Kayenta and Piñon'], d: { navajo: 5 } },
+    { id: 'mill_crew', g: ['就业', 'Jobs'], sup: [0, 0, 1, 2, 1], zh: '雇用斯诺弗莱克纸厂停工工人做流调', en: 'Hire idled Snowflake mill workers as contact tracers', fx: ['每周县账户 −$40K · 信任 +3 · 教会 +2 · 传播 −15%', 'County −$40K a week · Trust +3 · LDS +2 · Spread −15%'], d: { trust: 3, lds: 2, money: -40 }, weekly: -40 },
+    { id: 'bnsf', sup: [0, 0, 1, 1, 1], g: ['物资', 'Supplies'], zh: '请 BNSF 在霍尔布鲁克站停车卸货', en: 'Ask BNSF to stop and unload at Holbrook', fx: ['物资每天 +0.4 天 · 联邦 +2', 'Supplies +0.4 days a day · Federal +2'] }
   ],
   promises: [
     { zh: '霍尔布鲁克公共图书馆周六恢复开放', en: 'Reopen the Holbrook Public Library on Saturday', left: 3, cost: 15, by: ['霍尔布鲁克居民联署', 'Holbrook residents\' petition'] },

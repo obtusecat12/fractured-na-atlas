@@ -76,8 +76,8 @@ CONTENT.add({
       "county": -120
      },
      "fx": [
-      "信任 +3 · 教会 +2 · $120K",
-      "Trust +3 · LDS +2 · $120K"
+      "信任 +3 · 教会 +2 · 县账户 −$120K",
+      "Trust +3 · LDS +2 · County −$120K"
      ]
     },
     {
@@ -307,8 +307,8 @@ CONTENT.add({
     "Shift workers wait an hour at the I-40 checkpoint"
    ],
    "body": [
-    "约瑟夫城的电厂请县里给员工车辆开专用道。",
-    "The Joseph City plant asks for a dedicated lane for staff vehicles."
+    "约瑟夫城的电厂请县里在 I-40 检查点给倒班员工的车开一条专用道。电厂约 200 名员工，三班倒。",
+    "The Joseph City plant asks for a dedicated lane at the I-40 checkpoint for shift workers. The plant has about 200 staff on three shifts."
    ],
    "time": "08:40",
    "unread": true,
@@ -321,7 +321,11 @@ CONTENT.add({
      "done": [
       "已同意",
       "Agreed"
-     ]
+     ],
+     "do": {
+      "trust": 1,
+      "fed": -1
+     }
     },
     {
      "t": [
@@ -331,7 +335,10 @@ CONTENT.add({
      "done": [
       "已拒绝",
       "Declined"
-     ]
+     ],
+     "do": {
+      "trust": -1
+     }
     }
    ]
   },
@@ -399,8 +406,8 @@ CONTENT.add({
       "Reply"
      ],
      "done": [
-      "已回复",
-      "Replied"
+      "已回复，等对方答复",
+      "Replied; awaiting their answer"
      ]
     }
    ]
@@ -440,8 +447,8 @@ CONTENT.add({
       "Reply"
      ],
      "done": [
-      "已回复",
-      "Replied"
+      "已回复，等对方答复",
+      "Replied; awaiting their answer"
      ]
     }
    ]
@@ -480,8 +487,8 @@ CONTENT.add({
       "Reply"
      ],
      "done": [
-      "已回复",
-      "Replied"
+      "已回复，等对方答复",
+      "Replied; awaiting their answer"
      ]
     }
    ]
@@ -498,8 +505,8 @@ CONTENT.add({
     "Two nurses on loan, paid in diesel"
    ],
    "body": [
-    "6,000 加仑，从圣约翰斯运过来。",
-    "6,000 gallons, trucked from St. Johns."
+    "6,000 加仑，从圣约翰斯运过来，按现价约值 $16,500。两名护士借出期间，县卫生服务区的门诊每周少开一个半天。",
+    "6,000 gallons, trucked from St. Johns, worth about $16,500 at current prices. While the two nurses are away, Public Health runs one fewer clinic half-day a week."
    ],
    "time": "昨天 Yesterday",
    "unread": false,
@@ -512,7 +519,11 @@ CONTENT.add({
      "done": [
       "已接受",
       "Accepted"
-     ]
+     ],
+     "do": {
+      "county": 16,
+      "trust": -1
+     }
     },
     {
      "t": [
@@ -520,9 +531,12 @@ CONTENT.add({
       "Counter"
      ],
      "done": [
-      "已还价",
-      "Countered"
-     ]
+      "已还价：借一名护士，换 3,000 加仑",
+      "Countered: one nurse for 3,000 gallons"
+     ],
+     "do": {
+      "county": 8
+     }
     },
     {
      "t": [
@@ -575,7 +589,10 @@ CONTENT.add({
      "done": [
       "已婉拒",
       "Declined"
-     ]
+     ],
+     "do": {
+      "trust": -2
+     }
     }
    ]
   }

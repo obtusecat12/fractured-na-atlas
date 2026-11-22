@@ -696,7 +696,7 @@ CONTENT.add({
         "A game processor in Heber says some out-of-town hunters do not want to haul all their elk home and will donate the meat. The shop can cut and freeze it to state rules and asks whether the county food sites will take it."],
       opts: [
         { t: ["收，加工费县里出", "Yes, county pays processing"], do: { trust: 2, county: -3 } },
-        { t: ["收，加工费请猎人出", "Yes, if hunters pay processing"], do: { trust: 1 } },
+        { t: ["收，加工费请猎人出", "Yes, if hunters pay processing"], do: { trust: 1 }, fx: ["信任 +1（县里不出钱）", "Trust +1 (no county cost)"] },
         { t: ["野味不进发放点", "No game meat at food sites"], do: {} }
       ]
     },
@@ -1756,7 +1756,7 @@ CONTENT.add({
         "County Manager James Jayne: emergency spending this fiscal year has used 61% of the annual contingency. From today, any single emergency expense over $25K needs prior sign-off from the County Manager's office."],
       acts: [
         { t: ["照办", "Comply"], do: { county: 10 }, done: ["已通知各部门。", "Departments notified."] },
-        { t: ["请他放宽到 $50K", "Ask him to raise it to $50K"], do: { trust: 1 }, done: ["已回复。", "Replied."] }
+        { t: ["请他放宽到 $50K", "Ask him to raise it to $50K"], do: { trust: 1 }, fx: ["信任 +1（只改报批门槛，不花钱）", "Trust +1 (only the sign-off threshold changes)"], done: ["已回复。", "Replied."] }
       ]
     },
     {

@@ -41,7 +41,7 @@
     if (d.funds) Object.keys(d.funds).forEach(function (k) { S.funds[k] += d.funds[k]; });
     [].concat(d.flag || []).forEach(function (f) { S.flags[f] = true; });
     [].concat(d.unflag || []).forEach(function (f) { delete S.flags[f]; });
-    if (d.build) { var b = d.build, bd = bdefOf(b.b); if (bd) { S.facilities.push({ b: b.b, ll: b.ll, name: b.name, fund: b.fund || bd.fund[0], done: false, eta: b.eta || bd.days, size: b.size || bd.size, roof: bd.roof, look: bd.look, grid: bd.grid, tower: bd.tower, conv: bd.convert, grid: bd.grid, tower: bd.tower, progress: 0 }); syncFac(); MAP.invalidate(b.ll); } }
+    if (d.build) { var b = d.build, bd = bdefOf(b.b); if (bd) { var bf = b.fund || bd.fund[0]; if (b.cost !== 0) S.funds[bf] -= (b.cost != null ? b.cost : bd.cost); /* 内容里开工的建筑也要按造价从出资方扣钱（原来不扣，等于白送） */ S.facilities.push({ b: b.b, ll: b.ll, name: b.name, fund: b.fund || bd.fund[0], done: false, eta: b.eta || bd.days, size: b.size || bd.size, roof: bd.roof, look: bd.look, grid: bd.grid, tower: bd.tower, conv: bd.convert, grid: bd.grid, tower: bd.tower, progress: 0 }); syncFac(); MAP.invalidate(b.ll); } }
     [].concat(d.mail || []).forEach(deliverMail);
     if (d.event) { var q = typeof d.event === 'string' ? { id: d.event, inDays: 0 } : d.event; S.chain.push({ id: q.id, at: S.day + (q.inDays || 0) }); }
     if (d.notice) { $('#ntext').innerHTML = LA(d.notice); $('#notice').hidden = false; }
@@ -290,7 +290,7 @@
   // ---------- 人手 · 昼夜 ----------
   function isNight() { return S.hour >= 19 || S.hour < 6; }
   function opsStaff() { return S.facilities.reduce(function (a, f) { var b = bdefOf(f.b); return a + (f.done && b ? b.ops || 0 : 0); }, 0) + S.teams.length * 4; }
-  function staffTotal() { var off = holiday() || [0, 6].indexOf(S.date.getDay()) >= 0; return Math.round(S.staff.county * (off && !S.staff.ot ? .5 : 1)) + Math.round(S.staff.vol); }
+  function staffTotal() { var off = holiday() || [0, 6].indexOf(S.date.getDay()) >= 0; return Math.round(S.staff.county * (off && !S.staff.ot ? .5 : 1) * (S.laws.hours ? 1.25 : 1)) + Math.round(S.staff.vol); }   // 条例“每周 50 小时”：县雇员人手 +25%
   // ---------- 日历 ----------
   var HOL = { '2009-11-11': ['退伍军人节', 'Veterans Day'], '2009-11-26': ['感恩节', 'Thanksgiving'], '2009-11-27': ['感恩节次日', 'Day after Thanksgiving'], '2009-12-25': ['圣诞节', 'Christmas Day'], '2010-01-01': ['元旦', "New Year's Day"] };
   function holiday() { return HOL[ymdOf(S.date)]; }
@@ -380,6 +380,8 @@
     E.rev.forEach(function (r) { inn += revWk(r) / 7; }); E.exp.forEach(function (x) { out += x.wk / 7; });
     S.funds.county += inn - out; ec.wk.rev += inn; ec.wk.exp += out;
     ec.accr += ec.lgip * E.lgipRate / 365;
+    // 有周开支的条例（雇纸厂工人做流调每周 $40K）：每周一扣（签署当天已扣第一周）
+    if (S.date.getDay() === 1) D.laws.forEach(function (l) { if (l.weekly && S.laws[l.id]) { S.funds.county += l.weekly; ec.wk.exp -= l.weekly; } });
     if (S.funds.county < 0) { var w = -S.funds.county * .02 / 365; S.funds.county -= w; ec.wk.exp += w; if (S.date.getDay() === 1) apply({ trust: -1 }); }
     ec.loans.forEach(function (l) { if (l.rate) { var i = l.bal * l.rate / 365; S.funds.county -= i; ec.wk.exp += i; } });
     ec.pending = ec.pending.filter(function (q) { if (--q.days > 0) return true; var d = loanDef(q.id); S.funds.county += q.amt; if (!d.grant) ec.loans.push({ id: q.id, bal: q.amt, rate: d.rate, due: d.due, term: d.term }); else ec.used[q.id] = true; if (d.id === 'interfund') ec.flood -= q.amt; notice(L('到账：', 'Received: ') + LA([d.zh, d.en]) + ' ' + fmtK(q.amt)); return false; });
@@ -605,35 +607,67 @@
   }
   function fogTiles(x, y, w, h) { cx.fillStyle = fogPat(); cx.fillRect(x, y, w, h); }
   // 夜色：19 点到 6 点卫星图压暗，镇上的路灯和夜间施工的照明灯亮起；黄昏和清晨各一小时过渡
-  var lastNL = -1;
-  function nightLevel() { var h = S.hour; return h >= 20 || h < 5 ? 1 : h === 19 ? .55 : h === 5 ? .5 : h === 6 ? .2 : h === 18 ? .2 : 0; }
-  // 路灯位置只算一次（原来每帧遍历 2.5 万个道路顶点），光晕用预先画好的小图（原来每盏灯每帧新建一个径向渐变）
-  var LAMPS = null, GLOW = {};
-  function lamps() {
-    if (LAMPS) return LAMPS; LAMPS = [];
-    MAP.HW.forEach(function (h) {
-      if (h.h === 'track' || h.h === 'path' || h.h === 'footway') return;
-      for (var i = 0; i < h.ll.length; i++) if (MAP.hash(i, h.ll.length, 31) <= (h.h === 'residential' ? .45 : .8)) LAMPS.push(h.ll[i]);
-    });
-    return LAMPS;
+  // ---------- 昼夜（2026-11-22）：按霍尔布鲁克（北纬 34.90°、西经 110.16°，MST，亚利桑那不实行夏令时）的真实太阳高度角 ----------
+  // 太阳位置用 NOAA 的简化公式；时间按分钟插值（两次整点结算之间按真实时间推进），不再每小时跳一次。
+  // 色调：太阳高度 8° 以上是白天；3° 到 0° 偏暖橙；民用晨昏蒙影（0 到 −6°）偏粉、变暗；航海晨昏蒙影（−6 到 −12°）转蓝；之后是夜里的暗蓝并降饱和。
+  var SUN_KEYS = [[8, [255, 255, 255], 0], [3, [250, 229, 202], .04], [0, [218, 168, 138], .08], [-3, [152, 120, 130], .16], [-6, [92, 86, 120], .26], [-10, [56, 62, 100], .33], [-14, [40, 46, 82], .38]];
+  var lastBatch = (window.performance || Date).now();
+  function hourF() { var now = (window.performance || Date).now(), f = S.speed ? Math.min(1, (now - lastBatch) / 1000) * S.speed : 0; return S.hour + f; }
+  function sunElev(date, h) {
+    var y0 = new Date(date.getFullYear(), 0, 1), doy = Math.round((new Date(date.getFullYear(), date.getMonth(), date.getDate()) - y0) / 864e5) + 1;
+    var gm = 2 * Math.PI / 365 * (doy - 1 + (h - 12) / 24);
+    var decl = .006918 - .399912 * Math.cos(gm) + .070257 * Math.sin(gm) - .006758 * Math.cos(2 * gm) + .000907 * Math.sin(2 * gm) - .002697 * Math.cos(3 * gm) + .00148 * Math.sin(3 * gm);
+    var eqt = 229.18 * (.000075 + .001868 * Math.cos(gm) - .032077 * Math.sin(gm) - .014615 * Math.cos(2 * gm) - .040849 * Math.sin(2 * gm));
+    var tst = h * 60 + eqt + 4 * -110.158 + 60 * 7, ha = (tst / 4 - 180) * Math.PI / 180, lat = 34.902 * Math.PI / 180;
+    var cz = Math.sin(lat) * Math.sin(decl) + Math.cos(lat) * Math.cos(decl) * Math.cos(ha);
+    return 90 - Math.acos(Math.max(-1, Math.min(1, cz))) * 180 / Math.PI;
   }
+  function ambient(e) {
+    if (e >= SUN_KEYS[0][0]) return null;
+    for (var i = 1; i < SUN_KEYS.length; i++) if (e >= SUN_KEYS[i][0]) { var a = SUN_KEYS[i - 1], b = SUN_KEYS[i], t = (a[0] - e) / (a[0] - b[0]); t = t * t * (3 - 2 * t); return { c: a[1].map(function (v, j) { return Math.round(v + (b[1][j] - v) * t); }), d: a[2] + (b[2] - a[2]) * t }; }
+    var L = SUN_KEYS[SUN_KEYS.length - 1]; return { c: L[1], d: L[2] };
+  }
+  function sstep(a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+  // 路灯是光控的，太阳低于约 −1° 时陆续亮起；住宅灯光看钟点：傍晚到 22 点多，后半夜只剩少数，清晨 5–7 点又亮一些
+  function lightsOn(e) { return sstep(2, -3.5, e); }
+  function homeLevel(h) { h = ((h % 24) + 24) % 24; return h >= 16 && h < 22 ? 1 : h >= 22 ? 1 - .62 * sstep(22, 24, h) : h < 5 ? .38 - .16 * sstep(0, 3, h) : h < 7 ? .22 + .5 * sstep(5, 6, h) : .72 - .72 * sstep(7, 8, h); }
+  function nightLevel() { var e = sunElev(S.date, S.hour); return e >= 8 ? 0 : e <= -14 ? 1 : sstep(8, -14, e); }   // 给其他逻辑用（整点）
+  var IL = document.createElement('canvas'), ILG = IL.getContext('2d'), GLOW = {};
   function glowSprite(rgb) {
     if (GLOW[rgb]) return GLOW[rgb];
     var c = document.createElement('canvas'); c.width = c.height = 64; var t = c.getContext('2d'), gr = t.createRadialGradient(32, 32, 0, 32, 32, 32);
     gr.addColorStop(0, 'rgba(' + rgb + ',1)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); t.fillStyle = gr; t.fillRect(0, 0, 64, 64);
     return (GLOW[rgb] = c);
   }
+  function viewTiles() { var x0 = Math.floor((V.x - W / 2) / 256), y0 = Math.floor((V.y - H / 2) / 256), x1 = Math.floor((V.x + W / 2) / 256), y1 = Math.floor((V.y + H / 2) / 256), l = []; for (var tx = x0; tx <= x1; tx++) for (var ty = y0; ty <= y1; ty++) l.push([tx, ty, tx * 256 - V.x + W / 2, ty * 256 - V.y + H / 2]); return l; }
+  var nightKey = '';
+  function nightState() { var h = hourF(), e = sunElev(S.date, h), am = ambient(e); return { h: h, e: e, am: am, lon: lightsOn(e), hm: homeLevel(h) * lightsOn(e) }; }
+  // 夜景：白天的卫星图 ×（环境光 + 烘焙好的路灯/住宅照度），再叠加灯具亮点。乘法让灯光照亮真实的地面：沥青被钠灯照成橙褐色，屋顶和院子的纹理都还在。
   function nightShade() {
-    var a = nightLevel(); if (!a) return;
-    cx.save(); cx.globalCompositeOperation = 'multiply'; cx.fillStyle = 'rgba(' + Math.round(255 - 205 * a) + ',' + Math.round(255 - 195 * a) + ',' + Math.round(255 - 150 * a) + ',1)'; cx.fillRect(0, 0, W, H); cx.restore();
-    if (V.z < 12) return;
-    cx.save(); cx.globalCompositeOperation = 'lighter'; var m = MAP.mpp(V.z), r = Math.max(1.5, 14 / m), sp = glowSprite('255,196,110');
-    cx.globalAlpha = .55 * a;
-    lamps().forEach(function (ll) { var q = px(ll); if (q[0] < -10 || q[1] < -10 || q[0] > W + 10 || q[1] > H + 10) return; cx.drawImage(sp, q[0] - r, q[1] - r, r * 2, r * 2); });
-    S.facilities.forEach(function (f) { var q = px(f.ll); if (!f.done && !f.wait) glow(q[0], q[1], Math.max(3, 40 / m), '235,240,255', .7 * a); else if (f.done) glow(q[0], q[1], Math.max(2, 22 / m), '255,210,140', .5 * a); });
+    var n = nightState(); nightKey = n.am ? [n.am.c.join(','), Math.round(n.lon * 40), Math.round(n.hm * 25)].join('|') : 'day';
+    if (!n.am) return;
+    if (IL.width !== cv.width || IL.height !== cv.height) { IL.width = cv.width; IL.height = cv.height; }
+    var g = ILG, tiles = V.z >= 9 && n.lon > .01 ? viewTiles() : [];
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.fillStyle = 'rgb(' + n.am.c.join(',') + ')'; g.fillRect(0, 0, IL.width, IL.height);
+    g.setTransform(DPR, 0, 0, DPR, 0, 0); g.globalCompositeOperation = 'lighter'; g.imageSmoothingEnabled = true;
+    tiles.forEach(function (t) { var L = MAP.light(V.z, t[0], t[1]); if (!L || L.empty) return; g.globalAlpha = n.lon; g.drawImage(L.st, t[2], t[3], 256, 256); if (n.hm > .01) { g.globalAlpha = n.hm; g.drawImage(L.hm, t[2], t[3], 256, 256); } });
+    // 施工照明和建成设施的灯
+    var m = MAP.mpp(V.z);
+    S.facilities.forEach(function (f) { var q = px(f.ll), r, c, a; if (!f.done && !f.wait) { r = Math.max(3, 40 / m); c = '235,240,255'; a = .75; } else if (f.done) { r = Math.max(2, 22 / m); c = '255,200,130'; a = .55; } else return; g.globalAlpha = a * n.lon; g.drawImage(glowSprite(c), q[0] - r, q[1] - r, r * 2, r * 2); });
+    cx.save(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.globalCompositeOperation = 'multiply'; cx.drawImage(IL, 0, 0);
+    if (n.am.d > .01) { cx.globalCompositeOperation = 'saturation'; cx.globalAlpha = n.am.d; cx.fillStyle = '#808080'; cx.fillRect(0, 0, cv.width, cv.height); }
+    cx.restore();
+    if (!tiles.length) return;
+    cx.save(); cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = n.lon;
+    tiles.forEach(function (t) { var L = MAP.peekLight(V.z, t[0], t[1]); if (L && !L.empty) cx.drawImage(L.em, t[2], t[3], 256, 256); });
     cx.restore();
   }
-  function glow(x, y, r, rgb, al) { cx.globalAlpha = al; cx.drawImage(glowSprite(rgb), x - r, y - r, r * 2, r * 2); }
+  // 时间流动时，晨昏的颜色和灯光按分钟变化：状态变了才全量重画（白天、深夜不变时什么都不做）
+  setInterval(function () {
+    if (mode === 'map' || ZA || drag || document.hidden) return;
+    var n = nightState(), k = n.am ? [n.am.c.join(','), Math.round(n.lon * 40), Math.round(n.hm * 25)].join('|') : 'day';
+    if (k !== nightKey) draw();
+  }, 150);
   function satTiles() {
     var x0 = Math.floor((V.x - W / 2) / 256), y0 = Math.floor((V.y - H / 2) / 256), x1 = Math.floor((V.x + W / 2) / 256), y1 = Math.floor((V.y + H / 2) / 256);
     MAP.clearQueue();
@@ -957,7 +991,6 @@
     pauseAtlas();
     S.hour++;
     buildHour();
-    if (nightLevel() !== lastNL) { lastNL = nightLevel(); draw(); }
     meters();
     if (S.hour >= 24) {
       S.hour = 0; S.day++; S.date = new Date(S.date.getTime() + 864e5); S.dstand = { fed: 0, navajo: 0, lds: 0 };
@@ -971,7 +1004,7 @@
     }
     clock();
   }
-  setInterval(function () { for (var i = 0; i < S.speed; i++) tick(); }, 1000);
+  setInterval(function () { for (var i = 0; i < S.speed; i++) tick(); lastBatch = (window.performance || Date).now(); }, 1000);
 
 
   // ---------- 存档 ----------
