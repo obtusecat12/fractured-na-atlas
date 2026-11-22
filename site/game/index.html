@@ -14,7 +14,7 @@
 <body class="game">
 <div id="gbar">
   <div id="gnav"><a href="#">网页 Web</a><a href="#">图片 Images</a><a href="#">视频 Videos</a><b>地图 Maps</b><a href="#">新闻 News</a><a href="#">邮件 Mail</a><a href="#" class="more">更多 more <span class="tri">&#9660;</span></a></div>
-  <div id="guser"><b>oem@co.navajo.az.us</b> | <a href="#">我的地图 My Maps</a> | <a href="#" id="help">帮助 Help</a> | <a href="#">退出 Sign out</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><a href="#" class="gmi" id="gmsave"><b class="ck"></b>保存进度 Save game</a></div></div>
+  <div id="guser"><b>oem@co.navajo.az.us</b> | <a href="#">我的地图 My Maps</a> | <a href="#" id="help">帮助 Help</a> | <a href="#">退出 Sign out</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><div class="gmh">显示器 Display</div><a href="#" data-lcd="on" class="gmi"><b class="ck"></b>液晶屏（标准） LCD (normal)</a><a href="#" data-lcd="strong" class="gmi"><b class="ck"></b>液晶屏（加强） LCD (strong)</a><a href="#" data-lcd="off" class="gmi"><b class="ck"></b>关闭 Off</a><div class="gms"></div><a href="#" class="gmi" id="gmsave"><b class="ck"></b>保存进度 Save game</a><a href="#" class="gmi" id="gmhelp"><b class="ck"></b>帮助 Help</a></div></div>
 </div>
 <div id="header">
   <a id="logo" href="../index.html" title="返回地图 Back to the atlas"><img src="maplogo.gif" width="175" height="40" alt="Google Maps"></a>
@@ -28,7 +28,7 @@
   </div>
 </div>
 <div id="bar">
-  <div id="barl" class="tabs"><a href="#" data-tab="ov" class="on"><img src="icons/ov24.png" width="24" height="24" alt=""><span class="zh">概况</span><span class="en">Overview</span></a><a href="#" data-tab="ppl"><img src="icons/ppl24.png" width="24" height="24" alt=""><span class="zh">人员</span><span class="en">People</span></a><a href="#" data-tab="nb"><img src="icons/nb24.png" width="24" height="24" alt=""><span class="zh">周边</span><span class="en">Region</span></a><a href="#" data-tab="law"><img src="icons/law24.png" width="24" height="24" alt=""><span class="zh">条例</span><span class="en">Ordinances</span></a><a href="#" data-tab="build"><img src="icons/build24.png" width="24" height="24" alt=""><span class="zh">建造</span><span class="en">Build</span></a><a href="#" data-tab="bank"><img src="icons/bank24.png" width="24" height="24" alt=""><span class="zh">财政</span><span class="en">Finance</span></a></div>
+  <div id="barl" class="tabs"><a href="#" data-tab="ov" class="on"><img src="icons/ov24.png" width="24" height="24" alt=""><span class="zh">今天</span><span class="en">Today</span></a><a href="#" data-tab="build"><img src="icons/build24.png" width="24" height="24" alt=""><span class="zh">建造</span><span class="en">Build</span></a><a href="#" data-tab="law"><img src="icons/law24.png" width="24" height="24" alt=""><span class="zh">条例</span><span class="en">Ordinances</span></a><a href="#" data-tab="nb"><img src="icons/nb24.png" width="24" height="24" alt=""><span class="zh">周边</span><span class="en">Region</span></a><a href="#" data-tab="bank"><img src="icons/bank24.png" width="24" height="24" alt=""><span class="zh">财政</span><span class="en">Finance</span></a><a href="#" data-tab="ppl"><img src="icons/ppl24.png" width="24" height="24" alt=""><span class="zh">人员</span><span class="en">People</span></a></div>
   <div id="hud"></div>
 </div>
 <div id="body">
@@ -75,7 +75,7 @@
 <script src="content/core.js"></script>
 <script src="content/manifest.js"></script>
 <script src="map.js"></script>
-<script src="fog.js"></script>
+<script src="fogworker.js"></script><script src="fog.js"></script>
 <script src="game.js"></script>
 <script src="logon.js"></script>
 </body>
