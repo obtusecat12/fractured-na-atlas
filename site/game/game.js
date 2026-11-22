@@ -14,7 +14,8 @@
   var S = {
     day: D.start.day, date: new Date(D.start.y, D.start.m - 1, D.start.d), hour: D.start.hour, speed: 0,
     trust: 61, panic: 24, stand: { fed: 52, navajo: 47, lds: 58 }, dstand: { fed: 0, navajo: 0, lds: 0 },
-    funds: { fed: 900, navajo: 250, lds: 400, county: 520 },
+    funds: { fed: 900, navajo: 250, lds: 400, county: ECON.checking },
+    econ: { lgip: ECON.lgip, flood: ECON.flood, accr: 0, loans: [], pending: [], used: {}, wk: { rev: 0, exp: 0 }, last: null, decl: false },
     facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : .5 }, f); }),
     laws: {}, mail: D.mail.map(function (m) { return Object.assign({}, m); }), promises: D.promises.map(function (p) { return Object.assign({}, p); }),
     flags: {}, votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
@@ -44,20 +45,21 @@
   // ---------- sidebar ----------
   function sect(title, right) { return '<div class="sect"><div class="sh"><span style="font-weight:bold;font-size:13px">' + title + '</span>' + (right || '') + '</div>'; }
   function render() {
-    var h = { ov: tabOverview, ppl: tabPeople, nb: tabRegion, law: tabLaws, build: tabBuild, mail: tabMail }[S.tab]();
+    var h = { ov: tabOverview, ppl: tabPeople, nb: tabRegion, law: tabLaws, build: tabBuild, bank: tabBank, mail: tabMail }[S.tab]();
     $('#results').innerHTML = h;
     document.querySelectorAll('#barl [data-tab]').forEach(function (a) { a.classList.toggle('on', a.dataset.tab === S.tab); });
     meters();
   }
+  function ico(n) { return '<img src="icons/' + n + '16.png" width="16" height="16" alt="">'; }
   function tabOverview() {
     var cases = 0; D.towns.forEach(function (t) { cases += t.cases; });
     var h = sect(L('纳瓦霍县', 'Navajo County'), '<span>' + L('人口 107,449（2010）', 'Pop. 107,449 (2010)') + '</span>') +
       '<div class="stats"><div>' + L('确诊（县辖区）', 'Confirmed (county)') + '<b>' + cases + '</b></div><div>' + L('今日新增', 'New today') + '<b>+3</b></div>' +
       '<div>' + L('外来人员', 'Arrivals') + '<b>1,240</b></div><div>' + L('等待安置', 'Unhoused') + '<b>310</b></div>' +
       '<div>' + L('物资储备', 'Reserve') + '<b>' + L('34 天', '34 days') + '</b></div><div>' + L('县雇员到岗', 'Staff on duty') + '<b>91%</b></div>' +
-      '<div>' + L('失业率（9月）', 'Unemployment (Sep)') + '<b>15.7%</b></div><div>' + L('县财政', 'County funds') + '<b>' + money(S.funds.county) + '</b></div></div></div>';
+      '<div>' + L('失业率（10月）', 'Unemployment (Oct)') + '<b>15.7%</b></div><div>' + L('县财政', 'County funds') + '<b>' + money(S.funds.county) + '</b></div></div></div>';
     h += sect(L('承诺', 'Promises'));
-    S.promises.forEach(function (p, i) { h += '<div class="row"><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + LA(p.by) + ' · <span class="left">' + L('剩 ' + p.left + ' 天', p.left + ' days left') + '</span> · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div>'; });
+    S.promises.forEach(function (p, i) { h += '<div class="row ri">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + LA(p.by) + ' · <span class="left">' + L('剩 ' + p.left + ' 天', p.left + ' days left') + '</span> · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
     h += '</div>' + sect(L('广播', 'Broadcasts'));
     D.broadcasts.forEach(function (b) { h += '<div class="row bc"><div class="tm">' + b.time + '</div><div><div class="t" style="font-size:12px"><i class="sw" style="display:inline-block;width:8px;height:8px;margin-right:4px;background:' + P(b.ch).color + '"></i>' + LA(b.name) + '</div><div style="font-size:12px">' + LA(b.t) + '</div></div></div>'; });
     h += '</div>' + sect(L('城镇', 'Towns'), '<span>' + L('第 1 - ' + D.towns.length + ' 项', '1 - ' + D.towns.length) + '</span>');
@@ -72,8 +74,8 @@
     var seen = D.regions.filter(function (r) { return r.seen && !r.fed; });
     var h = sect(L('相邻政府', 'Neighbouring governments'), '<span>' + L('共 ' + (seen.length + 1) + ' 个', (seen.length + 1) + ' total') + '</span>');
     seen.forEach(function (r) {
-      h += '<div class="row" data-region="' + r.id + '"><div class="t"><a href="#">' + L(r.zh, r.en) + '</a></div><div class="s">' + LA(r.seat) + ' · ' + chip(r.stance) + L('病例 ', 'Cases ') + r.cases + (r.ref ? ' · ' + L('外来 ', 'Arrivals ') + r.ref.toLocaleString() : '') + '</div>' +
-        '<div class="lk"><a href="#" data-zr="' + r.id + '">' + L('放大', 'Zoom') + '</a> - <a href="#">' + L('贸易', 'Trade') + '</a> - <a href="#">' + L('派联络员', 'Send liaison') + '</a></div></div>';
+      h += '<div class="row ri" data-region="' + r.id + '">' + ico(r.res ? 'ppl' : 'globe') + '<div><div class="t"><a href="#">' + L(r.zh, r.en) + '</a></div><div class="s">' + LA(r.seat) + ' · ' + chip(r.stance) + L('病例 ', 'Cases ') + r.cases + (r.ref ? ' · ' + L('外来 ', 'Arrivals ') + r.ref.toLocaleString() : '') + '</div>' +
+        '<div class="lk"><a href="#" data-zr="' + r.id + '">' + L('放大', 'Zoom') + '</a> - <a href="#">' + L('贸易', 'Trade') + '</a> - <a href="#">' + L('派联络员', 'Send liaison') + '</a></div></div></div>';
     });
     var f = region.Maricopa;
     h += '<div class="row" data-region="Maricopa"><div class="t"><a href="#">' + L('联邦控制区', 'Federal zone') + '</a></div><div class="s">' + L('凤凰城 · 马里科帕、皮纳尔、格雷厄姆、格林利', 'Phoenix · Maricopa, Pinal, Graham, Greenlee') + '</div></div>';
@@ -142,6 +144,80 @@
     h += '</div>' + sect(L('施工中', 'Under construction'));
     S.facilities.filter(function (f) { return !f.done; }).forEach(function (f) { h += '<div class="row"><div class="t">' + LA(f.name) + '</div><div class="s">' + chip(f.fund) + L('还要 ' + f.eta + ' 天', f.eta + ' days left') + '</div></div>'; });
     return h + '</div>';
+  }
+
+  // ---------- finance ----------
+  var E = ECON;
+  function fmtK(k) { var s = Math.round(Math.abs(k)).toLocaleString('en-US'); return (k < 0 ? '−$' : '$') + s + 'K'; }
+  function revWk(r) { return r.lump && r.lump.months.indexOf(S.date.getMonth() + 1) >= 0 ? r.lump.wk : r.wk; }
+  function shortage() { return Math.max(0, (S.panic - 20) / 100); }
+  function econDay() {
+    var ec = S.econ, inn = 0, out = 0;
+    E.rev.forEach(function (r) { inn += revWk(r) / 7; }); E.exp.forEach(function (x) { out += x.wk / 7; });
+    S.funds.county += inn - out; ec.wk.rev += inn; ec.wk.exp += out;
+    ec.accr += ec.lgip * E.lgipRate / 365;
+    if (S.funds.county < 0) { var w = -S.funds.county * .02 / 365; S.funds.county -= w; ec.wk.exp += w; if (S.date.getDay() === 1) apply({ trust: -1 }); }
+    ec.loans.forEach(function (l) { if (l.rate) { var i = l.bal * l.rate / 365; S.funds.county -= i; ec.wk.exp += i; } });
+    ec.pending = ec.pending.filter(function (q) { if (--q.days > 0) return true; var d = loanDef(q.id); S.funds.county += q.amt; if (!d.grant) ec.loans.push({ id: q.id, bal: q.amt, rate: d.rate, due: d.due, term: d.term }); else ec.used[q.id] = true; if (d.id === 'interfund') ec.flood -= q.amt; notice(L('到账：', 'Received: ') + LA([d.zh, d.en]) + ' ' + fmtK(q.amt)); return false; });
+    var tmr = new Date(S.date.getTime() + 864e5); if (tmr.getDate() === 1) { ec.lgip += ec.accr; ec.accr = 0; }
+    if (S.date.getDay() === 0) { ec.last = { rev: ec.wk.rev, exp: ec.wk.exp }; ec.wk = { rev: 0, exp: 0 }; }
+  }
+  function notice(html) { $('#ntext').innerHTML = html; $('#notice').hidden = false; }
+  function loanDef(id) { return E.loans.filter(function (l) { return l.id === id; })[0]; }
+  function tabBank() {
+    var ec = S.econ, owed = 0; ec.loans.forEach(function (l) { owed += l.bal; });
+    var rin = 0, rout = 0; E.rev.forEach(function (r) { rin += revWk(r); }); E.exp.forEach(function (x) { rout += x.wk; });
+    var h = sect(L('县一般基金', 'County General Fund'), '<span>' + L('单位：千美元', 'Thousands USD') + '</span>') +
+      '<div class="stats"><div>' + L('支票账户', 'Checking') + '<b' + (S.funds.county < 0 ? ' style="color:#c00"' : '') + '>' + fmtK(S.funds.county) + '</b></div><div>' + L('州库投资池', 'State LGIP') + '<b>' + fmtK(ec.lgip) + '</b></div><div>' + L('新增借款', 'New borrowing') + '<b>' + fmtK(owed) + '</b></div></div>' +
+      '<div class="atmcall"><img src="icons/bank32.png" width="32" height="32" alt=""><div><div class="t">' + L('存取款', 'Deposit & withdraw') + '</div><div class="s">' + L('投资池年收益 0.25%，每月 1 日计入', 'Pool yield 0.25% a year, credited on the 1st') + '</div></div><button class="wb7" id="openatm">' + L('打开取款机…', 'Open ATM…') + '</button></div></div>';
+    h += sect(L('每周收支', 'Weekly budget'), '<span>' + L('2010 财年', 'FY2010') + '</span>') + '<table class="ledger">';
+    E.rev.forEach(function (r) { var w = revWk(r); h += '<tr><td>' + L(r.zh, r.en) + (w !== r.wk ? ' <span class="tag">' + L('物业税到期', 'tax due') + '</span>' : '') + '</td><td class="pos">+' + w + '</td></tr>'; });
+    E.exp.forEach(function (x) { h += '<tr><td>' + L(x.zh, x.en) + '</td><td>−' + x.wk + '</td></tr>'; });
+    h += '<tr class="sum"><td>' + L('本周净额', 'Net this week') + '</td><td class="' + (rin - rout >= 0 ? 'pos' : 'neg') + '">' + (rin - rout >= 0 ? '+' : '−') + Math.abs(rin - rout) + '</td></tr></table></div>';
+    h += sect(L('借款与拨款', 'Borrowing & grants'));
+    E.loans.forEach(function (l) {
+      var pend = ec.pending.filter(function (q) { return q.id === l.id; })[0], taken = ec.loans.some(function (x) { return x.id === l.id; }) || ec.used[l.id];
+      var act = l.auto ? '<span class="s">' + L('自动', 'Automatic') + '</span>' : l.vote ? '<span class="s">' + L('需公投', 'Needs a vote') + '</span>' : pend ? '<span class="s">' + L('还要 ' + pend.days + ' 天', pend.days + ' days') + '</span>' : taken && (l.once || l.id !== 'pro') ? '<span class="signed">' + L('已到账', 'Received') + '</span>' : '<button class="wb7" data-loan="' + l.id + '">' + (l.grant ? L('申请', 'Apply') : L('借款…', 'Borrow…')) + '</button>';
+      h += '<div class="row ri">' + ico(l.icon) + '<div><div class="t">' + L(l.zh, l.en) + (l.max ? ' <span class="s">' + L('最多 ', 'up to ') + fmtK(l.max) + '</span>' : '') + '</div><div class="s">' + LA(l.d) + '</div></div><div class="act">' + act + '</div></div>';
+    });
+    h += '</div>' + sect(L('未偿债务', 'Outstanding debt'));
+    E.debt.concat(ec.loans.map(function (l) { var d = loanDef(l.id); return { zh: d.zh, en: d.en, bal: l.bal, rate: (l.rate * 100).toFixed(2).replace(/0$/, '') + '%' }; })).forEach(function (d) { h += '<div class="row"><div class="t">' + L(d.zh, d.en) + '</div><div class="s">' + fmtK(d.bal) + ' · ' + d.rate + '</div></div>'; });
+    var s = shortage();
+    h += '</div>' + sect(L('本地物价', 'Local prices'), '<span>' + L('2009 年 10 月基准', 'Oct 2009 base') + '</span>') + '<table class="ledger">';
+    E.prices.forEach(function (p) { var v = p.p * (1 + p.k * s), up = v / p.p - 1; h += '<tr><td>' + L(p.zh, p.en) + ' <span class="s">/' + LA(p.u) + '</span></td><td>$' + v.toFixed(2) + (up > .005 ? ' <span class="neg">+' + Math.round(up * 100) + '%</span>' : '') + '</td></tr>'; });
+    return h + '</table></div>';
+  }
+  function loanDialog(id) {
+    var l = loanDef(id), max = l.id === 'interfund' ? Math.min(l.max, Math.floor(S.econ.flood / 2)) : l.max;
+    taskDialog({ icon: l.grant ? 'info' : 'q', title: L(l.zh, l.en), body: LA(l.d) + (l.grant ? '' : '<div class="amt">' + L('金额', 'Amount') + ' <input id="lamt" type="number" min="50" step="50" max="' + max + '" value="' + Math.min(max, 1000) + '"> K <span class="s">' + L('最多 ', 'max ') + fmtK(max) + '</span></div>'),
+      links: [{ attr: 'data-lgo="' + id + '"', t: l.grant ? L('提交申请', 'Submit application') : L('提交监事会', 'Send to the Board'), n: L((l.days || 0) + ' 天后到账', 'Funds in ' + (l.days || 0) + ' days') }, { attr: 'data-lno="1"', t: L('取消', 'Cancel') }],
+      foot: l.grant ? null : L('借款计入未偿债务，利息每日从支票账户扣除。', 'Interest is charged to checking daily.'), footIcon: 'info' });
+  }
+  // ATM window
+  var atmMode = 'in';
+  function atmScreen() { if (window.ATM3D) ATM3D.drawScreen(['NAVAJO COUNTY', 'CHECKING ' + fmtK(S.funds.county).replace('−', '-'), 'POOL     ' + fmtK(S.econ.lgip), atmMode === 'in' ? '> DEPOSIT' : '> WITHDRAW']); }
+  function atmRender() {
+    $('#atmside').innerHTML = '<div class="tdi" style="margin:0 0 6px">' + L('县司库 · 州库投资池', 'County Treasurer · State LGIP') + '</div>' +
+      '<div class="acct"><span>' + L('支票账户', 'Checking') + '</span><b>' + fmtK(S.funds.county) + '</b></div><div class="acct"><span>' + L('州库投资池', 'State pool') + '</span><b>' + fmtK(S.econ.lgip) + '</b></div>' +
+      '<div class="acct s"><span>' + L('本月应计利息', 'Accrued this month') + '</span><span>' + fmtK(S.econ.accr) + '</span></div>' +
+      '<div class="seg"><button class="wb7' + (atmMode === 'in' ? ' on' : '') + '" data-atm="in">' + L('存入投资池', 'Deposit to pool') + '</button><button class="wb7' + (atmMode === 'out' ? ' on' : '') + '" data-atm="out">' + L('取回支票账户', 'Withdraw to checking') + '</button></div>' +
+      '<div class="amt">' + L('金额', 'Amount') + ' <input id="aamt" type="number" min="10" step="10" value="500"> K</div>' +
+      '<div class="quick">' + [100, 500, 1000, 2000].map(function (v) { return '<button class="wb7" data-aq="' + v + '">' + fmtK(v) + '</button>'; }).join('') + '</div>' +
+      '<div class="go"><button class="wb7 def" id="atmgo">' + L('确定', 'OK') + '</button><button class="wb7" id="atmx2">' + L('关闭', 'Close') + '</button></div><div class="s" id="atmmsg"></div>';
+    atmScreen();
+  }
+  function openAtm() {
+    $('#atmwrap').hidden = false; atmRender();
+    var go = function () { ATM3D.mount($('#atmview')); atmScreen(); };
+    if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; document.head.appendChild(s); }
+  }
+  function atmDo() {
+    var v = Math.round(+$('#aamt').value || 0), from = atmMode === 'in' ? S.funds.county : S.econ.lgip;
+    if (v <= 0) return; if (v > from) { $('#atmmsg').innerHTML = L('余额不足。', 'Insufficient funds.'); return; }
+    if (atmMode === 'in') { S.funds.county -= v; S.econ.lgip += v; } else { S.econ.lgip -= v; S.funds.county += v; }
+    $('#atmgo').disabled = true;
+    ATM3D.play(atmMode, Math.ceil(v / 100), function () { $('#atmgo').disabled = false; });
+    atmRender(); render();
   }
   function fromName(m) { return m.from === 'nb' ? LA(m.nb) : LA(P(m.from).short); }
   function tabMail() {
@@ -412,13 +488,29 @@
 
   // ---------- events ----------
   function dialog(title, html) { $('#dlgt').innerHTML = title; $('#dlgb').innerHTML = html; $('#dlgwrap').hidden = false; }
-  function eventDialog(e) { e = e || D.event; S.curEv = e; dialog(LA(e.title), '<p>' + LA(e.body) + '</p>' + e.opts.map(function (o, i) { return '<button class="opt" data-ev="' + i + '">' + LA(o.t) + '<small>' + LA(o.fx) + '</small></button>'; }).join('')); }
+  var ARROW = '<svg width="16" height="16" viewBox="0 0 16 16"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd36b"/><stop offset=".5" stop-color="#2f9e2a"/><stop offset="1" stop-color="#1d7a1c"/></linearGradient></defs><path d="M1.5 6h7V2.2L15 8l-6.5 5.8V10h-7z" fill="url(#ga)" stroke="#16611a" stroke-width=".8" stroke-linejoin="round"/><path d="M2.3 6.8h7V4l4.4 3.9" fill="none" stroke="rgba(255,255,255,.55)" stroke-width=".8"/></svg>';
+  function dateStr() { var d = S.date; return L(d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日', MON[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()); }
+  function taskDialog(o) {
+    dialog(o.caption || (L('纳瓦霍县', 'Navajo County') + ' · ' + dateStr()),
+      '<div class="td"><div class="tdm"><img src="icons/' + (o.icon || 'info') + '32.png" width="32" height="32" alt=""><div><div class="tdi">' + o.title + '</div><div class="tdc">' + o.body + '</div></div></div>' +
+      '<div class="tdl">' + o.links.map(function (l) { return '<button class="cl" ' + l.attr + '>' + ARROW + '<span><span class="clt">' + l.t + '</span>' + (l.n ? '<span class="cln">' + l.n + '</span>' : '') + '</span></button>'; }).join('') + '</div></div>' +
+      (o.foot ? '<div class="tdf"><img src="icons/' + (o.footIcon || 'info') + '16.png" width="16" height="16" alt="">' + o.foot + '</div>' : ''));
+  }
+  function eventDialog(e) { e = e || D.event; S.curEv = e; taskDialog({ icon: e.icon || 'info', title: LA(e.title), body: LA(e.body), links: e.opts.map(function (o, i) { return { attr: 'data-ev="' + i + '"', t: LA(o.t), n: LA(o.fx) }; }), foot: e.foot ? LA(e.foot) : null }); }
   document.addEventListener('click', function (e) {
     var a = e.target.closest('a,button,[data-town],[data-region],[data-b],[data-mail]'); if (!a || a.closest('#logon')) return;
     var holder = e.target.closest('[data-b],[data-region],[data-town],[data-mail]'); if (a.tagName === 'A' && !Object.keys(a.dataset).length && holder && holder.contains(a)) { e.preventDefault(); a = holder; }
     var ds = a.dataset;
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
     if (ds.tab) { S.tab = ds.tab; render(); return; }
+    if (a.id === 'openatm') { openAtm(); return; }
+    if (a.id === 'atmx' || a.id === 'atmx2') { $('#atmwrap').hidden = true; if (window.ATM3D) ATM3D.clearPile(); return; }
+    if (a.id === 'atmgo') { atmDo(); return; }
+    if (ds.atm) { atmMode = ds.atm; if (window.ATM3D) ATM3D.clearPile(); atmRender(); return; }
+    if (ds.aq) { $('#aamt').value = ds.aq; return; }
+    if (ds.loan) { loanDialog(ds.loan); return; }
+    if (ds.lno) { $('#dlgwrap').hidden = true; return; }
+    if (ds.lgo) { var ld = loanDef(ds.lgo), amt = ld.grant ? ld.max : Math.max(0, Math.min(+($('#lamt') || {}).value || 0, ld.id === 'interfund' ? Math.floor(S.econ.flood / 2) : ld.max)); if (amt > 0) S.econ.pending.push({ id: ld.id, amt: amt, days: ld.days }); $('#dlgwrap').hidden = true; render(); return; }
     if (ds.ev != null) { var ce = S.curEv || D.event; apply(ce.opts[+ds.ev].d); if (ce.flag) S.flags[ce.flag] = true; if (ce.date === '2009-11-16' && +ds.ev === 0) S.flags.deputize = true; $('#dlgwrap').hidden = true; S.curEv = null; render(); var nx = S.evq.shift(); if (nx) setTimeout(function () { eventDialog(nx); }, 300); return; }
     if (a.id === 'dlgx') { $('#dlgwrap').hidden = true; return; }
     if (a.id === 'infox') { closeInfo(); return; }
@@ -473,6 +565,7 @@
       S.promises.forEach(function (p) { p.left--; if (p.left === 0) apply({ trust: -8 }); }); S.promises = S.promises.filter(function (p) { return p.left > 0; });
       D.towns.forEach(function (t) { if (t.cases) t.cases += Math.round(MAP.hash(S.day, t.pop, 1) * 2); });
       if (S.laws.hours) apply({ trust: -1 });
+      econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
       D.events.forEach(function (ev) { if (ev.date === ymd) { if (S.curEv) S.evq.push(ev); else { S.speed = 0; eventDialog(ev); } } });
       syncFac(); render(); draw();
