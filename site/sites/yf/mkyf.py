@@ -313,7 +313,7 @@ for k, v in IMG.items(): h = h.replace(k, v)
 h = re.sub(r' name="http://ichart[^"]*"', '', h)
 left = re.findall(r'<img[^>]+src="http[^"]*"', h)
 if left: sys.exit('remote images left: %r' % left[:5])
-sub1(r'(<font face="Arial" size="-2" class="ad_slug_font">ADVERTISEMENT</font><br /></span>)', '<font face="Arial" size="-2" class="ad_slug_font">ADVERTISEMENT</font><br /></span>\n<div style="width:300px;height:250px;margin:0 auto"></div>')
+sub1(r'(<font face="Arial" size="-2" class="ad_slug_font">ADVERTISEMENT</font><br /></span>)', '<font face="Arial" size="-2" class="ad_slug_font">ADVERTISEMENT</font><br /></span>\n<div style="width:300px;height:263px;margin:0 auto"></div>')
 
 # ======================= stylesheets, behaviour, output =======================
 CSSMAP = {'http://l.yimg.com/a/i/us/uh/bt2/myyhp_sprite_v1.gif': 'res/myyhp_sprite.gif',
