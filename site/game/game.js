@@ -44,7 +44,7 @@
     if (d.build) { var b = d.build, bd = bdefOf(b.b); if (bd) { var bf = b.fund || bd.fund[0]; if (b.cost !== 0) S.funds[bf] -= (b.cost != null ? b.cost : bd.cost); /* 内容里开工的建筑也要按造价从出资方扣钱（原来不扣，等于白送） */ S.facilities.push({ b: b.b, ll: b.ll, name: b.name, fund: b.fund || bd.fund[0], done: false, eta: b.eta || bd.days, size: b.size || bd.size, roof: bd.roof, look: bd.look, grid: bd.grid, tower: bd.tower, conv: bd.convert, grid: bd.grid, tower: bd.tower, progress: 0 }); syncFac(); MAP.invalidate(b.ll); } }
     [].concat(d.mail || []).forEach(deliverMail);
     if (d.event) { var q = typeof d.event === 'string' ? { id: d.event, inDays: 0 } : d.event; S.chain.push({ id: q.id, at: S.day + (q.inDays || 0) }); }
-    if (d.notice) { $('#ntext').innerHTML = LA(d.notice); $('#notice').hidden = false; }
+    if (d.notice) { $('#nview').hidden = false; $('#ntext').innerHTML = LA(d.notice); $('#notice').hidden = false; }
     if (d.promise) S.promises.push(Object.assign({ by: ['', ''] }, d.promise));
     if (d.broadcast) CONTENT.broadcasts.unshift(d.broadcast);
     if (d.rel) Object.keys(d.rel).forEach(function (k) { S.st.rel[k] = clamp(S.st.rel[k] + d.rel[k]); });
@@ -142,7 +142,7 @@
     STK.forEach(function (k) { var rv = k === 'adem' ? S.stand.fed : r[k]; h += '<div class="row strow"><i class="sw" style="background:' + P(k === 'adem' ? 'fed' : k).color + '"></i><div><div class="t">' + LA(NM[k]) + ' <b>' + Math.round(c[k]) + '%</b></div><div class="s">' + LA(WHO[k]) + ' · ' + L('与本县关系 ', 'Relations ') + Math.round(rv) + '</div></div></div>'; });
     h += '</div>' + sect(L('承诺', 'Promises'));
     S.promises.forEach(function (p, i) { h += '<div class="row ri">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + LA(p.by) + ' · <span class="left">' + L('剩 ' + p.left + ' 天', p.left + ' days left') + '</span> · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
-    h += '</div>' + sect(L('广播', 'Broadcasts'));
+    h += '</div>' + sect(L('广播', 'Broadcasts')).replace('<div class="sect">', '<div class="sect" id="bcsect">');
     CONTENT.broadcasts.forEach(function (b) { h += '<div class="row bc"><div class="tm">' + b.time + '</div><div><div class="t" style="font-size:12px"><i class="sw" style="display:inline-block;width:8px;height:8px;margin-right:4px;background:' + P(b.ch).color + '"></i>' + LA(b.name) + '</div><div style="font-size:12px">' + LA(b.t) + '</div></div></div>'; });
     h += '</div>' + sect(L('城镇', 'Towns'), '<span>' + L('第 1 - ' + D.towns.length + ' 项', '1 - ' + D.towns.length) + '</span>');
     D.towns.forEach(function (t, i) {
@@ -388,7 +388,7 @@
     var tmr = new Date(S.date.getTime() + 864e5); if (tmr.getDate() === 1) { ec.lgip += ec.accr; ec.accr = 0; }
     if (S.date.getDay() === 0) { ec.last = { rev: ec.wk.rev, exp: ec.wk.exp }; ec.wk = { rev: 0, exp: 0 }; }
   }
-  function notice(html) { $('#ntext').innerHTML = html; $('#notice').hidden = false; }
+  function notice(html) { $('#nview').hidden = false; $('#ntext').innerHTML = html; $('#notice').hidden = false; }
   function loanDef(id) { return E.loans.filter(function (l) { return l.id === id; })[0]; }
   function tabBank() {
     var ec = S.econ, owed = 0; ec.loans.forEach(function (l) { owed += l.bal; });
@@ -929,7 +929,7 @@
     if (ds.tab === 'mail') { openMail(); return; }
     if (ds.tab) { if (document.body.classList.contains('collapsed')) { document.body.classList.remove('collapsed'); var tg = $('#sbtog'); if (tg) tg.textContent = '«'; resize(); } S.tab = ds.tab; render(); return; }
     if (a.id === 'openatm') { openAtm(); return; }
-    if (a.id === 'savebtn') { var ok = saveGame(SAVE_KEY); $('#ntext').innerHTML = ok ? L('已保存：', 'Saved: ') + dateStr() : L('保存失败：浏览器不允许本地存储。', 'Could not save: local storage is blocked.'); $('#notice').hidden = false; return; }
+    if (a.id === 'savebtn') { var ok = saveGame(SAVE_KEY); $('#nview').hidden = true; $('#ntext').innerHTML = ok ? L('已保存：', 'Saved: ') + dateStr() : L('保存失败：浏览器不允许本地存储。', 'Could not save: local storage is blocked.'); $('#notice').hidden = false; return; }
     if (ds.presser) { S.presserDay = S.day; var dv = Math.max(-4, Math.min(2, -(S.trust - 35) / 8)); nudge('panic', dv); notice(dv < 0 ? L('发布会开完，电话热线来电少了。', 'Press conference done; fewer calls to the hotline.') : L('发布会上被追问，记者不太买账。', 'Reporters pushed back hard at the press conference.')); render(); return; }
     if (ds.trade) { if (S.funds.county < 45) return; S.funds.county -= 45; S.econ.wk.exp += 45; S.trade[ds.trade] = S.day; S.sim.stock = Math.min(stockMax(), S.sim.stock + 3); render(); return; }
     if (ds.team) { if (crewFree() < 4 || S.funds.county < 6) { notice(L('人手或经费不够，派不出外勤队。', 'Not enough staff or money for a field team.')); return; } S.funds.county -= 6; var rr = region[ds.team]; S.teams.push({ rid: ds.team, days: rr && rr.res ? 2 : 3 }); render(); return; }
@@ -969,7 +969,11 @@
     if (a.id === 'pc') { center(-110.3, 34.75, 8); draw(); return; }
     if (ds.mode) { setMode(ds.mode); return; }
     if (a.id === 'morebtn') { $('#moremenu').hidden = !$('#moremenu').hidden; return; }
-    if (a.id === 'nview') { S.tab = 'ov'; render(); $('#notice').hidden = true; return; }
+    if (a.id === 'nview') {   // 查看：切到概况并滚到“广播”，高亮最新一条（原来只是切到概况，人已经在概况时看起来什么也没发生）
+      S.tab = 'ov'; render(); $('#notice').hidden = true;
+      setTimeout(function () { var bs = $('#bcsect'); if (bs) { bs.scrollIntoView({ block: 'start' }); var row = bs.querySelector('.row.bc'); if (row) { row.style.transition = 'background 1.6s'; row.style.background = '#fff3a8'; setTimeout(function () { row.style.background = ''; }, 900); } } }, 60);
+      return;
+    }
     if (a.id === 'nx') { $('#notice').hidden = true; return; }
     if (ds.region) { var r = region[ds.region], c2 = r.county ? COUNTY[r.county].c : centroidRes(r.res); center(c2[0], c2[1], 9); draw(); var q = px(c2); infoRegion(r, q[0], q[1]); return; }
     if (ds.town) { var t3 = town[ds.town]; center(t3.ll[0], t3.ll[1], t3.town ? 13 : 11); draw(); infoTown(t3); return; }
@@ -1033,8 +1037,8 @@
     var loaded = opt && opt.load ? readSave() : null;
     if (loaded) restore(loaded);
     syncFac(); render(); clock(); meters(); resize(); center(-110.3, 34.75, 8); draw();
-    if (loaded) { $('#ntext').innerHTML = L('已读取存档：', 'Loaded save: ') + dateStr(); $('#notice').hidden = false; return; }
-    $('#ntext').innerHTML = '<b>' + L('州应急管理局：', 'State emergency management: ') + '</b>' + L('明天上午 9 点公布新的病例标准。', 'New case criteria at 9 am tomorrow.'); $('#notice').hidden = false;
+    if (loaded) { $('#nview').hidden = true; $('#ntext').innerHTML = L('已读取存档：', 'Loaded save: ') + dateStr(); $('#notice').hidden = false; return; }
+    $('#nview').hidden = false; $('#ntext').innerHTML = '<b>' + L('州应急管理局：', 'State emergency management: ') + '</b>' + L('明天上午 9 点公布新的病例标准。', 'New case criteria at 9 am tomorrow.'); $('#notice').hidden = false;
     setTimeout(function () { eventDialog(startEvent()); }, 900);
   };
   LANG.set('zh');
