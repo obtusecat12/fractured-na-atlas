@@ -17,15 +17,52 @@
     funds: { fed: 900, navajo: 250, lds: 400, county: ECON.checking },
     econ: { lgip: ECON.lgip, flood: ECON.flood, accr: 0, loans: [], pending: [], used: {}, wk: { rev: 0, exp: 0 }, last: null, decl: false },
     facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, progress: f.done ? 1 : .5 }, f); }),
-    laws: {}, mail: D.mail.map(function (m) { return Object.assign({}, m); }), promises: D.promises.map(function (p) { return Object.assign({}, p); }),
-    flags: {}, votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
+    laws: {}, mail: [], promises: D.promises.map(function (p) { return Object.assign({}, p); }),
+    flags: {}, seen: {}, chain: [], votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
   };
   function bdefOf(id) { return D.buildings.filter(function (b) { return b.id === id; })[0]; }
   D.laws.forEach(function (l) { if (l.on) S.laws[l.id] = true; });
+  CONTENT.mail.forEach(function (m) { if (!m.date || m.date < '2009-10-14') S.mail.push(Object.assign({}, m)); });
   var town = {}; D.towns.forEach(function (t) { town[t.id] = t; });
   var region = {}; D.regions.forEach(function (r) { region[r.county || r.res] = r; region[r.id] = r; });
   function clamp(v) { return Math.max(0, Math.min(100, v)); }
   function apply(d) { if (!d) return; if (d.trust) S.trust = clamp(S.trust + d.trust); if (d.panic) S.panic = clamp(S.panic + d.panic); PW.forEach(function (k) { if (d[k]) { S.stand[k] = clamp(S.stand[k] + d[k]); S.dstand[k] = d[k]; } }); if (d.money) S.funds.county += d.money; meters(); }
+  function ymdOf(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  // 执行内容包里的 do 效果
+  function runDo(d) {
+    if (!d) return; apply(d);
+    if (d.county) S.funds.county += d.county;
+    if (d.funds) Object.keys(d.funds).forEach(function (k) { S.funds[k] += d.funds[k]; });
+    [].concat(d.flag || []).forEach(function (f) { S.flags[f] = true; });
+    [].concat(d.unflag || []).forEach(function (f) { delete S.flags[f]; });
+    if (d.build) { var b = d.build, bd = bdefOf(b.b); if (bd) { S.facilities.push({ b: b.b, ll: b.ll, name: b.name, fund: b.fund || bd.fund[0], done: false, eta: b.eta || bd.days, size: b.size || bd.size, roof: bd.roof, grid: bd.grid, tower: bd.tower, progress: 0 }); syncFac(); MAP.invalidate(b.ll); } }
+    [].concat(d.mail || []).forEach(deliverMail);
+    if (d.event) { var q = typeof d.event === 'string' ? { id: d.event, inDays: 0 } : d.event; S.chain.push({ id: q.id, at: S.day + (q.inDays || 0) }); }
+    if (d.notice) { $('#ntext').innerHTML = LA(d.notice); $('#notice').hidden = false; }
+    if (d.promise) S.promises.push(Object.assign({ by: ['', ''] }, d.promise));
+    if (d.broadcast) CONTENT.broadcasts.unshift(d.broadcast);
+  }
+  function mailById(id) { return CONTENT.mail.filter(function (m) { return m.id === id; })[0]; }
+  function evById(id) { return CONTENT.events.filter(function (e) { return e.id === id; })[0]; }
+  function deliverMail(id) { var m = typeof id === 'string' ? mailById(id) : id; if (!m || S.mail.some(function (x) { return x.id === m.id; })) return; var c = Object.assign({}, m); if (m.date || typeof id === 'string') { c.unread = true; c.time = c.time || (S.hour + ':00').replace(/^(\d):/, '0$1:'); c.got = ymdOf(S.date); } S.mail.unshift(c); if (window.GMAIL) GMAIL.refresh(); }
+  function condOk(w) {
+    if (!w) return true; var ymd = ymdOf(S.date);
+    if (w.after && ymd < w.after) return false; if (w.before && ymd > w.before) return false;
+    if (w.flags && !w.flags.every(function (f) { return S.flags[f]; })) return false;
+    if (w.notFlags && w.notFlags.some(function (f) { return S.flags[f]; })) return false;
+    var cur = { trust: S.trust, panic: S.panic, fed: S.stand.fed, navajo: S.stand.navajo, lds: S.stand.lds, county: S.funds.county };
+    if (w.min && Object.keys(w.min).some(function (k) { return cur[k] < w.min[k]; })) return false;
+    if (w.max && Object.keys(w.max).some(function (k) { return cur[k] > w.max[k]; })) return false;
+    if (w.chance != null && MAP.hash(S.day, w.chance * 997, 7) > w.chance) return false;
+    return true;
+  }
+  function fireEvent(ev) { S.seen[ev.id] = true; if (S.curEv) S.evq.push(ev); else { S.speed = 0; eventDialog(ev); } }
+  function contentDay() {
+    var ymd = ymdOf(S.date);
+    CONTENT.events.forEach(function (ev) { if (S.seen[ev.id] || ev.start || ev.chained) return; if (ev.date ? ev.date === ymd && condOk(ev.when) : condOk(ev.when)) fireEvent(ev); });
+    S.chain = S.chain.filter(function (q) { if (q.at > S.day) return true; var ev = evById(q.id); if (ev) fireEvent(ev); return false; });
+    CONTENT.mail.forEach(function (m) { if (m.date === ymd && (!m.when || condOk(m.when))) deliverMail(m); });
+  }
   function syncFac() { MAP.setFacilities(S.facilities); }
 
   // ---------- header ----------
@@ -61,7 +98,7 @@
     h += sect(L('承诺', 'Promises'));
     S.promises.forEach(function (p, i) { h += '<div class="row ri">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + LA(p.by) + ' · <span class="left">' + L('剩 ' + p.left + ' 天', p.left + ' days left') + '</span> · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
     h += '</div>' + sect(L('广播', 'Broadcasts'));
-    D.broadcasts.forEach(function (b) { h += '<div class="row bc"><div class="tm">' + b.time + '</div><div><div class="t" style="font-size:12px"><i class="sw" style="display:inline-block;width:8px;height:8px;margin-right:4px;background:' + P(b.ch).color + '"></i>' + LA(b.name) + '</div><div style="font-size:12px">' + LA(b.t) + '</div></div></div>'; });
+    CONTENT.broadcasts.forEach(function (b) { h += '<div class="row bc"><div class="tm">' + b.time + '</div><div><div class="t" style="font-size:12px"><i class="sw" style="display:inline-block;width:8px;height:8px;margin-right:4px;background:' + P(b.ch).color + '"></i>' + LA(b.name) + '</div><div style="font-size:12px">' + LA(b.t) + '</div></div></div>'; });
     h += '</div>' + sect(L('城镇', 'Towns'), '<span>' + L('第 1 - ' + D.towns.length + ' 项', '1 - ' + D.towns.length) + '</span>');
     D.towns.forEach(function (t, i) {
       h += '<div class="res r09" data-town="' + t.id + '"><img class="mk" src="../gimg/marker' + 'ABCDEFGHIJ'[i] + '.png" width="20" height="34" onerror="this.style.visibility=\'hidden\'"><div class="rb"><span class="nm">' + L(t.zh, t.en) + '</span>' +
@@ -193,46 +230,70 @@
       links: [{ attr: 'data-lgo="' + id + '"', t: l.grant ? L('提交申请', 'Submit application') : L('提交监事会', 'Send to the Board'), n: L((l.days || 0) + ' 天后到账', 'Funds in ' + (l.days || 0) + ' days') }, { attr: 'data-lno="1"', t: L('取消', 'Cancel') }],
       foot: l.grant ? null : L('借款计入未偿债务，利息每日从支票账户扣除。', 'Interest is charged to checking daily.'), footIcon: 'info' });
   }
-  // ATM window
-  var atmMode = 'in';
-  function atmScreen() { if (window.ATM3D) ATM3D.drawScreen(['NAVAJO COUNTY', 'CHECKING ' + fmtK(S.funds.county).replace('−', '-'), 'POOL     ' + fmtK(S.econ.lgip), atmMode === 'in' ? '> DEPOSIT' : '> WITHDRAW']); }
-  function atmRender() {
-    $('#atmside').innerHTML = '<div class="tdi" style="margin:0 0 6px">' + L('县司库 · 州库投资池', 'County Treasurer · State LGIP') + '</div>' +
-      '<div class="acct"><span>' + L('支票账户', 'Checking') + '</span><b>' + fmtK(S.funds.county) + '</b></div><div class="acct"><span>' + L('州库投资池', 'State pool') + '</span><b>' + fmtK(S.econ.lgip) + '</b></div>' +
-      '<div class="acct s"><span>' + L('本月应计利息', 'Accrued this month') + '</span><span>' + fmtK(S.econ.accr) + '</span></div>' +
-      '<div class="seg"><button class="wb7' + (atmMode === 'in' ? ' on' : '') + '" data-atm="in">' + L('存入投资池', 'Deposit to pool') + '</button><button class="wb7' + (atmMode === 'out' ? ' on' : '') + '" data-atm="out">' + L('取回支票账户', 'Withdraw to checking') + '</button></div>' +
-      '<div class="amt">' + L('金额', 'Amount') + ' <input id="aamt" type="number" min="10" step="10" value="500"> K</div>' +
-      '<div class="quick">' + [100, 500, 1000, 2000].map(function (v) { return '<button class="wb7" data-aq="' + v + '">' + fmtK(v) + '</button>'; }).join('') + '</div>' +
-      '<div class="go"><button class="wb7 def" id="atmgo">' + L('确定', 'OK') + '</button><button class="wb7" id="atmx2">' + L('关闭', 'Close') + '</button></div><div class="s" id="atmmsg"></div>';
-    atmScreen();
+  // ATM window — 2009 款取款机：屏幕菜单 + 屏幕两侧实体键 + 不锈钢密码键盘 + 凭条
+  var atm = { st: 'main', mode: 'in', entry: '', msg: '', receipt: [] };
+  var HEAD = function () { return T('纳瓦霍县司库', 'NAVAJO COUNTY TREASURER'); };
+  function atmSpec() {
+    var s = { head: HEAD(), L: [], R: [] }, ent = atm.entry ? '$' + (+atm.entry).toLocaleString('en-US') + 'K' : '$_K';
+    if (atm.st === 'main') { s.title = T('请选择交易', 'PLEASE SELECT A TRANSACTION'); s.L = [T('存入投资池', 'DEPOSIT TO POOL'), T('取回支票账户', 'WITHDRAW TO CHECKING')]; s.R = [T('余额查询', 'BALANCE INQUIRY'), '', '', T('退出', 'EXIT')]; s.foot = T('州库地方政府投资池 · 年收益 0.25%', 'STATE LGIP · 0.25% YIELD'); }
+    else if (atm.st === 'amt') { s.title = atm.mode === 'in' ? T('存入投资池', 'DEPOSIT TO POOL') : T('取回支票账户', 'WITHDRAW TO CHECKING'); s.lines = [T('请输入金额（千美元）', 'ENTER AMOUNT IN THOUSANDS')]; s.entry = ent; s.L = ['', '', '$100K', '$500K']; s.R = ['', '', '$1,000K', '$2,000K']; s.foot = atm.msg || T('输入后按 ENTER 确认', 'PRESS ENTER WHEN DONE'); }
+    else if (atm.st === 'busy') { s.title = T('交易处理中', 'PROCESSING'); s.lines = [T('请稍候', 'PLEASE WAIT')]; s.busy = true; }
+    else if (atm.st === 'done') { s.title = atm.mode === 'out' ? T('请取走现金', 'PLEASE TAKE YOUR CASH') : T('存款已受理', 'DEPOSIT ACCEPTED'); s.lines = [T('请取走凭条', 'PLEASE TAKE YOUR RECEIPT')]; s.L = ['', '', '', T('其他交易', 'ANOTHER TRANSACTION')]; s.R = ['', '', '', T('完成', 'DONE')]; }
+    else if (atm.st === 'bal') { s.title = T('账户余额', 'ACCOUNT BALANCES'); s.lines = [T('支票账户 ', 'CHECKING ') + fmtK(S.funds.county), T('投资池 ', 'POOL ') + fmtK(S.econ.lgip), { t: T('本月应计利息 ', 'ACCRUED ') + fmtK(S.econ.accr), c: '#cfe0ff' }]; s.L = ['', '', '', T('其他交易', 'ANOTHER TRANSACTION')]; s.R = ['', '', '', T('完成', 'DONE')]; }
+    return s;
   }
-  function openAtm() {
-    $('#atmwrap').hidden = false; atmRender();
-    var go = function () { ATM3D.mount($('#atmview')); atmScreen(); };
-    if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; document.head.appendChild(s); }
+  function atmDraw() { if (window.ATM3D) ATM3D.drawScreen(atmSpec()); atmSide(); }
+  function receipt(lines) {
+    var d = S.date, ts = (d.getMonth() + 1) + '/' + d.getDate() + '/09 ' + ('0' + S.hour).slice(-2) + ':00';
+    atm.receipt = ['NAVAJO COUNTY TREASURER', '100 E CARTER DR', 'HOLBROOK AZ 86025', '', ts + '  TERM 0117', '--------------------------------'].concat(lines, ['--------------------------------', 'CHECKING  ' + fmtK(S.funds.county).padStart(16), 'LGIP POOL ' + fmtK(S.econ.lgip).padStart(16), '', 'THANK YOU']);
+  }
+  function atmSide() {
+    var keys = [['1'], ['2'], ['3'], ['CANCEL', 'k-red', T('取消', 'CANCEL')], ['4'], ['5', 'k-dot'], ['6'], ['CLEAR', 'k-yel', T('更正', 'CLEAR')], ['7'], ['8'], ['9'], ['ENTER', 'k-grn', T('确认', 'ENTER')], [''], ['0'], ['00'], ['']];
+    $('#atmside').innerHTML = '<div class="prn"><div class="prn-slot"></div>' + (atm.receipt.length ? '<pre class="rcpt">' + atm.receipt.join('\n') + '</pre>' : '') + '</div>' +
+      '<div class="epp">' + keys.map(function (k) { return k[0] ? '<button class="ek ' + (k[1] || '') + '" data-ek="' + k[0] + '">' + (k[2] || k[0]) + '</button>' : '<span class="ek blank"></span>'; }).join('') + '</div>' +
+      '<div class="atm-note">' + L('县库专用终端 · 资金在县支票账户与州库地方政府投资池之间划转', 'Treasury terminal · moves money between county checking and the state LGIP') + '</div>';
+  }
+  function atmKey(k) {
+    if (atm.st === 'busy') return;
+    if (k === 'CANCEL') { atm.st = 'main'; atm.entry = ''; atm.msg = ''; return atmDraw(); }
+    if (atm.st === 'main') {
+      if (k === 'L1' || k === 'L2') { atm.mode = k === 'L1' ? 'in' : 'out'; atm.st = 'amt'; atm.entry = ''; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); }
+      else if (k === 'R1') { atm.st = 'bal'; receipt(['BALANCE INQUIRY']); }
+      else if (k === 'R4') { $('#atmwrap').hidden = true; return; }
+      return atmDraw();
+    }
+    if (atm.st === 'done' || atm.st === 'bal') { if (k === 'L4') atm.st = 'main'; else if (k === 'R4' || k === 'ENTER') { atm.st = 'main'; $('#atmwrap').hidden = true; } return atmDraw(); }
+    if (atm.st === 'amt') {
+      var q = { L3: 100, L4: 500, R3: 1000, R4: 2000 }[k];
+      if (q) atm.entry = String(q);
+      else if (/^\d+$/.test(k)) { if ((atm.entry + k).length <= 5) atm.entry = (atm.entry + k).replace(/^0+/, ''); }
+      else if (k === 'CLEAR') atm.entry = '';
+      else if (k === 'ENTER') return atmDo();
+      atm.msg = ''; return atmDraw();
+    }
   }
   function atmDo() {
-    var v = Math.round(+$('#aamt').value || 0), from = atmMode === 'in' ? S.funds.county : S.econ.lgip;
-    if (v <= 0) return; if (v > from) { $('#atmmsg').innerHTML = L('余额不足。', 'Insufficient funds.'); return; }
-    if (atmMode === 'in') { S.funds.county -= v; S.econ.lgip += v; } else { S.econ.lgip -= v; S.funds.county += v; }
-    $('#atmgo').disabled = true;
-    ATM3D.play(atmMode, Math.ceil(v / 100), function () { $('#atmgo').disabled = false; });
-    atmRender(); render();
+    var v = +atm.entry || 0, from = atm.mode === 'in' ? S.funds.county : S.econ.lgip;
+    if (v <= 0) return;
+    if (v > from) { atm.msg = T('余额不足', 'INSUFFICIENT FUNDS'); atm.entry = ''; return atmDraw(); }
+    if (atm.mode === 'in') { S.funds.county -= v; S.econ.lgip += v; } else { S.econ.lgip -= v; S.funds.county += v; }
+    atm.st = 'busy'; atmDraw(); render();
+    setTimeout(function () {
+      ATM3D.focus('slot');
+      ATM3D.play(atm.mode, Math.ceil(v / 100), function () { setTimeout(function () { ATM3D.focus('screen'); }, 1200); atm.st = 'done'; receipt([(atm.mode === 'in' ? 'DEPOSIT TO LGIP' : 'WITHDRAW TO CHECKING'), 'AMOUNT    ' + fmtK(v).padStart(16)]); atmDraw(); });
+    }, 700);
   }
-  function fromName(m) { return m.from === 'nb' ? LA(m.nb) : LA(P(m.from).short); }
-  function tabMail() {
-    var h = sect(L('收件箱', 'Inbox'), '<span>' + L('第 1 - ' + S.mail.length + ' 封', '1 - ' + S.mail.length) + '</span>') + '</div>';
-    S.mail.forEach(function (m, i) {
-      var c = m.from === 'nb' ? '#888' : P(m.from).color;
-      h += '<div class="mrow' + (m.unread ? ' unread' : '') + '" data-mail="' + i + '"><div class="from"><i style="display:inline-block;width:8px;height:8px;margin-right:4px;background:' + c + '"></i>' + fromName(m) + '</div><div class="bd"><span class="mt1">' + LA(m.t) + '</span> <span class="ms">- ' + LA(m.s) + '</span></div><div class="tm">' + (m.time.indexOf(' ') > 0 ? LA(m.time.split(' ')) : m.time) + '</div></div>';
-      if (S.openMail === i) {
-        var lh = m.from === 'nb' ? LA(m.nb) : LA(P(m.from).via);
-        h += '<div class="mopen"><div class="lh" style="border-left:4px solid ' + c + '"><b>' + lh + '</b>' + (m.id ? m.id : '') + '</div><p style="margin:0 0 8px"><b>' + LA(m.t) + '</b><br>' + LA(m.s) + '</p>' +
-          (m.done ? '<span class="signed">' + LA(m.done) + '</span>' : m.acts.map(function (a, j) { return '<button class="gbtn nd" data-act="' + i + ':' + j + '">' + LA(a) + '</button>'; }).join(' ')) + '</div>';
-      }
-    });
-    return h;
+  function openAtm() {
+    $('#atmwrap').hidden = false; atm.st = 'main'; atm.entry = ''; atmSide();
+    var go = function () { ATM3D.mount($('#atmview')); ATM3D.setKeyHandler(atmKey); atmDraw(); };
+    if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; document.head.appendChild(s); }
   }
+  document.addEventListener('keydown', function (e) {
+    if ($('#atmwrap').hidden) return; var k = e.key;
+    if (/^\d$/.test(k)) atmKey(k); else if (k === 'Enter') atmKey('ENTER'); else if (k === 'Backspace') atmKey('CLEAR'); else if (k === 'Escape') atmKey('CANCEL');
+  });
+  function tabMail() { return ''; }
+
 
   // ---------- map view ----------
   var cv = $('#map'), cx = cv.getContext('2d'), pane = $('#mappane'), W = 0, H = 0, DPR = window.devicePixelRatio || 1;
@@ -496,7 +557,8 @@
       '<div class="tdl">' + o.links.map(function (l) { return '<button class="cl" ' + l.attr + '>' + ARROW + '<span><span class="clt">' + l.t + '</span>' + (l.n ? '<span class="cln">' + l.n + '</span>' : '') + '</span></button>'; }).join('') + '</div></div>' +
       (o.foot ? '<div class="tdf"><img src="icons/' + (o.footIcon || 'info') + '16.png" width="16" height="16" alt="">' + o.foot + '</div>' : ''));
   }
-  function eventDialog(e) { e = e || D.event; S.curEv = e; taskDialog({ icon: e.icon || 'info', title: LA(e.title), body: LA(e.body), links: e.opts.map(function (o, i) { return { attr: 'data-ev="' + i + '"', t: LA(o.t), n: LA(o.fx) }; }), foot: e.foot ? LA(e.foot) : null }); }
+  function startEvent() { return CONTENT.events.filter(function (e) { return e.start; })[0]; }
+  function eventDialog(e) { e = e || startEvent(); S.curEv = e; taskDialog({ icon: e.icon || 'info', title: LA(e.title), body: LA(e.body), links: e.opts.map(function (o, i) { return { attr: 'data-ev="' + i + '"', t: LA(o.t), n: LA(o.fx || CONTENT.fx(o.do)) }; }), foot: e.foot ? LA(e.foot) : null }); }
   document.addEventListener('click', function (e) {
     var a = e.target.closest('a,button,[data-town],[data-region],[data-b],[data-mail]'); if (!a || a.closest('#logon')) return;
     var holder = e.target.closest('[data-b],[data-region],[data-town],[data-mail]'); if (a.tagName === 'A' && !Object.keys(a.dataset).length && holder && holder.contains(a)) { e.preventDefault(); a = holder; }
@@ -504,14 +566,12 @@
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
     if (ds.tab) { S.tab = ds.tab; render(); return; }
     if (a.id === 'openatm') { openAtm(); return; }
+    if (ds.ek) { atmKey(ds.ek); return; }
     if (a.id === 'atmx' || a.id === 'atmx2') { $('#atmwrap').hidden = true; if (window.ATM3D) ATM3D.clearPile(); return; }
-    if (a.id === 'atmgo') { atmDo(); return; }
-    if (ds.atm) { atmMode = ds.atm; if (window.ATM3D) ATM3D.clearPile(); atmRender(); return; }
-    if (ds.aq) { $('#aamt').value = ds.aq; return; }
     if (ds.loan) { loanDialog(ds.loan); return; }
     if (ds.lno) { $('#dlgwrap').hidden = true; return; }
     if (ds.lgo) { var ld = loanDef(ds.lgo), amt = ld.grant ? ld.max : Math.max(0, Math.min(+($('#lamt') || {}).value || 0, ld.id === 'interfund' ? Math.floor(S.econ.flood / 2) : ld.max)); if (amt > 0) S.econ.pending.push({ id: ld.id, amt: amt, days: ld.days }); $('#dlgwrap').hidden = true; render(); return; }
-    if (ds.ev != null) { var ce = S.curEv || D.event; apply(ce.opts[+ds.ev].d); if (ce.flag) S.flags[ce.flag] = true; if (ce.date === '2009-11-16' && +ds.ev === 0) S.flags.deputize = true; $('#dlgwrap').hidden = true; S.curEv = null; render(); var nx = S.evq.shift(); if (nx) setTimeout(function () { eventDialog(nx); }, 300); return; }
+    if (ds.ev != null) { var ce = S.curEv || startEvent(); S.seen[ce.id] = true; $('#dlgwrap').hidden = true; S.curEv = null; runDo(ce.opts[+ds.ev].do); render(); var nx = S.evq.shift(); if (nx) setTimeout(function () { eventDialog(nx); }, 300); return; }
     if (a.id === 'dlgx') { $('#dlgwrap').hidden = true; return; }
     if (a.id === 'infox') { closeInfo(); return; }
     if (ds.sp != null) { S.speed = +ds.sp; clock(); return; }
@@ -527,11 +587,7 @@
     if (ds.mail != null && !e.target.closest('button')) { var i2 = +ds.mail; S.mail[i2].unread = false; S.openMail = S.openMail === i2 ? -1 : i2; render(); return; }
     if (ds.act) {
       var pp = ds.act.split(':'), m = S.mail[+pp[0]], act = m.acts[+pp[1]];
-      var fx = { fed: { 0: { fed: 5, navajo: -3 }, 1: { fed: -2 } }, navajo: { 0: { navajo: 5, fed: -2 } }, lds: { 0: { lds: 4, trust: 2 } } };
-      apply((fx[m.from] || {})[pp[1]]);
-      if (m.from === 'fed' && pp[1] === '0') { S.funds.fed += 180; var b2 = bdefOf('check'); S.facilities.push({ b: 'check', ll: [-110.1795, 34.9078], name: ['I-40 西口检查点', 'I-40 west exit checkpoint'], fund: 'fed', done: false, eta: 2, size: b2.size, roof: b2.roof, progress: 0 }); syncFac(); MAP.invalidate([-110.1795, 34.9078]); draw(); }
-      if (m.from === 'nb' && act[1] === 'Fund') S.funds.county -= 260;
-      m.done = ['已' + act[0], act[1] === 'Reply' ? 'Replied' : act[1] === 'Hold' ? 'On hold' : act[1] + (/e$/.test(act[1]) ? 'd' : 'ed')]; render(); return;
+      runDo(act.do); m.done = act.done || ['已处理', 'Done']; render(); if (window.GMAIL) GMAIL.refresh(); return;
     }
     if (a.id === 'zin') return zoomAt(1);
     if (a.id === 'zout') return zoomAt(-1);
@@ -567,7 +623,7 @@
       if (S.laws.hours) apply({ trust: -1 });
       econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
-      D.events.forEach(function (ev) { if (ev.date === ymd) { if (S.curEv) S.evq.push(ev); else { S.speed = 0; eventDialog(ev); } } });
+      contentDay();
       syncFac(); render(); draw();
     }
     clock();
@@ -578,7 +634,7 @@
   window.GAME_START = function () {
     syncFac(); render(); clock(); resize(); center(-110.3, 34.75, 8); draw();
     $('#ntext').innerHTML = '<b>' + L('州应急管理局：', 'State emergency management: ') + '</b>' + L('明天上午 9 点公布新的病例标准。', 'New case criteria at 9 am tomorrow.'); $('#notice').hidden = false;
-    setTimeout(function () { eventDialog(D.event); }, 900);
+    setTimeout(function () { eventDialog(startEvent()); }, 900);
   };
   LANG.set('zh');
   $('#gearmenu').addEventListener('click', function () { setTimeout(function () { render(); clock(); draw(); }, 0); });

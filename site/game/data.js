@@ -92,35 +92,6 @@ var DATA = {
       ['安·柯克帕特里克', 'Ann Kirkpatrick', '联邦众议员（亚利桑那第1选区）', 'U.S. Representative, AZ-1'],
       ['南希·沃德', 'Nancy Ward', '联邦应急管理署第九区主任', 'FEMA Region IX Administrator']] }
   ],
-  // 按日期触发 / dated events
-  events: [
-    { date: '2009-10-20', title: ['斯诺弗莱克纸厂', 'Snowflake mill'],
-      body: ['Catalyst Paper 通知县里，斯诺弗莱克纸厂下周起再停两周，近 300 人回家。七月已经停过一次。斯诺弗莱克镇长凯利·威利斯问县里能做什么。', 'Catalyst Paper tells the county the Snowflake mill will idle for two weeks from next week, sending nearly 300 people home. It already idled once in July. Snowflake Mayor Kelly Willis asks what the county can do.'],
-      opts: [
-        { t: ['把停工工人雇来做流调', 'Hire the idled workers as contact tracers'], fx: ['信任 +3 · 教会 +2 · $120K', 'Trust +3 · LDS +2 · $120K'], d: { trust: 3, lds: 2, money: -120 } },
-        { t: ['请泰勒支联会的福利委员会接手', "Ask the Taylor stake's welfare committee to help"], fx: ['教会 +3 · 信任 −1', 'LDS +3 · Trust −1'], d: { lds: 3, trust: -1 } },
-        { t: ['县里不出面', 'Stay out of it'], fx: ['信任 −3', 'Trust −3'], d: { trust: -3 } }
-      ] },
-    { date: '2009-10-26', title: ['窗岩', 'Window Rock'],
-      body: ['纳瓦霍族议会表决让族长小乔·雪利行政休假，副族长本·谢利代理族长。族应急管理部说，之前和县里谈好的事照旧，但签字要等代理族长办公室。', 'The Navajo Nation Council votes to put President Joe Shirley Jr. on administrative leave. Vice President Ben Shelly becomes acting president. The Nation\'s emergency management office says earlier agreements with the county stand, but signatures now go through the acting president\'s office.'],
-      opts: [
-        { t: ['照常和族应急管理部对接', 'Keep working through Navajo emergency management'], fx: ['无变化', 'No change'], d: {} },
-        { t: ['给代理族长办公室去函，确认现有协议', "Write to the acting president's office to confirm existing agreements"], fx: ['纳瓦霍族 +3', 'Navajo +3'], d: { navajo: 3 } },
-        { t: ['暂停新的合作，等族内局势明朗', 'Pause new joint work until things settle'], fx: ['纳瓦霍族 −4 · 恐慌 −1', 'Navajo −4 · Panic −1'], d: { navajo: -4, panic: -1 } }
-      ], flag: 'shelly' },
-    { date: '2009-11-16', title: ['凯恩塔和皮农', 'Kayenta and Piñon'],
-      body: ['警长 K.C. 克拉克和纳瓦霍族公共安全部谈妥了草案：县警长副手拿族里的委任，在凯恩塔和皮农驻点。需要监事会表决。', "Sheriff K.C. Clark and the Navajo Division of Public Safety have a draft: sheriff's deputies take Navajo Nation commissions and are stationed in Kayenta and Piñon. It needs a Board vote."],
-      opts: [
-        { t: ['列入下次监事会议程', "Put it on the Board's next agenda"], fx: ['条例页可表决', 'Votable under Ordinances'], d: { navajo: 1 } },
-        { t: ['再等一个月', 'Wait another month'], fx: ['纳瓦霍族 −2', 'Navajo −2'], d: { navajo: -2 } }
-      ] },
-    { date: '2009-11-18', title: ['基科茨莫维', 'Kykotsmovi'],
-      body: ['霍皮族选出了主席勒罗伊·辛戈伊特瓦，12月1日就职。族里问，去霍尔布鲁克的 SR 77 能不能在白天放行族人的车。', 'The Hopi Tribe has elected Leroy Shingoitewa chairman; he takes office Dec 1. The tribe asks whether Hopi vehicles can use SR 77 to Holbrook during the day.'],
-      opts: [
-        { t: ['白天放行，入城测体温', 'Daytime access, temperature check at town'], fx: ['纳瓦霍族 +2 · 恐慌 +1', 'Navajo +2 · Panic +1'], d: { navajo: 2, panic: 1 } },
-        { t: ['只放行送货车', 'Delivery trucks only'], fx: ['信任 +1', 'Trust +1'], d: { trust: 1 } }
-      ], flag: 'hopi_chair' }
-  ],
   // 建筑。size = 米 / metres. convert = 只能改建现有建筑
   buildings: [
     { id: 'clinic', cat: 'life', zh: '模块化诊所', en: 'Modular clinic', cost: 180, days: 4, fund: ['fed', 'county'], size: [24, 12], fx: ['信任 +3', 'Trust +3'], roof: '#d8d7d1' },
@@ -152,37 +123,12 @@ var DATA = {
     { id: 'mill_crew', g: ['就业', 'Jobs'], sup: [0, 0, 1, 2, 1], zh: '雇用斯诺弗莱克纸厂停工工人做流调', en: 'Hire idled Snowflake mill workers as contact tracers', fx: ['每周 $40K · 信任 +3 · 教会 +2', '$40K a week · Trust +3 · LDS +2'], d: { trust: 3, lds: 2, money: -40 } },
     { id: 'bnsf', sup: [0, 0, 1, 1, 1], g: ['物资', 'Supplies'], zh: '请 BNSF 在霍尔布鲁克站停车卸货', en: 'Ask BNSF to stop and unload at Holbrook', fx: ['储备 +10 天 · 联邦 +2', 'Reserve +10 days · Federal +2'] }
   ],
-  mail: [
-    { from: 'fed', id: 'FEMA IX', t: ['第九区可调 40 台旅行拖车', 'Region IX can release 40 travel trailers'], s: ['南希·沃德办公室：需要县里提供有水电接口的场地。', "Nancy Ward's office: the county must provide a site with water and power hookups."], time: '09:05', unread: true, acts: [['接受', 'Accept'], ['回复', 'Reply']] },
-    { from: 'nb', nb: ['乔拉电厂（APS）', 'Cholla Power Plant (APS)'], id: '', t: ['倒班工人过 I-40 检查点要排一小时', 'Shift workers wait an hour at the I-40 checkpoint'], s: ['约瑟夫城的电厂请县里给员工车辆开专用道。', 'The Joseph City plant asks for a dedicated lane for staff vehicles.'], time: '08:40', unread: true, acts: [['同意', 'Agree'], ['拒绝', 'Decline']] },
-    { from: 'fed', id: 'ADEM 09-0412', t: ['在 I-40 霍尔布鲁克西口增设体温检查点', 'Add a temperature checkpoint at the I-40 Holbrook west exit'], s: ['随文拨款 $180,000，10月16日前完成。', '$180,000 attached. Complete by Oct 16.'], time: '10:42', unread: true, acts: [['执行', 'Comply'], ['搁置', 'Hold'], ['回复', 'Reply']] },
-    { from: 'navajo', id: 'NNDEM-117', t: ['族人进城采购不应在检查点排队', 'Nation members should not queue at checkpoints to shop in town'], s: ['霍尔布鲁克的 Safeway 是很多家庭最近的超市。', "For many families the Safeway in Holbrook is the nearest supermarket."], time: '11:15', unread: true, acts: [['同意', 'Agree'], ['回复', 'Reply']] },
-    { from: 'lds', id: '', t: ['主教仓库可调出面粉和罐头', "The bishops' storehouse can release flour and canned goods"], s: ['约 40 吨。请县里定一个分发地点。', 'About 40 tons. Please name a distribution site.'], time: '昨天 Yesterday', unread: true, acts: [['接受', 'Accept'], ['回复', 'Reply']] },
-    { from: 'nb', nb: ['阿帕奇县监事会', 'Apache County Board of Supervisors'], id: '', t: ['借两名护士，可用柴油交换', 'Two nurses on loan, paid in diesel'], s: ['6,000 加仑，从圣约翰斯运过来。', '6,000 gallons, trucked from St. Johns.'], time: '昨天 Yesterday', unread: false, acts: [['接受', 'Accept'], ['还价', 'Counter'], ['拒绝', 'Decline']] },
-    { from: 'nb', nb: ['温斯洛市议会', 'Winslow City Council'], id: '', t: ['小科罗拉多医疗中心需要 20 张床位的钱', 'Little Colorado Medical Center needs funding for 20 beds'], s: ['$260,000。', '$260,000.'], time: '10月12日 Oct 12', unread: false, acts: [['拨款', 'Fund'], ['婉拒', 'Decline']] }
-  ],
   promises: [
     { zh: '霍尔布鲁克公共图书馆周六恢复开放', en: 'Reopen the Holbrook Public Library on Saturday', left: 3, cost: 15, by: ['霍尔布鲁克居民联署', 'Holbrook residents\' petition'] },
     { zh: '周五前公布全县病例分布图', en: 'Publish the county case map by Friday', left: 2, cost: 5, by: ['《霍尔布鲁克论坛新闻》', 'Holbrook Tribune-News'] }
   ],
-  broadcasts: [
-    { ch: 'fed', name: ['KPNX 12 · 凤凰城', 'KPNX 12 · Phoenix'], time: '14:00', t: ['州应急管理局：明天上午 9 点公布新的病例标准。', 'State emergency management: new case criteria at 9 am tomorrow.'] },
-    { ch: 'navajo', name: ['KTNN 660 AM · 窗岩', 'KTNN 660 AM · Window Rock'], time: '12:30', t: ['族长办公室：族内检测点周末照常开放。', "President's office: Nation testing sites stay open this weekend."] },
-    { ch: 'county', name: ['KINO 1230 AM · 温斯洛', 'KINO 1230 AM · Winslow'], time: '09:10', t: ['县新闻发布会：今日新增确诊 3 例，均在温斯洛。', 'County briefing: 3 new confirmed cases today, all in Winslow.'] },
-    { ch: 'lds', name: ['KNAZ 2 · 弗拉格斯塔夫', 'KNAZ 2 · Flagstaff'], time: '08:00', t: ['斯诺弗莱克的志愿者周六在泰勒分发食品。', 'Snowflake volunteers hand out food in Taylor on Saturday.'] }
-  ],
   teams: [
     { zh: '县警长办公室 · 警长 K.C. 克拉克', en: "Sheriff's Office · Sheriff K.C. Clark", where: ['巡逻车 14 辆', '14 patrol units'] },
     { zh: '县卫生局流调组', en: 'Public Health contact tracers', where: ['麦金利县 · 还要 2 天', 'McKinley County · 2 days out'] }
-  ],
-  event: {
-    title: ['周五橄榄球赛', 'Friday football'],
-    body: ['霍尔布鲁克高中 Roadrunners 周五晚 7 点主场对温斯洛高中 Bulldogs。往年能来两千多人。州应急管理局建议取消，学区说听县里的。',
-           'Holbrook High plays Winslow High at home on Friday at 7 pm. It usually draws over two thousand people. The state recommends cancelling; the school district will follow the county.'],
-    opts: [
-      { t: ['照常举行', 'Play as usual'], fx: ['信任 +5 · 联邦 −3', 'Trust +5 · Federal −3'], d: { trust: 5, fed: -3 } },
-      { t: ['限 800 人，入场测体温', 'Cap at 800, temperature checks at the gate'], fx: ['信任 +2 · 恐慌 −1', 'Trust +2 · Panic −1'], d: { trust: 2, panic: -1 } },
-      { t: ['不卖票，KINO 电台直播', 'No crowd, live on KINO'], fx: ['恐慌 −2 · 联邦 +2', 'Panic −2 · Federal +2'], d: { panic: -2, fed: 2 } }
-    ]
-  }
+  ]
 };
