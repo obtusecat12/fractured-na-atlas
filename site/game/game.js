@@ -501,7 +501,8 @@
   var cv = $('#map'), cx = cv.getContext('2d'), pane = $('#mappane'), W = 0, H = 0, DPR = window.devicePixelRatio || 1;
   var V = { z: 8, x: 0, y: 0 }, mode = 'map', layers = { fac: true, cases: true, res: true, fog: true };
   function center(lon, lat, z) { V.z = z; V.x = MAP.wx(lon, z); V.y = MAP.wy(lat, z); }
-  function px(ll) { return [MAP.wx(ll[0], V.z) - V.x + W / 2, MAP.wy(ll[1], V.z) - V.y + H / 2]; }
+  // 墨卡托坐标按缩放级 0 缓存在点数组上（坐标是常量数组），每帧只做乘法，不再对几万个顶点算 log/sin
+  function px(ll) { var m = ll._m || (ll._m = [MAP.wx(ll[0], 0), MAP.wy(ll[1], 0)]), k = Math.pow(2, V.z); return [m[0] * k - V.x + W / 2, m[1] * k - V.y + H / 2]; }
   function unpx(x, y) { return [MAP.xlon(V.x - W / 2 + x, V.z), MAP.ylat(V.y - H / 2 + y, V.z)]; }
   function resize() { W = pane.clientWidth; H = pane.clientHeight; cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px'; FOG.resize(W, H, DPR); draw(); }
   var COUNTY = {}; MAP.R.counties.forEach(function (c) { COUNTY[c.n] = c; });
@@ -518,44 +519,121 @@
     var t = LANG.mode() === 'en' ? en : zh; cx.font = font; cx.textAlign = align || 'center'; cx.lineJoin = 'round'; cx.lineWidth = 3; cx.strokeStyle = halo || 'rgba(255,255,255,.92)'; cx.fillStyle = color; cx.strokeText(t, x, y); cx.fillText(t, x, y);
     if (LANG.mode() === 'both' && en !== zh) { cx.font = '10px Arial'; cx.strokeText(en, x, y + 12); cx.fillText(en, x, y + 12); }
   }
-  var drawPending = false;
-  function draw() { if (drawPending) return; drawPending = true; requestAnimationFrame(function () { drawPending = false; drawNow(); }); }
+  // ---------- 绘制调度 ----------
+  // 全量重画（drawNow）很重：卫星图块、几千个顶点的县界和道路、标签、夜间灯光。
+  // 拖动地图、放置建筑时的鼠标移动只把上一次全量画面（SNAP）平移后贴上去（drawQuick）；
+  // 滚轮缩放先把 SNAP 按比例放大/缩小做 180 ms 动画，结束后再全量重画（同外壳 a2.js 的 quickDraw 思路）。
+  var drawPending = false, needFull = false, SNAP = document.createElement('canvas'), SG = SNAP.getContext('2d'), snapV = null, ZA = null;
+  function draw(quick) { if (!quick) needFull = true; if (drawPending) return; drawPending = true; requestAnimationFrame(function () { drawPending = false; if (ZA) return; var full = needFull || !canQuick(); needFull = false; if (full) drawNow(); else drawQuick(); }); }
+  function canQuick() { return snapV && snapV.z === V.z && snapV.w === W && snapV.h === H && Math.abs(snapV.x - V.x) < W * .35 && Math.abs(snapV.y - V.y) < H * .35; }
+  function saveSnap() {
+    if (SNAP.width !== cv.width || SNAP.height !== cv.height) { SNAP.width = cv.width; SNAP.height = cv.height; }
+    SG.setTransform(1, 0, 0, 1, 0, 0); SG.clearRect(0, 0, SNAP.width, SNAP.height); SG.drawImage(cv, 0, 0);
+    snapV = { x: V.x, y: V.y, z: V.z, w: W, h: H };
+  }
+  function blitSnap(s, ox, oy) { // s = 缩放倍数，ox/oy = SNAP 左上角在屏幕上的位置（CSS 像素）
+    cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.fillStyle = fogPat(); cx.fillRect(0, 0, W, H);
+    cx.setTransform(1, 0, 0, 1, 0, 0); cx.imageSmoothingEnabled = true;
+    cx.drawImage(SNAP, Math.round(ox * DPR), Math.round(oy * DPR), SNAP.width * s, SNAP.height * s);
+    cx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  function drawQuick() {
+    blitSnap(1, snapV.x - V.x, snapV.y - V.y);
+    if (S.placing && hover) ghost();
+    scale(); knob();
+  }
+  // 缩放动画：从当前显示的 SNAP 变换插值到新视图下 SNAP 应在的位置
+  function zoomAnim(nz, sx, sy) {
+    if (!snapV || snapV.w !== W || snapV.h !== H) return false;
+    var from = ZA ? ZA.cur : (snapV.z === V.z ? { s: 1, ox: snapV.x - V.x, oy: snapV.y - V.y } : null); if (!from) return false;
+    var ll = unpx(sx, sy), k = Math.pow(2, nz - snapV.z);
+    V.z = nz; V.x = MAP.wx(ll[0], nz) - sx + W / 2; V.y = MAP.wy(ll[1], nz) - sy + H / 2;
+    var to = { s: k, ox: (snapV.x - W / 2) * k - V.x + W / 2, oy: (snapV.y - H / 2) * k - V.y + H / 2 };
+    var running = !!ZA;
+    ZA = { from: from, to: to, cur: from, t0: performance.now() };
+    if (!running) requestAnimationFrame(zaStep);
+    return true;
+  }
+  function zaStep() {
+    var a = ZA; if (!a) return;
+    var p = Math.min(1, (performance.now() - a.t0) / 180), e = 1 - (1 - p) * (1 - p);
+    var s = a.from.s * Math.pow(a.to.s / a.from.s, e), r = Math.abs(a.to.s - a.from.s) > 1e-9 ? (s - a.from.s) / (a.to.s - a.from.s) : e;
+    a.cur = { s: s, ox: a.from.ox + (a.to.ox - a.from.ox) * r, oy: a.from.oy + (a.to.oy - a.from.oy) * r };
+    blitSnap(a.cur.s, a.cur.ox, a.cur.oy); scale(); knob();
+    if (p < 1) { requestAnimationFrame(zaStep); return; }
+    ZA = null; drawNow();
+  }
+  // 地图集在游戏后面看不见，让它的夜景/雪花动画停下（a3.js、fx.js 在 S.pending 为真时跳过；回到地图集时 render() 会清掉）
+  function pauseAtlas() { try { if (top !== window && top.FNA && top.FNA.inGame && top.FNA.inGame() && top.S) top.S.pending = true; } catch (e) {} }
+  var lastImgDate = '';
   function drawNow() {
+    pauseAtlas();
     FOG.dirty();
     cx.setTransform(DPR, 0, 0, DPR, 0, 0);
     var sat = mode !== 'map';
     // base: fog everywhere
-    cx.fillStyle = '#DCD9D3'; cx.fillRect(0, 0, W, H); fogTiles();
+    fogTiles(0, 0, W, H);
     if (sat) satTiles(); else baseMap();
-    // fog over unseen counties
-    MAP.R.counties.forEach(function (c) { if (seen(c.n)) return; poly(c.p, true); cx.save(); cx.clip(); cx.fillStyle = '#DCD9D3'; cx.fillRect(0, 0, W, H); fogTiles(); cx.restore(); });
+    // fog over unseen counties：所有没见过的县合成一条路径，裁剪一次
+    cx.save(); cx.beginPath(); var anyUnseen = false;
+    MAP.R.counties.forEach(function (c) { if (seen(c.n)) return; anyUnseen = true; c.p.forEach(function (r) { r.forEach(function (p, i) { var q = px(p); i ? cx.lineTo(q[0], q[1]) : cx.moveTo(q[0], q[1]); }); cx.closePath(); }); });
+    if (anyUnseen) { cx.clip('nonzero'); fogTiles(0, 0, W, H); }
+    cx.restore();
     if (sat) nightShade();
     if (!sat || mode === 'hyb') overlay(sat);
+    saveSnap();
     if (S.placing && hover) ghost();
     scale(); knob();
-    $('#imgdate').innerHTML = sat ? L('影像 ©2009 DigitalGlobe, USDA Farm Service Agency - 影像日期：2007年6月', 'Imagery ©2009 DigitalGlobe, USDA Farm Service Agency - Imagery Date: Jun 2007') : L('地图数据 ©2009 Tele Atlas', 'Map data ©2009 Tele Atlas');
+    var t = sat ? L('影像 ©2009 DigitalGlobe, USDA Farm Service Agency - 影像日期：2007年6月', 'Imagery ©2009 DigitalGlobe, USDA Farm Service Agency - Imagery Date: Jun 2007') : L('地图数据 ©2009 Tele Atlas', 'Map data ©2009 Tele Atlas');
+    if (t !== lastImgDate) { lastImgDate = t; $('#imgdate').innerHTML = t; }
   }
-  function fogTiles() {
+  // “没有影像”的灰格：预先画好一张 256 px 的图块，用图案平铺，一次 fillRect（原来每块两行字、每个没见过的县各重画一遍）
+  var FOGT = { key: '' };
+  function fogPat() {
+    var key = LANG.mode() + DPR;
+    if (FOGT.key !== key) {
+      var c = document.createElement('canvas'), s = Math.round(256 * DPR); c.width = c.height = s; var t = c.getContext('2d');
+      t.scale(DPR, DPR); t.fillStyle = '#DCD9D3'; t.fillRect(0, 0, 256, 256);
+      t.strokeStyle = '#CFCBC4'; t.lineWidth = 1; t.strokeRect(.5, .5, 256, 256);
+      t.fillStyle = '#9C988F'; t.font = '11px Arial'; t.textAlign = 'center';
+      t.fillText(T('很抱歉，此缩放级别下', 'We are sorry, but we don\'t'), 128, 120); t.fillText(T('该区域没有影像。', 'have imagery at this zoom level.'), 128, 135);
+      FOGT = { key: key, pat: cx.createPattern(c, 'repeat') };
+    }
     var ox = ((-V.x + W / 2) % 256 + 256) % 256, oy = ((-V.y + H / 2) % 256 + 256) % 256;
-    cx.strokeStyle = '#CFCBC4'; cx.lineWidth = 1; cx.fillStyle = '#9C988F'; cx.font = '11px Arial'; cx.textAlign = 'center';
-    for (var x = ox - 256; x < W; x += 256) for (var y = oy - 256; y < H; y += 256) { cx.strokeRect(x + .5, y + .5, 256, 256); cx.fillText(T('很抱歉，此缩放级别下', 'We are sorry, but we don\'t'), x + 128, y + 120); cx.fillText(T('该区域没有影像。', 'have imagery at this zoom level.'), x + 128, y + 135); }
+    if (FOGT.pat.setTransform) FOGT.pat.setTransform(new DOMMatrix([1 / DPR, 0, 0, 1 / DPR, ox, oy]));
+    return FOGT.pat;
   }
+  function fogTiles(x, y, w, h) { cx.fillStyle = fogPat(); cx.fillRect(x, y, w, h); }
   // 夜色：19 点到 6 点卫星图压暗，镇上的路灯和夜间施工的照明灯亮起；黄昏和清晨各一小时过渡
   var lastNL = -1;
   function nightLevel() { var h = S.hour; return h >= 20 || h < 5 ? 1 : h === 19 ? .55 : h === 5 ? .5 : h === 6 ? .2 : h === 18 ? .2 : 0; }
+  // 路灯位置只算一次（原来每帧遍历 2.5 万个道路顶点），光晕用预先画好的小图（原来每盏灯每帧新建一个径向渐变）
+  var LAMPS = null, GLOW = {};
+  function lamps() {
+    if (LAMPS) return LAMPS; LAMPS = [];
+    MAP.HW.forEach(function (h) {
+      if (h.h === 'track' || h.h === 'path' || h.h === 'footway') return;
+      for (var i = 0; i < h.ll.length; i++) if (MAP.hash(i, h.ll.length, 31) <= (h.h === 'residential' ? .45 : .8)) LAMPS.push(h.ll[i]);
+    });
+    return LAMPS;
+  }
+  function glowSprite(rgb) {
+    if (GLOW[rgb]) return GLOW[rgb];
+    var c = document.createElement('canvas'); c.width = c.height = 64; var t = c.getContext('2d'), gr = t.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(' + rgb + ',1)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); t.fillStyle = gr; t.fillRect(0, 0, 64, 64);
+    return (GLOW[rgb] = c);
+  }
   function nightShade() {
     var a = nightLevel(); if (!a) return;
     cx.save(); cx.globalCompositeOperation = 'multiply'; cx.fillStyle = 'rgba(' + Math.round(255 - 205 * a) + ',' + Math.round(255 - 195 * a) + ',' + Math.round(255 - 150 * a) + ',1)'; cx.fillRect(0, 0, W, H); cx.restore();
     if (V.z < 12) return;
-    cx.save(); cx.globalCompositeOperation = 'lighter'; var m = MAP.mpp(V.z), step = Math.max(35, 45 * m / 3);
-    MAP.HW.forEach(function (h) {
-      if (h.h === 'track' || h.h === 'path' || h.h === 'footway') return;
-      for (var i = 0; i < h.ll.length; i++) { if (MAP.hash(i, h.ll.length, 31) > (h.h === 'residential' ? .45 : .8)) continue; var q = px(h.ll[i]); if (q[0] < -10 || q[1] < -10 || q[0] > W + 10 || q[1] > H + 10) continue; glow(q[0], q[1], Math.max(1.5, 14 / m), 'rgba(255,196,110,' + (.55 * a) + ')'); }
-    });
-    S.facilities.forEach(function (f) { var q = px(f.ll); if (!f.done && !f.wait) glow(q[0], q[1], Math.max(3, 40 / m), 'rgba(235,240,255,' + (.7 * a) + ')'); else if (f.done) glow(q[0], q[1], Math.max(2, 22 / m), 'rgba(255,210,140,' + (.5 * a) + ')'); });
+    cx.save(); cx.globalCompositeOperation = 'lighter'; var m = MAP.mpp(V.z), r = Math.max(1.5, 14 / m), sp = glowSprite('255,196,110');
+    cx.globalAlpha = .55 * a;
+    lamps().forEach(function (ll) { var q = px(ll); if (q[0] < -10 || q[1] < -10 || q[0] > W + 10 || q[1] > H + 10) return; cx.drawImage(sp, q[0] - r, q[1] - r, r * 2, r * 2); });
+    S.facilities.forEach(function (f) { var q = px(f.ll); if (!f.done && !f.wait) glow(q[0], q[1], Math.max(3, 40 / m), '235,240,255', .7 * a); else if (f.done) glow(q[0], q[1], Math.max(2, 22 / m), '255,210,140', .5 * a); });
     cx.restore();
   }
-  function glow(x, y, r, c) { var gr = cx.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, c); gr.addColorStop(1, 'rgba(0,0,0,0)'); cx.fillStyle = gr; cx.fillRect(x - r, y - r, r * 2, r * 2); }
+  function glow(x, y, r, rgb, al) { cx.globalAlpha = al; cx.drawImage(glowSprite(rgb), x - r, y - r, r * 2, r * 2); }
   function satTiles() {
     var x0 = Math.floor((V.x - W / 2) / 256), y0 = Math.floor((V.y - H / 2) / 256), x1 = Math.floor((V.x + W / 2) / 256), y1 = Math.floor((V.y + H / 2) / 256);
     MAP.clearQueue();
@@ -564,9 +642,23 @@
     cx.imageSmoothingEnabled = true;
     list.forEach(function (t) {
       var sx = t[0] * 256 - V.x + W / 2, sy = t[1] * 256 - V.y + H / 2, im = MAP.tile(V.z, t[0], t[1]);
-      if (im) cx.drawImage(im, sx, sy, 256, 256); else { cx.fillStyle = '#7d7466'; cx.fillRect(sx, sy, 256, 256); }
+      if (im) cx.drawImage(im, sx, sy, 256, 256); else if (!fallbackTile(t[0], t[1], sx, sy)) { cx.fillStyle = '#7d7466'; cx.fillRect(sx, sy, 256, 256); }
     });
-    if (MAP.queueLen()) setTimeout(function () { MAP.pump(3, draw); }, 0);
+    if (MAP.queueLen() && !pumpT) pumpT = setTimeout(function () { pumpT = 0; MAP.pump(6, draw, 10); }, 0);
+  }
+  var pumpT = 0;
+  // 新级别的图块还没做好时，先用上一级（放大）或下一级（缩小）已缓存的图块顶上，不再闪成空格
+  function fallbackTile(tx, ty, sx, sy) {
+    for (var dz = 1; dz <= 4 && V.z - dz >= 0; dz++) {
+      var n = 1 << dz, im = MAP.peek(V.z - dz, Math.floor(tx / n), Math.floor(ty / n)); if (!im) continue;
+      var sw = im.width / n, ix = ((tx % n) + n) % n, iy = ((ty % n) + n) % n;
+      cx.drawImage(im, ix * sw, iy * sw, sw, sw, sx, sy, 256, 256); return true;
+    }
+    var kids = []; for (var k = 0; k < 4; k++) kids.push(MAP.peek(V.z + 1, tx * 2 + (k & 1), ty * 2 + (k >> 1)));
+    if (!kids.some(Boolean)) return false;
+    cx.fillStyle = '#7d7466'; cx.fillRect(sx, sy, 256, 256);
+    kids.forEach(function (c, k) { if (c) cx.drawImage(c, sx + (k & 1) * 128, sy + (k >> 1) * 128, 128, 128); });
+    return true;
   }
   var PLACE_COL = { '25': 1, '43': 1 };
   function baseMap() {
@@ -588,7 +680,7 @@
     // roads
     var order = { S: 0, U: 1, I: 2 };
     cx.save(); if (z >= 13) clipTowns();
-    R.roads.slice().sort(function (a, b) { return order[a.t] - order[b.t]; }).forEach(function (r) {
+    (R._sorted || (R._sorted = R.roads.slice().sort(function (a, b) { return order[a.t] - order[b.t]; }))).forEach(function (r) {
       if (r.t === 'S' && z < 9) return;
       var w = r.t === 'I' ? (z >= 12 ? 7 : z >= 10 ? 5 : 3.5) : r.t === 'U' ? (z >= 12 ? 6 : z >= 10 ? 4 : 2.6) : (z >= 12 ? 5 : 3);
       var cs = r.t === 'I' ? '#E09B2D' : r.t === 'U' ? '#D9C95A' : '#C9C2A0', fl = r.t === 'I' ? '#FFC345' : r.t === 'U' ? '#FFFD8B' : '#FFFFC8';
@@ -702,18 +794,28 @@
   var drag = null, moved = false, hover = null;
   cv.addEventListener('mousedown', function (e) { drag = [e.clientX, e.clientY, V.x, V.y]; moved = false; cv.classList.add('dragging'); });
   window.addEventListener('mousemove', function (e) {
-    if (drag) { var dx = e.clientX - drag[0], dy = e.clientY - drag[1]; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true; V.x = drag[2] - dx; V.y = drag[3] - dy; closeInfo(); draw(); }
-    else if (S.placing) { var r = cv.getBoundingClientRect(); hover = [e.clientX - r.left, e.clientY - r.top]; draw(); }
+    if (drag) { var dx = e.clientX - drag[0], dy = e.clientY - drag[1]; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true; V.x = drag[2] - dx; V.y = drag[3] - dy; closeInfo(); draw(true); }
+    else if (S.placing) { var r = cv.getBoundingClientRect(); hover = [e.clientX - r.left, e.clientY - r.top]; draw(true); }
   });
-  window.addEventListener('mouseup', function (e) { if (!drag) return; cv.classList.remove('dragging'); var r = cv.getBoundingClientRect(); if (!moved) click(e.clientX - r.left, e.clientY - r.top); drag = null; });
-  cv.addEventListener('wheel', function (e) { e.preventDefault(); var r = cv.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1 : -1, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  window.addEventListener('mouseup', function (e) { if (!drag) return; cv.classList.remove('dragging'); var r = cv.getBoundingClientRect(); if (!moved) click(e.clientX - r.left, e.clientY - r.top); else draw(); drag = null; });
+  // 滚轮：鼠标一格换一级；触控板的小增量先累计，满一格再换，并且两次之间至少隔 90 ms（原来每个滚轮事件都换一级）
+  var wheelAcc = 0, wheelT = 0;
+  cv.addEventListener('wheel', function (e) {
+    e.preventDefault(); var r = cv.getBoundingClientRect(), now = performance.now();
+    wheelAcc += e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 600 : 1);
+    if (Math.abs(wheelAcc) < 50 || now - wheelT < 90) return;
+    var d = wheelAcc < 0 ? 1 : -1; wheelAcc = 0; wheelT = now;
+    zoomAt(d, e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
   cv.addEventListener('dblclick', function (e) { var r = cv.getBoundingClientRect(); zoomAt(1, e.clientX - r.left, e.clientY - r.top); });
   function zoomAt(d, sx, sy) {
     if (d < 0 && V.z <= ZMIN && top !== window && top.FNA) { closeInfo(); top.FNA.toAtlas(); return; }
     var nz = Math.max(ZMIN, Math.min(ZMAX, V.z + d)); if (nz === V.z) return;
     if (sx == null) { sx = W / 2; sy = H / 2; }
+    closeInfo();
+    if (zoomAnim(nz, sx, sy)) return;
     var ll = unpx(sx, sy); V.z = nz; V.x = MAP.wx(ll[0], nz) - sx + W / 2; V.y = MAP.wy(ll[1], nz) - sy + H / 2;
-    closeInfo(); draw();
+    draw();
   }
   function click(x, y) {
     var ll = unpx(x, y);
@@ -852,6 +954,7 @@
   // ---------- time ----------
   function tick() {
     if (S.sim.over) return;
+    pauseAtlas();
     S.hour++;
     buildHour();
     if (nightLevel() !== lastNL) { lastNL = nightLevel(); draw(); }
@@ -864,7 +967,7 @@
       simDay(); econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
       contentDay();
-      stateDay(); staffDay(); teamsDay(); pressDay(); calDay(); syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) saveGame(AUTO_KEY);
+      stateDay(); staffDay(); teamsDay(); pressDay(); calDay(); syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) (window.requestIdleCallback || setTimeout)(function () { saveGame(AUTO_KEY); });
     }
     clock();
   }
