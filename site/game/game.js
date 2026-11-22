@@ -833,17 +833,29 @@
   });
   window.addEventListener('mouseup', function (e) { if (!drag) return; cv.classList.remove('dragging'); var r = cv.getBoundingClientRect(); if (!moved) click(e.clientX - r.left, e.clientY - r.top); else draw(); drag = null; });
   // 滚轮：鼠标一格换一级；触控板的小增量先累计，满一格再换，并且两次之间至少隔 90 ms（原来每个滚轮事件都换一级）
-  var wheelAcc = 0, wheelT = 0;
+  var wheelAcc = 0, wheelT = 0, lastWheelAt = 0, edgeArm = 0, edgeQuiet = false, edgeTipEl = null, edgeTipT = 0, inWheel = false;
+  function edgeTip(on) {
+    if (!edgeTipEl) { edgeTipEl = document.createElement('div'); edgeTipEl.style.cssText = 'position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#fff9c4;border:1px solid #c9b458;padding:3px 10px;font:12px Arial,sans-serif;z-index:50;pointer-events:none'; edgeTipEl.textContent = '再缩小一次回到全国地图 Zoom out again for the national map'; cv.parentNode.appendChild(edgeTipEl); }
+    edgeTipEl.hidden = !on; clearTimeout(edgeTipT); if (on) edgeTipT = setTimeout(function () { edgeTipEl.hidden = true; edgeArm = 0; }, 3000);
+  }
   cv.addEventListener('wheel', function (e) {
     e.preventDefault(); var r = cv.getBoundingClientRect(), now = performance.now();
+    if (edgeArm && now - lastWheelAt > 350) edgeQuiet = true; lastWheelAt = now;
     wheelAcc += e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 600 : 1);
     if (Math.abs(wheelAcc) < 50 || now - wheelT < 90) return;
     var d = wheelAcc < 0 ? 1 : -1; wheelAcc = 0; wheelT = now;
-    zoomAt(d, e.clientX - r.left, e.clientY - r.top);
+    inWheel = true; zoomAt(d, e.clientX - r.left, e.clientY - r.top); inWheel = false;
   }, { passive: false });
   cv.addEventListener('dblclick', function (e) { var r = cv.getBoundingClientRect(); zoomAt(1, e.clientX - r.left, e.clientY - r.top); });
   function zoomAt(d, sx, sy) {
-    if (d < 0 && V.z <= ZMIN && top !== window && top.FNA) { closeInfo(); top.FNA.toAtlas(); return; }
+    if (d < 0 && V.z <= ZMIN && top !== window && top.FNA) {
+      // 已是最小缩放：第一次只提示；滚轮停下后再缩小一次（3 秒内）才回到全国地图，避免一次滚过头就跳出去
+      var now = performance.now(); if (!inWheel && edgeArm) edgeQuiet = true;
+      if (edgeArm && now - edgeArm < 3000 && edgeQuiet) { edgeArm = 0; edgeTip(false); closeInfo(); top.FNA.toAtlas(); return; }
+      if (!edgeArm || now - edgeArm >= 3000) edgeQuiet = false;
+      edgeArm = now; edgeTip(true);   // 同一次滚动还在继续：只延长提示，不跳出
+      return;
+    }
     var nz = Math.max(ZMIN, Math.min(ZMAX, V.z + d)); if (nz === V.z) return;
     if (sx == null) { sx = W / 2; sy = H / 2; }
     closeInfo();
