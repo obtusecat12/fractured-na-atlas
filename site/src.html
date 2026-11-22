@@ -12,7 +12,31 @@
 <!--INLINE_CSS:fell.css-->
 <!--INLINE_CSS:gpage.css-->
 </head>
-<body>
+<body class="fna-logon">
+<style>
+#fnaboot{position:fixed;inset:0;z-index:3000000;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .6s}
+#fnaboot video{width:100%;height:100%;object-fit:contain;background:#000}
+#fnaboot.out{opacity:0;pointer-events:none}
+#gameframe{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:99990;background:#000;transition:opacity .45s}
+#gameframe.out{opacity:0;pointer-events:none}
+body.fna-logon #bmtab,body.fna-logon #bmlist,body.fna-logon .cwin{display:none!important}
+#fnaback{position:fixed;left:50%;top:96px;transform:translateX(-50%);z-index:9000;display:none;padding:5px 14px;font:13px Arial,"Microsoft YaHei",sans-serif;background:#fff8c4;border:1px solid #e5d36e;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+body.fna-atlas #fnaback{display:block}
+</style>
+<div id="fnaboot"></div>
+<script>(function () {
+  var seen = false; try { seen = localStorage.getItem('fna-boot-seen') === '1'; } catch (e) {}
+  var b = document.getElementById('fnaboot');
+  window.FNA_BOOT_DONE = false;
+  function done() { if (window.FNA_BOOT_DONE) return; window.FNA_BOOT_DONE = true; try { localStorage.setItem('fna-boot-seen', '1'); } catch (e) {} b.classList.add('out'); setTimeout(function () { b.remove(); }, 700); }
+  window.FNA_BOOTED = done;
+  if (seen) { setTimeout(done, 300); return; }
+  var v = document.createElement('video'); v.src = 'boot.mp4'; v.autoplay = true; v.muted = true; v.playsInline = true; v.preload = 'auto';
+  v.addEventListener('ended', done); v.addEventListener('error', done); b.appendChild(v);
+  var p = v.play(); if (p && p.catch) p.catch(function () { setTimeout(done, 1500); });
+  setTimeout(done, 26000);
+})();</script>
+<iframe id="gameframe" src="game/index.html" title="Navajo County"></iframe>
 <div id="gbar">
   <div id="gnav"><a href="#">网页 Web</a><a href="#">图片 Images</a><a href="#">视频 Videos</a><b>地图 Maps</b><a href="#">新闻 News</a><a href="#">购物 Shopping</a><a href="#">邮件 Mail</a><a href="#" class="more">更多 more <span class="tri">&#9660;</span></a></div>
   <div id="guser"><a href="#" id="help">帮助 Help</a> | <a href="#">登录 Sign in</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><div class="gmh">显示器 Display</div><a href="#" data-lcd="on" class="gmi"><b class="ck"></b>液晶屏（标准） LCD (normal)</a><a href="#" data-lcd="strong" class="gmi"><b class="ck"></b>液晶屏（加强） LCD (strong)</a><a href="#" data-lcd="off" class="gmi"><b class="ck"></b>关闭 Off</a><div class="gms"></div><a href="#" class="gmi" id="gmhelp"><b class="ck"></b>地图帮助 Maps Help</a></div></div>
@@ -97,6 +121,7 @@
 <!--INLINE_JS:bppage.js-->
 <!--INLINE_JS:bm.js-->
 <!--INLINE_JS:gpage.js-->
+<!--INLINE_JS:gamehost.js-->
 <script>/*BOOT_DEFAULTS*/LANG.set('zh');setMode('night');document.fonts.load('italic 80px "IM Fell English"').then(function(){document.fonts.load('80px "IM Fell English"').then(function(){render();});});</script>
 </body>
 </html>

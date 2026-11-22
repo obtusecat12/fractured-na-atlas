@@ -104,9 +104,18 @@
     document.querySelectorAll('#cbtns [data-sp]').forEach(function (b) { b.classList.toggle('on', +b.dataset.sp === S.speed); });
   }
   function meters() {
-    [['#m-trust', S.trust], ['#m-panic', S.panic]].forEach(function (a) { var e = $(a[0]); e.querySelector('i').style.width = a[1] + '%'; e.querySelector('b').textContent = a[1]; });
-    $('#stand').innerHTML = PW.map(function (k) { var dd = S.dstand[k]; return '<span class="sp" title="' + P(k).zh + ' ' + P(k).en + '"><i class="sw" style="background:' + P(k).color + '"></i>' + LA(P(k).short) + ' <b>' + S.stand[k] + '</b>' + (dd ? '<span class="' + (dd > 0 ? 'up' : 'dn') + '">' + (dd > 0 ? '▲' : '▼') + Math.abs(dd) + '</span>' : '') + '</span>'; }).join('');
-    var n = S.mail.filter(function (m) { return m.unread; }).length; $('#mailn').textContent = n ? '(' + n + ')' : '';
+    var sm = S.sim, cases = totalCases(), uh = unhoused(), sd = Math.round(sm.stock), fund = Math.round(S.funds.county), tot = staffTotal(), ops = opsStaff(), free = crewFree();
+    var n = S.mail.filter(function (m) { return m.unread; }).length;
+    function hi(tab, icon, label, val, bad, tip) { return '<a href="#" class="hi' + (bad ? ' bad' : '') + '" data-tab="' + tab + '"' + (tip ? ' title="' + tip + '"' : '') + '><img src="icons/' + icon + '24.png" alt=""><span><span class="hl">' + label + '</span><br><span class="hv">' + val + '</span></span></a>'; }
+    function hm(id, label, v, red, bad) { return '<span class="hi hm meter' + (red ? ' red' : '') + (bad ? ' bad' : '') + '" id="' + id + '"><span><span class="hl">' + label + ' <b class="hv" style="font-size:13px">' + v + '</b></span><span class="mb"><i style="width:' + v + '%"></i></span></span></span>'; }
+    $('#hud').innerHTML =
+      hi('bank', 'bank', L('县资金', 'County funds'), money(fund), fund < 100) +
+      hi('ov', 'imp', L('现有病例', 'Active cases'), cases.toLocaleString() + '<small>' + L('今日 +' + sm.newT, '+' + sm.newT + ' today') + '</small>', sm.newT > 12) +
+      hi('build', 'ppl', L('等待安置', 'Unhoused'), uh.toLocaleString(), uh > 300) +
+      hi('build', 'pkg', L('物资储备', 'Supplies'), L(sd + ' 天', sd + ' days'), sd < 10) +
+      hi('build', 'sheet', L('空闲人手', 'Free staff'), free + '<small>/ ' + tot + '</small>', ops > tot) +
+      '<span class="hsep"></span>' + hm('m-trust', L('信任', 'Trust'), S.trust, false, S.trust < 25) + hm('m-panic', L('恐慌', 'Panic'), S.panic, true, S.panic > 75) +
+      '<a href="#" class="hi hmail" data-tab="mail" title="Gmail"><img src="icons/mail24.png" alt="">' + (n ? '<b>' + n + '</b>' : '') + '<span class="hl">' + L('公文', 'Mail') + '</span></a>';
   }
 
   // ---------- sidebar ----------
@@ -121,10 +130,8 @@
   function tabOverview() {
     var sm = S.sim, cases = totalCases(), uh = unhoused(), sd = Math.round(sm.stock);
     var h = sect(L('纳瓦霍县', 'Navajo County'), '<span>' + L('人口 107,449（2010）', 'Pop. 107,449 (2010)') + '</span>') +
-      '<div class="stats"><div>' + L('现有病例', 'Active cases') + '<b>' + cases + '</b></div><div>' + L('今日新增', 'New today') + '<b>+' + sm.newT + '</b></div>' +
-      '<div>' + L('外来人员', 'Arrivals') + '<b>' + sm.arr.toLocaleString() + '</b></div><div>' + L('等待安置', 'Unhoused') + '<b' + (uh > 200 ? ' class="bad"' : '') + '>' + uh.toLocaleString() + '</b></div>' +
-      '<div>' + L('物资储备', 'Reserve') + '<b' + (sd < 10 ? ' class="bad"' : '') + '>' + L(sd + ' 天', sd + ' days') + '</b></div><div>' + L('安置容量', 'Housing') + '<b>' + simCap().toLocaleString() + '</b></div>' +
-      '<div>' + L('失业率（10月）', 'Unemployment (Oct)') + '<b>15.7%</b></div><div>' + L('县财政', 'County funds') + '<b>' + money(Math.round(S.funds.county)) + '</b></div></div></div>';
+      '<div class="stats"><div>' + L('外来人员', 'Arrivals') + '<b>' + sm.arr.toLocaleString() + '</b></div><div>' + L('安置容量', 'Housing') + '<b>' + simCap().toLocaleString() + '</b></div><div>' + L('已康复', 'Recovered') + '<b>' + (sm.rec || 0).toLocaleString() + '</b></div>' +
+      '<div>' + L('失业率（10月）', 'Unemployment (Oct)') + '<b>15.7%</b></div></div>' + PW.map(function (k) { var dd = S.dstand[k]; return '<div class="row strow"><i class="sw" style="background:' + P(k).color + '"></i><div><div class="t">' + LA(P(k).short) + ' <b>' + S.stand[k] + '</b>' + (dd ? ' <span style="color:' + (dd > 0 ? '#080' : '#c00') + '">' + (dd > 0 ? '▲' : '▼') + Math.abs(dd) + '</span>' : '') + '</div></div></div>'; }).join('') + '</div>';
     var c = S.st.ctl, r = S.st.rel, NM = { gov: ['州长办公室', "Governor's Office"], sec: ['州应急委员会', 'State Emergency Council'], adem: ['州应急管理局', 'ADEM'] }, WHO = { gov: ['州长 简·布鲁尔', 'Gov. Jan Brewer'], sec: ['州长任主席 · 14 名成员', 'Chaired by the governor · 14 members'], adem: ['隶属应急与军事事务部 · 联邦拨款渠道', 'Under DEMA · federal funding channel'] };
     var hol = holiday(), nh = nextHoliday(), wdz = '日一二三四五六'[S.date.getDay()];
     h += '<div class="row calrow">' + ico('sheet') + '<div><div class="t">' + (hol ? L(hol[0] + ' · 县政府休息', hol[1] + ' · county offices closed') : ([0, 6].indexOf(S.date.getDay()) >= 0 ? L('周末 · 县员工半数到岗', 'Weekend · half the county staff in') : L('工作日', 'Workday'))) + '</div>' + (nh ? '<div class="s">' + L('下一个假日：' + (+nh[0].slice(5, 7)) + '月' + (+nh[0].slice(8)) + '日 ' + nh[1][0], 'Next holiday: ' + nh[0].slice(5) + ' ' + nh[1][1]) + '</div>' : '') + '</div></div>';
@@ -193,14 +200,16 @@
     var yes = v.filter(Boolean).length; S.lastVote = { id: l.id, v: v, yes: yes }; S.votes[l.id] = { yes: yes, day: S.day };
     return yes >= 3;
   }
+  function vtz(l) { var v = S.votes[l.id]; return v ? '赞成 ' + v.yes + ' · 反对 ' + (5 - v.yes) : '开局已生效'; }
+  function vte(l) { var v = S.votes[l.id]; return v ? v.yes + ' aye, ' + (5 - v.yes) + ' nay' : 'in force at start'; }
   function tabLaws() {
-    var h = sect(L('县监事会决议', 'Board of Supervisors resolutions')) + '</div>', g = null;
+    var h = sect(L('县监事会决议', 'Board of Supervisors resolutions')) + '<div class="row"><div class="s">' + L('点“提交表决”后五名监事当场投票，3 票赞成就通过，条例立即生效；没通过可以第二天再提。', 'Submit a resolution and the five supervisors vote at once. Three ayes pass it and it takes effect; if it fails you can try again tomorrow.') + '</div></div></div>', g = null;
     D.laws.forEach(function (l) {
       if (l.id === 'deputize' && !S.flags.deputize) return;
       if (!g || g[0] !== l.g[0]) { if (g) h += '</div>'; g = l.g; h += sect(LA(l.g)); }
       var on = !!S.laws[l.id], dis = l.ex && S.laws[l.ex], vt = S.votes[l.id], failed = vt && !on && vt.day === S.day;
       h += '<div class="row law' + (dis ? ' dis' : '') + '"><div style="flex:1"><div class="t">' + L(l.zh, l.en) + '</div><div class="fx">' + LA(l.fx) + '</div></div>' +
-        (on ? '<span class="signed">' + L('已通过 ' + vt0(l) , 'Passed ' + vt0(l)) + '</span>' : failed ? '<span class="signed" style="color:#c00">' + L('未通过 ' + vt.yes + '–' + (5 - vt.yes), 'Failed ' + vt.yes + '–' + (5 - vt.yes)) + '</span>' : '<button class="gbtn nd" data-sign="' + l.id + '"' + (dis ? ' disabled' : '') + '>' + L('表决', 'Vote') + '</button>') + '</div>';
+        (on ? '<span class="signed">' + L('已通过（' + vtz(l) + '）', 'Passed (' + vte(l) + ')') + '</span>' : failed ? '<span class="signed" style="color:#c00">' + L('未通过（赞成 ' + vt.yes + ' · 反对 ' + (5 - vt.yes) + '）', 'Failed (' + vt.yes + ' aye, ' + (5 - vt.yes) + ' nay)') + '</span>' : '<button class="gbtn nd" data-sign="' + l.id + '"' + (dis ? ' disabled' : '') + '>' + L('提交表决', 'Submit to vote') + '</button>') + '</div>';
     });
     return h + '</div>';
   }
@@ -700,6 +709,7 @@
   cv.addEventListener('wheel', function (e) { e.preventDefault(); var r = cv.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1 : -1, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   cv.addEventListener('dblclick', function (e) { var r = cv.getBoundingClientRect(); zoomAt(1, e.clientX - r.left, e.clientY - r.top); });
   function zoomAt(d, sx, sy) {
+    if (d < 0 && V.z <= ZMIN && top !== window && top.FNA) { closeInfo(); top.FNA.toAtlas(); return; }
     var nz = Math.max(ZMIN, Math.min(ZMAX, V.z + d)); if (nz === V.z) return;
     if (sx == null) { sx = W / 2; sy = H / 2; }
     var ll = unpx(sx, sy); V.z = nz; V.x = MAP.wx(ll[0], nz) - sx + W / 2; V.y = MAP.wy(ll[1], nz) - sy + H / 2;
@@ -780,7 +790,8 @@
     var holder = e.target.closest('[data-b],[data-region],[data-town],[data-mail]'); if (a.tagName === 'A' && !Object.keys(a.dataset).length && holder && holder.contains(a)) { e.preventDefault(); a = holder; }
     var ds = a.dataset;
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
-    if (ds.tab) { S.tab = ds.tab; render(); return; }
+    if (ds.tab === 'mail') { openMail(); return; }
+    if (ds.tab) { if (document.body.classList.contains('collapsed')) { document.body.classList.remove('collapsed'); var tg = $('#sbtog'); if (tg) tg.textContent = '«'; resize(); } S.tab = ds.tab; render(); return; }
     if (a.id === 'openatm') { openAtm(); return; }
     if (a.id === 'savebtn') { var ok = saveGame(SAVE_KEY); $('#ntext').innerHTML = ok ? L('已保存：', 'Saved: ') + dateStr() : L('保存失败：浏览器不允许本地存储。', 'Could not save: local storage is blocked.'); $('#notice').hidden = false; return; }
     if (ds.presser) { S.presserDay = S.day; var dv = Math.max(-4, Math.min(2, -(S.trust - 35) / 8)); nudge('panic', dv); notice(dv < 0 ? L('发布会开完，电话热线来电少了。', 'Press conference done; fewer calls to the hotline.') : L('发布会上被追问，记者不太买账。', 'Reporters pushed back hard at the press conference.')); render(); return; }
@@ -813,8 +824,7 @@
     if (a.id === 'place') { var bb = bdefOf(S.bsel); S.placing = true; cv.style.cursor = 'crosshair'; if (V.z < 15 || !MAP.inTown(MAP.xlon(V.x, V.z), MAP.ylat(V.y, V.z))) { center(town.holbrook.ll[0], town.holbrook.ll[1], 16); } hint(bb.convert ? L('点击一栋建筑。Esc 取消。', 'Click a building. Esc to cancel.') : L('点击本县辖区内的空地放置。Esc 取消。', 'Click open ground in county jurisdiction. Esc to cancel.')); draw(); return; }
     if (ds.mail != null && !e.target.closest('button')) { var i2 = +ds.mail; S.mail[i2].unread = false; S.openMail = S.openMail === i2 ? -1 : i2; render(); return; }
     if (ds.act) {
-      var pp = ds.act.split(':'), m = S.mail[+pp[0]], act = m.acts[+pp[1]];
-      runDo(act.do); m.done = act.done || ['已处理', 'Done']; render(); if (window.GMAIL) GMAIL.refresh(); return;
+      var pp = ds.act.split(':'); mailAct(+pp[0], +pp[1]); return;
     }
     if (a.id === 'zin') return zoomAt(1);
     if (a.id === 'zout') return zoomAt(-1);
@@ -845,6 +855,7 @@
     S.hour++;
     buildHour();
     if (nightLevel() !== lastNL) { lastNL = nightLevel(); draw(); }
+    meters();
     if (S.hour >= 24) {
       S.hour = 0; S.day++; S.date = new Date(S.date.getTime() + 864e5); S.dstand = { fed: 0, navajo: 0, lds: 0 };
       S.promises.forEach(function (p) { p.left--; if (p.left === 0) apply({ trust: -8 }); }); S.promises = S.promises.filter(function (p) { return p.left > 0; });
@@ -882,6 +893,7 @@
 
   // ---------- boot ----------
   window.GAME_START = function (id, opt) {
+    try { if (top !== window && top.FNA) top.FNA.started(); } catch (e) {}
     var loaded = opt && opt.load ? readSave() : null;
     if (loaded) restore(loaded);
     syncFac(); render(); clock(); meters(); resize(); center(-110.3, 34.75, 8); draw();
@@ -890,8 +902,14 @@
     setTimeout(function () { eventDialog(startEvent()); }, 900);
   };
   LANG.set('zh');
+  if (top === window) { location.replace('../index.html'); }
+  $('#logo').addEventListener('click', function (e) { if (top !== window && top.FNA) { e.preventDefault(); top.FNA.toAtlas(); } });
   $('#gearmenu').addEventListener('click', function () { setTimeout(function () { render(); clock(); draw(); }, 0); });
   window.addEventListener('resize', resize);
+  (function () { var b = document.createElement('button'); b.id = 'sbtog'; b.title = '收起/展开侧栏 Hide/show panel'; b.textContent = '«'; pane.appendChild(b);
+    b.addEventListener('click', function (e) { e.stopPropagation(); document.body.classList.toggle('collapsed'); b.textContent = document.body.classList.contains('collapsed') ? '»' : '«'; resize(); }); })();
   syncFac(); render(); clock(); resize(); center(-110.3, 34.75, 8);
-  window.GAME = { S: S, redrawFac: function () { S.facilities.forEach(function (f) { MAP.invalidate(f.ll); }); syncFac(); draw(); }, tick: function (n) { for (var i = 0; i < n; i++) tick(); }, cap: function () { return simCap(); }, V: V, center: center, setMode: setMode, draw: draw, render: render, eventDialog: eventDialog };
+  function mailAct(i, j) { var m = S.mail[i], act = m && m.acts && m.acts[j]; if (!act || m.done) return; runDo(act.do); m.done = act.done || ['已处理', 'Done']; render(); if (window.GMAIL) GMAIL.refresh(); }
+  function openMail() { if (top !== window && top.FNA) top.FNA.openMail(); }
+  window.GAME = { setSpeed: function (v) { S.speed = v; clock(); }, fromAtlas: function () { resize(); if (V.z <= ZMIN) center(-110.3, 34.75, 8); draw(); }, mailAct: mailAct, openMail: openMail, S: S, redrawFac: function () { S.facilities.forEach(function (f) { MAP.invalidate(f.ll); }); syncFac(); draw(); }, tick: function (n) { for (var i = 0; i < n; i++) tick(); }, cap: function () { return simCap(); }, V: V, center: center, setMode: setMode, draw: draw, render: render, eventDialog: eventDialog };
 })();

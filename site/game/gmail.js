@@ -1,7 +1,9 @@
 // gmail.js — 公文窗口：2009 年 10 月版 Gmail（logo、星标、回形针取自 2009 年存档原图）。
 (function () {
   'use strict';
-  var G = window.GAME, S = G.S, $ = function (s) { return document.querySelector(s); };
+  // 在 Chrome 窗口的标签页里运行（gmailtab.html），游戏状态取自同源的游戏框架
+  var GW = window.GAME ? window : (function () { var f = top.document.getElementById('gameframe'); return f && f.contentWindow; })();
+  var G = GW.GAME, S = G.S, DATA = GW.DATA, LANG = GW.LANG, $ = function (s) { return document.querySelector(s); };
   function L(zh, en) { return '<span class="zh">' + zh + '</span><span class="bi"> </span><span class="en">' + en + '</span>'; }
   function LA(a) { return L(a[0], a[1]); }
   function T(zh, en) { return LANG.mode() === 'en' ? en : zh; }
@@ -48,28 +50,27 @@
       '<div class="gm-lab"><div class="gm-labh">' + L('标签', 'Labels') + '</div>' + ['fed', 'navajo', 'lds'].map(function (k) { return '<div><i style="background:' + POW[k].color + '"></i>' + LA(POW[k].short) + '</div>'; }).join('') + '<div><i style="background:#7b2f8e"></i>' + L('邻县', 'Neighbours') + '</div><a href="#">' + L('编辑标签', 'Edit labels') + '</a></div></div>';
   }
   function draw() {
-    if ($('#gmwrap').hidden) return;
-    var n = unread();
-    $('#gmtitle').textContent = 'Gmail - ' + (view.open >= 0 ? T(S.mail[view.open].subject[0], S.mail[view.open].subject[1]) : T('收件箱', 'Inbox') + (n ? ' (' + n + ')' : '')) + ' - oem@co.navajo.az.us - Windows Internet Explorer';
+    var n = unread(); document.body.className = GW.document.body.className.replace(/\bcollapsed\b/, '');
+    document.title = 'Gmail - ' + (view.open >= 0 ? T(S.mail[view.open].subject[0], S.mail[view.open].subject[1]) : T('收件箱', 'Inbox') + (n ? ' (' + n + ')' : '')) + ' - oem@co.navajo.az.us';
+    if (window.GMAIL_TAB) { window.GMAIL_TAB.title = document.title; if (window.GMAIL_TAB.retitle) window.GMAIL_TAB.retitle(); }
     $('#gmbody').innerHTML = '<div class="gm-top"><div class="gm-gb"><b>Gmail</b> <a href="#">' + L('日历', 'Calendar') + '</a> <a href="#">' + L('文档', 'Documents') + '</a> <a href="#">' + L('阅读器', 'Reader') + '</a> <a href="#">' + L('网页', 'Web') + '</a> <a href="#">' + L('更多', 'more') + ' ▾</a></div>' +
       '<div class="gm-acc"><b>oem@co.navajo.az.us</b> | <a href="#">' + L('设置', 'Settings') + '</a> | <a href="#">' + L('帮助', 'Help') + '</a> | <a href="#" data-gm="close">' + L('退出', 'Sign out') + '</a></div></div>' +
       '<div class="gm-head"><img src="gmail/logo.gif" width="143" height="59" alt="Gmail by Google"><div class="gm-sr"><input type="text"><button class="gm-b">' + L('搜索邮件', 'Search Mail') + '</button><button class="gm-b">' + L('搜索网页', 'Search the Web') + '</button><span class="gm-srl"><a href="#">' + L('显示搜索选项', 'Show search options') + '</a><br><a href="#">' + L('创建过滤器', 'Create a filter') + '</a></span></div></div>' +
       '<div class="gm-main">' + nav() + '<div class="gm-cont">' + (view.open >= 0 ? message() : inbox()) + '</div></div>' +
       '<div class="gm-foot">' + L('您目前使用了 214 MB (2%)，共 7,386 MB。', 'You are currently using 214 MB (2%) of your 7,386 MB.') + '<br>Gmail ' + L('视图：', 'view: ') + '<b>' + L('标准', 'standard') + '</b> | <a href="#">' + L('关闭聊天', 'turn off chat') + '</a> | <a href="#">' + L('旧版', 'older version') + '</a> | <a href="#">' + L('基本 HTML', 'basic HTML') + '</a><br>©2009 Google - <a href="#">' + L('服务条款', 'Terms') + '</a> - <a href="#">' + L('隐私权政策', 'Privacy Policy') + '</a> - <a href="#">' + L('Google 首页', 'Google Home') + '</a></div>';
-    $('#gmurl').textContent = 'https://mail.google.com/mail/?shva=1#' + (view.open >= 0 ? 'inbox/' + (S.mail[view.open].id || '') : view.box);
+    if (window.GMAIL_TAB && window.GMAIL_TAB.setPath) window.GMAIL_TAB.setPath('/mail/?shva=1#' + (view.open >= 0 ? 'inbox/' + (S.mail[view.open].id || '') : view.box));
   }
-  function open() { $('#gmwrap').hidden = false; draw(); }
   document.addEventListener('click', function (e) {
-    var tab = e.target.closest('[data-tab="mail"]'); if (tab) { e.preventDefault(); e.stopPropagation(); open(); return; }
-    if (!e.target.closest('#gmwrap')) return;
-    var a = e.target.closest('[data-gm],[data-gmb],[data-gmo],[data-gms],#gmx'); if (e.target.closest('a')) e.preventDefault(); if (!a) return;
+    var a = e.target.closest('[data-gm],[data-gmb],[data-gmo],[data-gms],[data-act]'); if (e.target.closest('a')) e.preventDefault(); if (!a) return;
     var d = a.dataset; e.stopPropagation();
-    if (a.id === 'gmx' || d.gm === 'close') { $('#gmwrap').hidden = true; return; }
+    if (d.act) { var pp = d.act.split(':'); G.mailAct(+pp[0], +pp[1]); draw(); return; }
+    if (d.gm === 'close') { if (window.GMAIL_TAB && top.CW) top.CW.close(window.GMAIL_TAB); return; }
     if (d.gms) { view.star[d.gms] = !view.star[d.gms]; draw(); return; }
     if (d.gm === 'back' || d.gm === 'refresh') { view.open = -1; draw(); return; }
     if (d.gm === 'arch' && view.open >= 0) { S.mail[view.open].archived = true; view.open = -1; draw(); return; }
     if (d.gmb) { view.box = d.gmb; view.open = -1; draw(); return; }
     if (d.gmo != null && !e.target.closest('input')) { view.open = +d.gmo; S.mail[view.open].unread = false; G.render(); draw(); }
   }, true);
-  window.GMAIL = { open: open, refresh: draw };
+  GW.GMAIL = { refresh: draw }; window.addEventListener('unload', function () { if (GW.GMAIL && GW.GMAIL.refresh === draw) GW.GMAIL = null; });
+  draw();
 })();

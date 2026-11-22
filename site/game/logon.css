@@ -10,7 +10,7 @@
 .lu-t .fr{position:relative;width:82px;height:81px;margin:0 auto;border-radius:6px}
 .lu-t .fr i{position:absolute;left:10px;top:7px;width:63px;height:63px;background-size:63px 63px}
 .lu-t .fr b{position:absolute;inset:0;background:url(logon/frame_big.png) 0 0/82px 81px no-repeat}
-.lu-t:hover .fr::before,.lu-t:focus .fr::before{content:"";position:absolute;left:-8px;top:-8px;right:-8px;bottom:-8px;border-radius:8px;background:radial-gradient(ellipse at 50% 45%,rgba(255,255,255,.42),rgba(190,230,255,.18) 60%,rgba(255,255,255,0) 72%);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.lu-t:hover .fr b,.lu-t:focus .fr b{filter:brightness(1.12)}
 .lu-t .nm{margin-top:7px;font-size:12px;line-height:15px}
 /* single user */
 #lu-one{position:absolute;left:0;right:0;top:calc(50% - 132px);text-align:center}
