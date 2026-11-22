@@ -33,6 +33,29 @@ var MAP = (function () {
   // building grid for hit tests (25 m cells)
   var GRID = {}; BLD.forEach(function (b) { for (var x = Math.floor(b.box[0] / 25); x <= Math.floor(b.box[2] / 25); x++) for (var y = Math.floor(b.box[1] / 25); y <= Math.floor(b.box[3] / 25); y++) (GRID[x + ',' + y] = GRID[x + ',' + y] || []).push(b); });
   function ll2m(lon, lat) { return [(lon - LON0) * KX, (LAT0 - lat) * KY]; }
+  // 空间索引（约 1 公里一格，经纬度包围盒）：生成卫星图块时只取图块附近的要素，不再每块遍历全部 2 万栋房子和道路
+  var IC = 0.01;
+  function mkIndex(list) {
+    var idx = {}; list.forEach(function (o, i) { o.i0 = i; var b = o.bb;
+      for (var x = Math.floor(b[0] / IC); x <= Math.floor(b[2] / IC); x++) for (var y = Math.floor(b[1] / IC); y <= Math.floor(b[3] / IC); y++) (idx[x + ',' + y] = idx[x + ',' + y] || []).push(o); });
+    return idx;
+  }
+  var STAMP = 0;
+  function near(idx, lon0, lat0, lon1, lat1) {
+    var out = [], st = ++STAMP;
+    for (var x = Math.floor(lon0 / IC); x <= Math.floor(lon1 / IC); x++) for (var y = Math.floor(lat0 / IC); y <= Math.floor(lat1 / IC); y++) {
+      var c = idx[x + ',' + y]; if (!c) continue;
+      for (var i = 0; i < c.length; i++) if (c[i]._st !== st) { c[i]._st = st; out.push(c[i]); }
+    }
+    return out.sort(function (a, b) { return a.i0 - b.i0; }); // 保持原来的绘制顺序
+  }
+  var IX = { bld: mkIndex(BLD), hw: mkIndex(HW), rail: mkIndex(RAIL), wat: mkIndex(WAT), area: mkIndex(AREA) };
+  // 住宅区（种树用）：预先算好米制包围盒，先比包围盒再做点在多边形内判断
+  var RES = AREA.filter(function (a) { return a.v === 'residential'; }).map(function (a) {
+    var bx = [1e9, 1e9, -1e9, -1e9]; a.m.forEach(function (q) { if (q[0] < bx[0]) bx[0] = q[0]; if (q[1] < bx[1]) bx[1] = q[1]; if (q[0] > bx[2]) bx[2] = q[0]; if (q[1] > bx[3]) bx[3] = q[1]; });
+    return { m: a.m, b: bx };
+  });
+  function inResidential(p) { for (var i = 0; i < RES.length; i++) { var r = RES[i], b = r.b; if (p[0] >= b[0] && p[0] <= b[2] && p[1] >= b[1] && p[1] <= b[3] && pip(p, r.m)) return true; } return false; }
   function pip(pt, poly) { var x = pt[0], y = pt[1], c = false; for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) if ((poly[i][1] > y) !== (poly[j][1] > y) && x < (poly[j][0] - poly[i][0]) * (y - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0]) c = !c; return c; }
   function buildingAt(lon, lat) { var m = ll2m(lon, lat), c = GRID[Math.floor(m[0] / 25) + ',' + Math.floor(m[1] / 25)] || []; for (var i = 0; i < c.length; i++) if (pip(m, c[i].m)) return c[i]; return null; }
 
@@ -66,39 +89,76 @@ var MAP = (function () {
   }
 
   // ---- satellite tile cache ----
-  var CACHE = {}, QUEUE = [], LIMIT = 260, order = [];
+  // 图块生成很重（地面噪声、树、房顶、模糊、JPEG）。这里：按时间预算分批生成，不阻塞拖动；
+  // 施工进度刷新时旧图块先留着（标记过期），新图块做好再替换，不会闪成空白；JPEG 用 toBlob + createImageBitmap 异步编解码。
+  var CACHE = {}, QUEUE = [], LIMIT = 260, order = [], PENDING = {};
   var FAC = []; // facilities [{ll,size,roof,done,eta,tower,road,grid,conv}]
+  var NOWF = (typeof performance !== 'undefined' && performance.now) ? function () { return performance.now(); } : function () { return Date.now(); };
   function setFacilities(list) { FAC = list; }
   function invalidate(ll) {
     Object.keys(CACHE).forEach(function (k) {
       var p = k.split('/'), z = +p[0], tx = +p[1], ty = +p[2];
       var x = wx(ll[0], z), y = wy(ll[1], z);
-      if (x > tx * 256 - 80 && x < tx * 256 + 336 && y > ty * 256 - 80 && y < ty * 256 + 336) delete CACHE[k];
+      if (x > tx * 256 - 80 && x < tx * 256 + 336 && y > ty * 256 - 80 && y < ty * 256 + 336) CACHE[k].stale = true;
     });
   }
   function tile(z, tx, ty) {
     var k = z + '/' + tx + '/' + ty, c = CACHE[k];
-    if (c) return c.ready ? c.img : null;
-    if (QUEUE.indexOf(k) < 0) QUEUE.push(k);
-    return null;
+    if ((!c || c.stale) && !PENDING[k] && QUEUE.indexOf(k) < 0) QUEUE.push(k);
+    return c && c.ready ? c.img : null;
   }
-  function pump(n, done) {
-    var did = 0;
-    while (QUEUE.length && did < n) {
-      var k = QUEUE.shift(); if (CACHE[k]) continue;
+  // 只看缓存，不排队（缩放时用上一级或下一级的图块先顶着）
+  function peek(z, tx, ty) { var c = CACHE[z + '/' + tx + '/' + ty]; return c && c.ready ? c.img : null; }
+  function pump(n, done, budget) {
+    var did = 0, t0 = NOWF();
+    while (QUEUE.length && did < n && (did === 0 || !budget || NOWF() - t0 < budget)) {
+      var k = QUEUE.shift(); if (PENDING[k] || (CACHE[k] && !CACHE[k].stale)) continue;
       var p = k.split('/'); makeTile(+p[0], +p[1], +p[2], k, done); did++;
     }
     return QUEUE.length;
   }
+  function freeImg(im) { if (im && typeof im.close === 'function') try { im.close(); } catch (e) {} }
+  function finish(key, img, done) {
+    delete PENDING[key];
+    var old = CACHE[key];
+    CACHE[key] = { ready: true, img: img };
+    if (old) { if (old.img !== img) freeImg(old.img); }
+    else { order.push(key); if (order.length > LIMIT) { var ev = order.shift(); if (CACHE[ev]) freeImg(CACHE[ev].img); delete CACHE[ev]; } }
+    done && done();
+  }
+  function encode(c2, q, key, done) {
+    // 真实的 JPEG 压缩（2009 年卫星图的块状伪影）。能异步就异步，不行再退回同步 toDataURL。
+    if (c2.toBlob && typeof createImageBitmap === 'function') {
+      c2.toBlob(function (blob) {
+        if (!blob) return sync();
+        createImageBitmap(blob).then(function (bm) { finish(key, bm, done); }, sync);
+      }, 'image/jpeg', q);
+      return;
+    }
+    sync();
+    function sync() { var im = new Image(); im.onload = function () { finish(key, im, done); }; im.onerror = function () { delete PENDING[key]; }; im.src = c2.toDataURL('image/jpeg', q); }
+  }
   function makeTile(z, tx, ty, key, done) {
+    PENDING[key] = 1;
     var scale = z >= 18 ? 0.5 : 1, S = Math.round(256 * scale); // imagery is ~1 m/px at best
     var c = document.createElement('canvas'); c.width = c.height = S; var g = c.getContext('2d');
     var X0 = tx * 256, Y0 = ty * 256;
-    // ground, per 4px cell (then blur hides the cells)
-    var step = z >= 13 ? 4 : 2, img = g.createImageData(S, S), d = img.data, fine = z >= 14;
-    for (var py = 0; py < S; py += step) for (var px = 0; px < S; px += step) {
-      var lon = xlon(X0 + (px + step / 2) / scale, z), lat = ylat(Y0 + (py + step / 2) / scale, z), col = ground(lon, lat, fine);
-      for (var yy = py; yy < py + step && yy < S; yy++) for (var xx = px; xx < px + step && xx < S; xx++) { var o = (yy * S + xx) * 4; d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255; }
+    // ground: sample the noise every 4 px and interpolate between samples (was a 2-4 px block mosaic; same colours, ~4x fewer noise evaluations at low zoom)
+    var step = 4, n = Math.ceil(S / step) + 1, img = g.createImageData(S, S), d = img.data, fine = z >= 14, G = new Float32Array(n * n * 3);
+    for (var gy = 0; gy < n; gy++) for (var gx = 0; gx < n; gx++) {
+      var col = ground(xlon(X0 + gx * step / scale, z), ylat(Y0 + gy * step / scale, z), fine), o3 = (gy * n + gx) * 3;
+      G[o3] = col[0]; G[o3 + 1] = col[1]; G[o3 + 2] = col[2];
+    }
+    for (var py = 0; py < S; py++) {
+      var fy = py / step, iy = fy | 0, ty2 = fy - iy;
+      for (var px2 = 0; px2 < S; px2++) {
+        var fx = px2 / step, ix = fx | 0, tx2 = fx - ix, a0 = (iy * n + ix) * 3, a1 = a0 + 3, b0 = a0 + n * 3, b1 = b0 + 3, o = (py * S + px2) * 4;
+        var w00 = (1 - tx2) * (1 - ty2), w10 = tx2 * (1 - ty2), w01 = (1 - tx2) * ty2, w11 = tx2 * ty2;
+        d[o] = G[a0] * w00 + G[a1] * w10 + G[b0] * w01 + G[b1] * w11;
+        d[o + 1] = G[a0 + 1] * w00 + G[a1 + 1] * w10 + G[b0 + 1] * w01 + G[b1 + 1] * w11;
+        d[o + 2] = G[a0 + 2] * w00 + G[a1 + 2] * w10 + G[b0 + 2] * w01 + G[b1 + 2] * w11;
+        d[o + 3] = 255;
+      }
     }
     g.putImageData(img, 0, 0);
     g.save(); g.scale(scale, scale);
@@ -116,8 +176,9 @@ var MAP = (function () {
     if (!detail) R.roads.forEach(function (r) { r.p.forEach(function (ln) { if (!vis(ln)) return; path(ln); g.strokeStyle = r.t === 'I' ? 'rgba(88,86,82,.95)' : 'rgba(110,104,96,.85)'; g.lineWidth = Math.max(r.t === 'I' ? 1.4 : .9, (r.t === 'I' ? 30 : 12) / M); g.stroke(); }); });
     if (!detail) R.rail.forEach(function (ln) { if (!vis(ln)) return; path(ln); g.strokeStyle = 'rgba(80,70,62,.7)'; g.lineWidth = Math.max(.8, 10 / M); g.stroke(); });
     if (detail) {
+      var nb = function (ix) { return near(ix, tlon0, tlat0, tlon1, tlat1); };
       // landuse
-      AREA.forEach(function (a) {
+      nb(IX.area).forEach(function (a) {
         if (!visb(a)) return; path(a.ll); g.closePath();
         var col = null;
         if (a.v === 'residential') col = 'rgba(150,132,104,.35)';
@@ -131,22 +192,24 @@ var MAP = (function () {
         if (col) { g.fillStyle = col; g.fill(); }
       });
       // washes / river
-      WAT.forEach(function (w) { if (!visb(w)) return; path(w.ll); if (w.w === 'water') { g.closePath(); g.fillStyle = '#4a5a50'; g.fill(); } else { g.strokeStyle = 'rgba(104,112,74,.35)'; g.lineWidth = (w.w === 'river' ? 90 : 12) / M; g.stroke(); g.strokeStyle = 'rgba(216,202,172,.97)'; g.lineWidth = (w.w === 'river' ? 58 : 6) / M; g.stroke(); if (w.w === 'river' && z >= 15) { g.strokeStyle = 'rgba(196,180,150,.8)'; g.lineWidth = 12 / M; g.setLineDash([40 / M, 25 / M]); g.stroke(); g.setLineDash([]); } } });
+      nb(IX.wat).forEach(function (w) { if (!visb(w)) return; path(w.ll); if (w.w === 'water') { g.closePath(); g.fillStyle = '#4a5a50'; g.fill(); } else { g.strokeStyle = 'rgba(104,112,74,.35)'; g.lineWidth = (w.w === 'river' ? 90 : 12) / M; g.stroke(); g.strokeStyle = 'rgba(216,202,172,.97)'; g.lineWidth = (w.w === 'river' ? 58 : 6) / M; g.stroke(); if (w.w === 'river' && z >= 15) { g.strokeStyle = 'rgba(196,180,150,.8)'; g.lineWidth = 12 / M; g.setLineDash([40 / M, 25 / M]); g.stroke(); g.setLineDash([]); } } });
       // roads
       var RW = { motorway: 24, trunk: 18, primary: 15, secondary: 13, tertiary: 12, unclassified: 9, residential: 9, living_street: 7, service: 5, motorway_link: 8, trunk_link: 8, primary_link: 8, track: 4, footway: 0, path: 0 };
-      HW.forEach(function (h) { var w = RW[h.h]; if (!w || !visb(h)) return; path(h.ll); g.strokeStyle = h.h === 'track' ? 'rgba(206,188,160,.9)' : (h.h === 'service' ? '#7d7a74' : '#6f6c66'); g.lineWidth = w / M; g.stroke(); });
-      HW.forEach(function (h) { if ((h.h === 'motorway' || h.h === 'trunk' || h.h === 'primary') && visb(h) && z >= 16) { path(h.ll); g.strokeStyle = 'rgba(230,226,210,.55)'; g.lineWidth = .35 / M + .3; g.setLineDash([3 / M, 9 / M]); g.stroke(); g.setLineDash([]); } });
-      RAIL.forEach(function (r) { if (!visb(r)) return; path(r.ll); g.strokeStyle = '#6e645a'; g.lineWidth = 5 / M; g.stroke(); if (z >= 16) { g.strokeStyle = '#3c3632'; g.lineWidth = .6; g.stroke(); } });
+      var HWn = nb(IX.hw);
+      HWn.forEach(function (h) { var w = RW[h.h]; if (!w || !visb(h)) return; path(h.ll); g.strokeStyle = h.h === 'track' ? 'rgba(206,188,160,.9)' : (h.h === 'service' ? '#7d7a74' : '#6f6c66'); g.lineWidth = w / M; g.stroke(); });
+      HWn.forEach(function (h) { if ((h.h === 'motorway' || h.h === 'trunk' || h.h === 'primary') && visb(h) && z >= 16) { path(h.ll); g.strokeStyle = 'rgba(230,226,210,.55)'; g.lineWidth = .35 / M + .3; g.setLineDash([3 / M, 9 / M]); g.stroke(); g.setLineDash([]); } });
+      nb(IX.rail).forEach(function (r) { if (!visb(r)) return; path(r.ll); g.strokeStyle = '#6e645a'; g.lineWidth = 5 / M; g.stroke(); if (z >= 16) { g.strokeStyle = '#3c3632'; g.lineWidth = .6; g.stroke(); } });
       // trees in residential areas (deterministic per 9 m cell)
       if (z >= 15) {
         var cell = 9, mx0 = ll2m(tlon0, tlat1), mx1 = ll2m(tlon1, tlat0);
         for (var cx = Math.floor(mx0[0] / cell); cx <= Math.ceil(mx1[0] / cell); cx++) for (var cy = Math.floor(mx0[1] / cell); cy <= Math.ceil(mx1[1] / cell); cy++) {
-          var h1 = hash(cx, cy, 77), mxp = [cx * cell + hash(cx, cy, 78) * cell, cy * cell + hash(cx, cy, 79) * cell], tll = m2ll(mxp);
+          var h1 = hash(cx, cy, 77); if (h1 > .37) continue; // 后面的阈值最多 .37，先筛掉，省掉九成噪声计算
+          var mxp = [cx * cell + hash(cx, cy, 78) * cell, cy * cell + hash(cx, cy, 79) * cell], tll = m2ll(mxp);
           var pine = Math.max(0, Math.min(1, (34.40 - tll[1]) * 4.5 + (fbm(mxp[0] / 300, mxp[1] / 300, 61, 2) - .5) * 1.6));
           if (h1 > .07 + .3 * pine * pine) continue;
           if (!inTown(tll[0], tll[1])) continue;
           if (buildingAt(tll[0], tll[1])) continue;
-          if (!pine) { var inRes = AREA.some(function (a) { return a.v === 'residential' && pip(mxp, a.m); }); if (!inRes && h1 > .025) continue; }
+          if (!pine && h1 > .025 && !inResidential(mxp)) continue;
           var q = P(tll), rr = (pine ? 2.6 + hash(cx, cy, 80) * 3 : 2 + hash(cx, cy, 80) * 3.5) / M;
           g.fillStyle = pine ? 'rgba(22,24,18,.55)' : 'rgba(40,36,28,.45)'; g.beginPath(); g.arc(q[0] - rr * .8, q[1] - rr * .9, rr * (pine ? 1.15 : 1), 0, 7); g.fill();
           g.fillStyle = pine ? (hash(cx, cy, 81) < .5 ? '#2f3a24' : '#3a432a') : (hash(cx, cy, 81) < .5 ? '#4b5532' : '#5d6238'); g.beginPath(); g.arc(q[0], q[1], rr, 0, 7); g.fill();
@@ -154,9 +217,9 @@ var MAP = (function () {
         }
       }
       // buildings
-      BLD.forEach(function (b) { if (!visb(b)) return; drawRoof(g, b, P, M, z); });
+      nb(IX.bld).forEach(function (b) { if (!visb(b)) return; drawRoof(g, b, P, M, z); });
       // cars in parking lots
-      if (z >= 16) AREA.forEach(function (a) {
+      if (z >= 16) nb(IX.area).forEach(function (a) {
         if (a.v !== 'parking' || !visb(a)) return;
         var bx = [1e9, 1e9, -1e9, -1e9]; a.m.forEach(function (q) { bx[0] = Math.min(bx[0], q[0]); bx[1] = Math.min(bx[1], q[1]); bx[2] = Math.max(bx[2], q[0]); bx[3] = Math.max(bx[3], q[1]); });
         for (var x = bx[0] + 2; x < bx[2] - 2; x += 2.8) for (var y = bx[1] + 3; y < bx[3] - 3; y += 6) {
@@ -170,15 +233,13 @@ var MAP = (function () {
     FAC.forEach(function (f) { var q = P(f.ll); if (q[0] < -200 || q[1] < -200 || q[0] > 456 || q[1] > 456) return; drawFacility(g, f, q, M); });
     g.restore();
     // optics: blur + grain + strip tint, then a real JPEG round trip
-    var c2 = document.createElement('canvas'); c2.width = c2.height = S; var g2 = c2.getContext('2d');
+    var c2 = document.createElement('canvas'); c2.width = c2.height = S; var g2 = c2.getContext('2d', { willReadFrequently: true });
     g2.filter = 'blur(' + (z >= 16 ? .55 : .4) + 'px) saturate(.88) contrast(1.04)'; g2.drawImage(c, 0, 0); g2.filter = 'none';
     var id = g2.getImageData(0, 0, S, S), dd = id.data;
     var strip = (xlon(X0, z) < -110.172) ? [6, 3, -4] : [0, 0, 0]; // two acquisitions meet west of downtown
-    for (var i = 0; i < dd.length; i += 4) { var n = (hash(i, tx * 7 + ty, z) - .5) * 14; dd[i] += n + strip[0]; dd[i + 1] += n + strip[1]; dd[i + 2] += n + strip[2]; }
+    for (var i = 0; i < dd.length; i += 4) { var nz = (hash(i, tx * 7 + ty, z) - .5) * 14; dd[i] += nz + strip[0]; dd[i + 1] += nz + strip[1]; dd[i + 2] += nz + strip[2]; }
     g2.putImageData(id, 0, 0);
-    var im = new Image(), ent = { ready: false, img: im }; CACHE[key] = ent;
-    im.onload = function () { ent.ready = true; if (CACHE[key] !== ent) return; order.push(key); if (order.length > LIMIT) delete CACHE[order.shift()]; done && done(); };
-    im.src = c2.toDataURL('image/jpeg', z >= 16 ? .5 : .42);
+    encode(c2, z >= 16 ? .5 : .42, key, done);
   }
   var ROOF = { house: ['#6e5e50', '#77736c', '#8a7a68', '#5e5852', '#a39582', '#c4c2bb', '#8f5b48'], flat: ['#c9c7c0', '#bcbab3', '#d6d4cc', '#a9a8a2', '#9b978d'], metal: ['#b3b6b6', '#a7abac', '#c2c4c1'] };
   function drawRoof(g, b, P, M, z) {
@@ -299,5 +360,5 @@ var MAP = (function () {
   function stageKey(f) { return f.done ? 99 : Math.floor((f.progress || 0) * 20); }
 
   return { R: R, BLD: BLD, HW: HW, RAIL: RAIL, WAT: WAT, AREA: AREA, POI: POI, m2ll: m2ll, ll2m: ll2m, wx: wx, wy: wy, xlon: xlon, ylat: ylat, mpp: mpp, pip: pip, hash: hash,
-    buildingAt: buildingAt, inTown: inTown, townAt: townAt, TOWN_BOXES: TOWN_BOXES, boxHitsTown: boxHitsTown, tile: tile, pump: pump, setFacilities: setFacilities, stageOf: stageOf, stageKey: stageKey, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
+    buildingAt: buildingAt, inTown: inTown, townAt: townAt, TOWN_BOXES: TOWN_BOXES, boxHitsTown: boxHitsTown, tile: tile, peek: peek, pump: pump, setFacilities: setFacilities, stageOf: stageOf, stageKey: stageKey, invalidate: invalidate, queueLen: function () { return QUEUE.length; }, clearQueue: function () { QUEUE.length = 0; } };
 })();
