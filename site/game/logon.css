@@ -1,0 +1,38 @@
+/* logon.css — Windows 7 欢迎屏幕 / LogonUI, 按原版像素尺寸 */
+#logon{position:fixed;inset:0;z-index:200;background:#1a63c6 url(logon/bg.jpg) center/cover no-repeat;font-family:"Segoe UI","Microsoft YaHei","微软雅黑",Tahoma,sans-serif;color:#fff;user-select:none;overflow:hidden}
+#logon[hidden]{display:none}
+#logon .shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .6s}
+#logon.out .shade{opacity:1}
+#logon .txt{text-shadow:0 0 6px rgba(0,0,0,.55),0 1px 2px rgba(0,0,0,.6)}
+/* user list */
+#lu-list{position:absolute;left:0;right:0;top:calc(50% - 70px);display:flex;justify-content:center;gap:30px}
+.lu-t{width:120px;text-align:center;cursor:default;outline:none}
+.lu-t .fr{position:relative;width:82px;height:81px;margin:0 auto;border-radius:6px}
+.lu-t .fr i{position:absolute;left:10px;top:7px;width:63px;height:63px;background-size:63px 63px}
+.lu-t .fr b{position:absolute;inset:0;background:url(logon/frame_big.png) 0 0/82px 81px no-repeat}
+.lu-t:hover .fr b,.lu-t:focus .fr b{filter:brightness(1.12)}
+.lu-t .nm{margin-top:7px;font-size:12px;line-height:15px}
+/* single user */
+#lu-one{position:absolute;left:0;right:0;top:calc(50% - 132px);text-align:center}
+#lu-one[hidden],#lu-list[hidden],#lu-wel[hidden]{display:none}
+#lu-one .fr{position:relative;width:164px;height:162px;margin:0 auto}
+#lu-one .fr i{position:absolute;left:21px;top:15px;width:126px;height:126px;background-size:126px 126px}
+#lu-one .fr b{position:absolute;inset:0;background:url(logon/frame_big.png) no-repeat}
+#lu-one .nm{font-size:24px;line-height:30px;margin-top:4px;font-weight:normal}
+#lu-one .msg{font-size:14px;line-height:19px;margin:14px auto 0;max-width:330px}
+#lu-one .lu-row{margin-top:16px;height:38px}
+.w7b{display:inline-block;height:26px;min-width:107px;padding:0 14px;box-sizing:border-box;border:1px solid rgba(214,236,255,.78);border-radius:3px;background:linear-gradient(rgba(255,255,255,.34),rgba(255,255,255,.16) 48%,rgba(90,170,235,.16) 52%,rgba(140,205,255,.30));box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 0 0 1px rgba(0,40,110,.28);font:12px/24px "Segoe UI","Microsoft YaHei",sans-serif;color:#fff;text-shadow:0 0 3px rgba(0,30,80,.55);cursor:default;outline:none}
+.w7b:hover{background:linear-gradient(rgba(255,255,255,.46),rgba(255,255,255,.24) 48%,rgba(120,200,255,.26) 52%,rgba(170,225,255,.42));border-color:rgba(235,248,255,.95)}
+.w7b:active{background:linear-gradient(rgba(255,255,255,.16),rgba(60,140,215,.25));}
+#lu-switch{margin-top:46px}
+/* welcome */
+#lu-wel{position:absolute;left:0;right:0;top:calc(50% - 22px);display:flex;justify-content:center;align-items:center;gap:12px;font-size:36px;font-weight:300;line-height:44px}
+#lu-wel .spin{width:32px;height:32px;background:url(../cursors/busy_00.png) center/32px 32px no-repeat}
+/* bottom bar */
+#lu-ease{position:absolute;left:30px;bottom:30px;width:46px;height:36px;background:url(logon/ease.png)}
+#lu-off{position:absolute;right:28px;bottom:30px;width:69px;height:36px;background:url(logon/shutdown.png)}
+#lu-ease:hover,#lu-off:hover{filter:brightness(1.15)}
+#lu-logo{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;align-items:flex-end;pointer-events:none}
+#lu-logo img{display:block;width:169px;height:42px}
+#lu-logo span{font-size:17px;line-height:20px;margin:0 0 9px 5px;font-weight:300;color:rgba(255,255,255,.92)}
+#lu-one .lu-row .w7b{margin:0 4px}

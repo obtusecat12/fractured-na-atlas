@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
+<script>/* 站点被错误地加载进自己的 Chrome 标签页时不渲染 */try{if(window.top!==window&&parent.CW){location.replace("about:blank")}}catch(e){}</script>
 <meta charset="utf-8">
+<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7PT7/3zF6/9Ptu//RbHx/0227/+Tzvb/9vv5/97h0f9JeBz/NHoA/z98Av9AfAD/PHsA/0F6AP8AAAAA/vz7/1+33/8Mp+z/FrHw/xWy8f8bs/T/Hqrx/3zE7v////7/t8qp/zF2A/87gwH/P4ID/z59AP8+egD/Q3kA/97s8v8botj/ELn3/wy58f8PtfL/D7Lw/xuz9P8vq+f/8/n///779v9KhR3/OYYA/0GFAv88hgD/QIAC/z17AP/0+/j/N6bM/wC07/8Cxf7/CsP7/wm+9v8Aqur/SrDb//7+/v///P7/VZEl/zSJAP87jQD/PYYA/0OBBf8+fQH///3//9Dp8/84sM7/CrDf/wC14/8CruL/KqnW/9ns8f/8/v//4OjX/z+GDf85kAD/PIwD/z2JAv8+hQD/PoEA/9C7pv/97uv////+/9Xw+v+w3ej/ls/e/+rz9///////+/z6/22mSf8qjQH/OJMA/zuQAP85iwL/PIgA/zyFAP+OSSL/nV44/7J+Vv/AkG7/7trP//7//f/9//7/6/Lr/2uoRv8tjQH/PJYA/zuTAP87kwD/PY8A/z2KAP89hAD/olkn/6RVHP+eSgj/mEgR//Ho3//+/v7/5Ozh/1GaJv8tlAD/OZcC/zuXAv84lAD/O5IC/z2PAf89iwL/OIkA/6hWFf+cTxD/pm9C/76ihP/8/v//+////8nav/8fdwL/NZsA/zeZAP83mgD/PJQB/zyUAf84jwD/PYsB/z6HAf+fXif/1r6s//79///58u//3r+g/+3i2v/+//3/mbiF/yyCAP87mgP/OpgD/zeWAP85lgD/OpEB/z+TAP9ChwH/7eHb/////v/28ej/tWwo/7tUAP+5XQ7/5M+5/////v+bsZn/IHAd/zeVAP89lgP/O5MA/zaJCf8tZTr/DyuK//3////9////0qmC/7lTAP/KZAT/vVgC/8iQWf/+//3///j//ygpx/8GGcL/ESax/xEgtv8FEMz/AALh/wAB1f///f7///z//758O//GXQL/yGYC/8RaAv/Ojlf/+/////////9QU93/BAD0/wAB//8DAP3/AAHz/wAA5f8DAtr///////v7+/+2bCT/yGMA/89mAP/BWQD/0q+D///+/////P7/Rkbg/wEA+f8AA/z/AQH5/wMA8P8AAev/AADf///7/P////7/uINQ/7lXAP/MYwL/vGIO//Lm3P/8/v//1dT2/woM5/8AAP3/AwH+/wAB/f8AAfb/BADs/wAC4P8AAAAA//z7/+LbzP+mXyD/oUwE/9Gshv/8//3/7/H5/zo/w/8AAdX/AgL6/wAA/f8CAP3/AAH2/wAA7v8AAAAAgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAEAAA==">
+<link rel="preload" href="boot.mp4?v=__BOOT_V__" as="fetch" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Google 地图 Google Maps</title>
 <!--INLINE_CSS:libfonts.css-->
@@ -12,10 +15,52 @@
 <!--INLINE_CSS:fell.css-->
 <!--INLINE_CSS:gpage.css-->
 </head>
-<body>
+<body class="fna-logon">
+<style>
+#fnaboot{position:fixed;inset:0;z-index:3000000;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .6s}
+#fnaboot video{width:100%;height:100%;object-fit:contain;background:#000}
+#fnaboot.out{opacity:0;pointer-events:none}
+#gameframe{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:99990;background:#000;transition:opacity .45s}
+#gameframe.out{opacity:0;pointer-events:none}
+body.fna-logon #bmtab,body.fna-logon #bmlist,body.fna-logon .cwin{display:none!important}
+#fnaback{position:fixed;left:50%;top:96px;transform:translateX(-50%);z-index:9000;display:none;padding:5px 14px;font:13px Arial,"Microsoft YaHei",sans-serif;background:#fff8c4;border:1px solid #e5d36e;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+body.fna-atlas #fnaback{display:block}
+</style>
+<div id="fnaboot"></div>
+<script>(function () {
+  // 第一次访问播放开机动画。标记只在视频真正播完后写入；旧版本在加载失败或超时时也会写入，所以换了一个键。
+  var KEY = 'fna-boot-played';
+  var seen = false; try { seen = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  var b = document.getElementById('fnaboot'), started = false, ended = false;
+  window.FNA_BOOT_DONE = false;
+  function loadGame() { var f = document.getElementById('gameframe'); if (f && !f.getAttribute('src')) f.setAttribute('src', f.getAttribute('data-src')); }
+  window.FNA_LOADGAME = loadGame;
+  function out() { if (window.FNA_BOOT_DONE) return; window.FNA_BOOT_DONE = true; loadGame(); b.classList.add('out'); setTimeout(function () { b.remove(); }, 700); }
+  // 视频播完时页面脚本可能还没下载完：黑屏等到页面可用再淡出，和 Win7 进登录界面前的黑屏一样
+  function done(played) {
+    if (played) { ended = true; try { localStorage.setItem(KEY, '1'); } catch (e) {} }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', out); else out();
+  }
+  window.FNA_BOOTED = function () { done(false); };
+  if (seen) { window.FNA_BOOT_SKIP = true; setTimeout(function () { done(false); }, 300); return; }
+  var v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto';
+  v.addEventListener('ended', function () { done(true); });
+  v.addEventListener('error', function () { done(false); });
+  v.addEventListener('playing', function () { setTimeout(function () { if (!ended) done(true); }, 26000); });
+  v.addEventListener('timeupdate', function () { if (v.currentTime > 6.5) loadGame(); });
+  b.appendChild(v);
+  var url = 'boot.mp4?v=__BOOT_V__';
+  function go(u) { if (started) return; started = true; v.src = u; var p = v.play(); if (p && p.catch) p.catch(function () { done(false); }); }
+  // 整个下载完再播：网络慢时多等一会儿黑屏，但播放时不会卡在半路。下载失败就直接边下边播。
+  if (window.fetch && window.URL && URL.createObjectURL) fetch(url).then(function (r) { if (!r.ok) throw r.status; return r.blob(); }).then(function (bl) { go(URL.createObjectURL(bl)); }, function () { go(url); });
+  else go(url);
+  setTimeout(function () { if (!started) done(false); }, 90000);
+})();</script>
+<iframe id="gameframe" data-src="game/index.html" title="Navajo County"></iframe>
+<script>if (window.FNA_BOOT_SKIP || window.FNA_BOOT_DONE) window.FNA_LOADGAME();</script>
 <div id="gbar">
   <div id="gnav"><a href="#">网页 Web</a><a href="#">图片 Images</a><a href="#">视频 Videos</a><b>地图 Maps</b><a href="#">新闻 News</a><a href="#">购物 Shopping</a><a href="#">邮件 Mail</a><a href="#" class="more">更多 more <span class="tri">&#9660;</span></a></div>
-  <div id="guser"><a href="#" id="help">帮助 Help</a> | <a href="#">登录 Sign in</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><div class="gmh">显示器 Display</div><a href="#" data-lcd="on" class="gmi"><b class="ck"></b>液晶屏（标准） LCD (normal)</a><a href="#" data-lcd="strong" class="gmi"><b class="ck"></b>液晶屏（加强） LCD (strong)</a><a href="#" data-lcd="off" class="gmi"><b class="ck"></b>关闭 Off</a><div class="gms"></div><a href="#" class="gmi" id="gmhelp"><b class="ck"></b>地图帮助 Maps Help</a></div></div>
+  <div id="guser"><a href="#" id="help">帮助 Help</a> | <a href="#">登录 Sign in</a><a href="#" id="gear" title="选项 Options"><i class="gsprite gi"></i><i class="gsprite ga"></i></a><div id="gearmenu" hidden><div class="gmh">语言 Language</div><a href="#" data-lang="both" class="gmi"><b class="ck"></b>中文 + English</a><a href="#" data-lang="zh" class="gmi"><b class="ck"></b>仅中文</a><a href="#" data-lang="en" class="gmi"><b class="ck"></b>English only</a><div class="gms"></div><div class="gmh">显示器 Display</div><a href="#" data-lcd="on" class="gmi"><b class="ck"></b>液晶屏（标准） LCD (normal)</a><a href="#" data-lcd="strong" class="gmi"><b class="ck"></b>液晶屏（加强） LCD (strong)</a><a href="#" data-lcd="off" class="gmi"><b class="ck"></b>关闭 Off</a><div class="gms"></div><a href="#" class="gmi" id="gmsave"><b class="ck"></b>保存进度 Save game</a><a href="#" class="gmi" id="gmhelp"><b class="ck"></b>帮助 Help</a></div></div>
 </div>
 <div id="header">
   <a id="logo" href="#" title="Google 地图 Google Maps"><img src="data:image/gif;base64,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" width="175" height="40" alt="Google Maps"></a>
@@ -25,7 +70,7 @@
   </form>
 </div>
 <div id="bar">
-  <div id="barl"><a href="#" id="factlink">势力列表 Factions</a><span class="sep"></span><a href="#" id="aboutlink">关于此地图 About this map</a><a href="#" id="collapse" title="收起面板 Collapse panel">&laquo;</a></div>
+  <div id="barl"><a href="#" id="factlink">势力列表 Factions</a><a href="#" id="collapse" title="收起面板 Collapse panel">&laquo;</a></div>
   <div id="barr">
     <a href="#" id="printlink"><svg width="16" height="14" viewBox="0 0 16 14"><rect x="3.5" y=".5" width="9" height="5" fill="#fff" stroke="#6b7c99"/><rect x=".5" y="4.5" width="15" height="6" rx="1" fill="#c9d3e6" stroke="#6b7c99"/><rect x="3.5" y="8.5" width="9" height="5" fill="#fff" stroke="#6b7c99"/><path d="M5 10.5h6M5 12h6" stroke="#9aa6bd"/></svg>打印 Print</a><span class="sep"></span>
     <a href="#" id="sendlink"><svg width="16" height="12" viewBox="0 0 16 12"><rect x=".5" y=".5" width="15" height="11" fill="#fff" stroke="#6b7c99"/><path d="M.5 .5l7.5 6 7.5-6M.5 11.5l5.5-5M15.5 11.5l-5.5-5" fill="none" stroke="#6b7c99"/></svg>发送 Send</a><span class="sep"></span>
@@ -97,6 +142,7 @@
 <!--INLINE_JS:bppage.js-->
 <!--INLINE_JS:bm.js-->
 <!--INLINE_JS:gpage.js-->
+<!--INLINE_JS:gamehost.js-->
 <script>/*BOOT_DEFAULTS*/LANG.set('zh');setMode('night');document.fonts.load('italic 80px "IM Fell English"').then(function(){document.fonts.load('80px "IM Fell English"').then(function(){render();});});</script>
 </body>
 </html>
