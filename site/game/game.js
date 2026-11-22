@@ -248,17 +248,28 @@
     atm.receipt = ['NAVAJO COUNTY TREASURER', '100 E CARTER DR', 'HOLBROOK AZ 86025', '', ts + '  TERM 0117', '--------------------------------'].concat(lines, ['--------------------------------', 'CHECKING  ' + fmtK(S.funds.county).padStart(16), 'LGIP POOL ' + fmtK(S.econ.lgip).padStart(16), '', 'THANK YOU']);
   }
   function atmSide() {
-    var keys = [['1'], ['2'], ['3'], ['CANCEL', 'k-red', T('取消', 'CANCEL')], ['4'], ['5', 'k-dot'], ['6'], ['CLEAR', 'k-yel', T('更正', 'CLEAR')], ['7'], ['8'], ['9'], ['ENTER', 'k-grn', T('确认', 'ENTER')], [''], ['0'], ['00'], ['']];
-    $('#atmside').innerHTML = '<div class="prn"><div class="prn-slot"></div>' + (atm.receipt.length ? '<pre class="rcpt">' + atm.receipt.join('\n') + '</pre>' : '') + '</div>' +
-      '<div class="epp">' + keys.map(function (k) { return k[0] ? '<button class="ek ' + (k[1] || '') + '" data-ek="' + k[0] + '">' + (k[2] || k[0]) + '</button>' : '<span class="ek blank"></span>'; }).join('') + '</div>' +
-      '<div class="atm-note">' + L('县库专用终端 · 资金在县支票账户与州库地方政府投资池之间划转', 'Treasury terminal · moves money between county checking and the state LGIP') + '</div>';
+    var inn = atm.mode === 'in', busy = atm.st === 'busy', log = (S.econ.atmlog || []).slice(0, 3);
+    var tile = function (k, zh, en, v, sub) { var src = (k === 'chk') === inn; return '<div class="at-tile' + (src ? ' src' : ' dst') + '"><div class="at-k">' + L(zh, en) + '<span class="at-role">' + (src ? L('转出', 'From') : L('转入', 'To')) + '</span></div><div class="at-v">' + fmtK(v) + '</div><div class="at-s">' + sub + '</div></div>'; };
+    $('#atmside').innerHTML =
+      '<div class="at-head"><img src="icons/bank32.png" width="32" height="32" alt=""><div><div class="at-t">' + L('县司库 · 资金调度', 'County Treasurer · Transfers') + '</div><div class="at-st">' + L('在县支票账户和州库地方政府投资池之间划转', 'Move money between county checking and the state LGIP') + '</div></div></div>' +
+      '<div class="at-pane">' +
+        '<div class="at-row">' + tile('chk', '支票账户', 'Checking', S.funds.county, L('县一般基金', 'General fund')) +
+          '<button class="at-swap' + (inn ? '' : ' rev') + '" data-atsw="1"><span>➜</span><i>' + L('换向', 'Swap') + '</i></button>' +
+          tile('pool', '州库投资池', 'State pool', S.econ.lgip, L('年收益 0.25% · 本月应计 ', '0.25% yield · accrued ') + fmtK(S.econ.accr)) + '</div>' +
+        '<div class="at-lbl">' + L('金额', 'Amount') + '</div>' +
+        '<div class="at-amt"><span>$</span><input id="aamt" inputmode="numeric" maxlength="5" value="' + atm.entry + '" placeholder="0"' + (busy ? ' disabled' : '') + '><span>K</span></div>' +
+        '<div class="at-quick">' + [100, 500, 1000, 2000].map(function (v) { return '<button class="wb7' + (+atm.entry === v ? ' on' : '') + '" data-aq="' + v + '">' + fmtK(v) + '</button>'; }).join('') + '</div>' +
+        '<div class="at-lbl">' + L('最近交易', 'Recent') + '</div>' +
+        '<div class="at-log">' + (log.length ? log.map(function (r) { return '<div><span>' + r.d + '</span><span>' + LA(r.t) + '</span><b class="' + (r.in ? 'pos' : 'neg') + '">' + fmtK(r.v) + '</b></div>'; }).join('') : '<div class="at-none">' + L('还没有交易', 'No transactions yet') + '</div>') + '</div>' +
+      '</div>' +
+      '<div class="at-foot"><span id="atmmsg">' + (atm.msg ? atm.msg : '') + '</span><button class="wb7 def" id="atmgo"' + (busy ? ' disabled' : '') + '>' + (inn ? L('存入', 'Deposit') : L('取回', 'Withdraw')) + '</button><button class="wb7" id="atmx2">' + L('关闭', 'Close') + '</button></div>';
   }
   function atmKey(k) {
     if (atm.st === 'busy') return;
     if (k === 'CANCEL') { atm.st = 'main'; atm.entry = ''; atm.msg = ''; return atmDraw(); }
     if (atm.st === 'main') {
       if (k === 'L1' || k === 'L2') { atm.mode = k === 'L1' ? 'in' : 'out'; atm.st = 'amt'; atm.entry = ''; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); }
-      else if (k === 'R1') { atm.st = 'bal'; receipt(['BALANCE INQUIRY']); }
+      else if (k === 'R1') { atm.st = 'bal'; }
       else if (k === 'R4') { $('#atmwrap').hidden = true; return; }
       return atmDraw();
     }
@@ -273,14 +284,16 @@
     }
   }
   function atmDo() {
-    var v = +atm.entry || 0, from = atm.mode === 'in' ? S.funds.county : S.econ.lgip;
+    var v = +atm.entry || 0;
+    if (v <= 0) { atm.msg = T('请输入金额', 'Enter an amount'); return atmDraw(); }
+    var from = atm.mode === 'in' ? S.funds.county : S.econ.lgip;
     if (v <= 0) return;
-    if (v > from) { atm.msg = T('余额不足', 'INSUFFICIENT FUNDS'); atm.entry = ''; return atmDraw(); }
+    if (v > from) { atm.st = 'amt'; atm.msg = T('余额不足', 'Insufficient funds'); return atmDraw(); }
     if (atm.mode === 'in') { S.funds.county -= v; S.econ.lgip += v; } else { S.econ.lgip -= v; S.funds.county += v; }
     atm.st = 'busy'; atmDraw(); render();
     setTimeout(function () {
       ATM3D.focus('slot');
-      ATM3D.play(atm.mode, Math.ceil(v / 100), function () { setTimeout(function () { ATM3D.focus('screen'); }, 1200); atm.st = 'done'; receipt([(atm.mode === 'in' ? 'DEPOSIT TO LGIP' : 'WITHDRAW TO CHECKING'), 'AMOUNT    ' + fmtK(v).padStart(16)]); atmDraw(); });
+      ATM3D.play(atm.mode, Math.ceil(v / 100), function () { setTimeout(function () { ATM3D.focus('screen'); }, 1200); atm.st = 'done'; S.econ.atmlog = S.econ.atmlog || []; S.econ.atmlog.unshift({ d: (S.date.getMonth() + 1) + '/' + S.date.getDate(), t: atm.mode === 'in' ? ['存入投资池', 'To pool'] : ['取回支票账户', 'To checking'], v: v, in: atm.mode === 'out' }); atm.entry = ''; atmDraw(); });
     }, 700);
   }
   function openAtm() {
@@ -288,8 +301,10 @@
     var go = function () { ATM3D.mount($('#atmview')); ATM3D.setKeyHandler(atmKey); atmDraw(); };
     if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; document.head.appendChild(s); }
   }
+  document.addEventListener('input', function (e) { if (e.target.id !== 'aamt') return; var v = e.target.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 5); e.target.value = v; atm.entry = v; if (atm.st !== 'amt') atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.drawScreen(atmSpec()); });
   document.addEventListener('keydown', function (e) {
-    if ($('#atmwrap').hidden) return; var k = e.key;
+    if ($('#atmwrap').hidden) return;
+    if (e.target.id === 'aamt') { if (e.key === 'Enter') atmDo(); return; } var k = e.key;
     if (/^\d$/.test(k)) atmKey(k); else if (k === 'Enter') atmKey('ENTER'); else if (k === 'Backspace') atmKey('CLEAR'); else if (k === 'Escape') atmKey('CANCEL');
   });
   function tabMail() { return ''; }
@@ -566,7 +581,9 @@
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
     if (ds.tab) { S.tab = ds.tab; render(); return; }
     if (a.id === 'openatm') { openAtm(); return; }
-    if (ds.ek) { atmKey(ds.ek); return; }
+    if (ds.atsw) { if (atm.st === 'busy') return; atm.mode = atm.mode === 'in' ? 'out' : 'in'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); return; }
+    if (ds.aq) { if (atm.st === 'busy') return; atm.entry = ds.aq; atm.st = 'amt'; atm.msg = ''; atmDraw(); return; }
+    if (a.id === 'atmgo') { atm.st = 'amt'; atmDo(); return; }
     if (a.id === 'atmx' || a.id === 'atmx2') { $('#atmwrap').hidden = true; if (window.ATM3D) ATM3D.clearPile(); return; }
     if (ds.loan) { loanDialog(ds.loan); return; }
     if (ds.lno) { $('#dlgwrap').hidden = true; return; }
