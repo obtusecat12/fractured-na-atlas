@@ -212,6 +212,7 @@ body.night #scale>div{border-color:#fff}
 #gearmenu .ck{position:absolute;left:11px;top:7px;width:12px;height:12px}
 #gearmenu .gmi.sel .ck:after{content:"";position:absolute;left:3px;top:0;width:4px;height:8px;border:solid #333;border-width:0 2px 2px 0;transform:rotate(40deg)}
 #gearmenu .gms{border-top:1px solid #ebebeb;margin:6px 0}
+#gearmenu .gmi.dis{color:#aaa;pointer-events:none}
 /* language switching */
 body.l-zh .en, body.l-zh .bi{display:none!important}
 body.l-en .zh, body.l-en .bi{display:none!important}
