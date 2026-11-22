@@ -2,6 +2,8 @@
 更新：2026-11-14。规则：慢慢做、质量优先、节省额度。
 
 ## 进行中 / 下一步
+- [x] **雅虎财经 2009-11-05 首页**（2026-11-22，书签「Yahoo! Finance」）：Wayback 2009-11-06 04:13 UTC 存档的原始 HTML、CSS、雪碧图（`site/sites/yf/src`、`res.json`），按原样式重画市场概要走势图（`charts.py`、`mkcharts.py`），`mkyf.py` 生成 `site/yfpage.js`。内容是米林顿核爆次日：太平洋交易所熔断一小时，威尔希尔 5000 收跌 9.87%；道指 5 月 28 日起停算；基列区和静默区公司不出现或已迁移。设定见 `docs/MARKETS_2009.md`。与原页面并排截图比对过（thum.io / mshots，经 htmlpreview 打开 `yf_preview.html`）。
+- [ ] CNN 首页（`site/cnn/`）仍是旧时间线（11 月 4 日总统遇刺、国会遇袭、纽交所当天停牌），与维基和雅虎财经页冲突，需改。
 - [ ] **Flickr「Last Uploads」小组讨论帖**（晚间简报 2026-11-12 提议）
   - 样板：Wayback 存档的 2009 年 4 月真实 Flickr 小组帖。
   - 复刻要点：「says:」回复格式、Pro 徽章、管理员图标、右侧讨论栏。
