@@ -16,12 +16,12 @@ var DATA = {
   },
   // 本县实际能管的城镇（保留地以外）/ towns under county jurisdiction
   towns: [
-    { id: 'holbrook', mayor: ['杰夫·希尔', 'Jeff Hill'], zh: '霍尔布鲁克', en: 'Holbrook', ll: [-110.1582, 34.9022], pop: 5053, cases: 9, mood: 61, seat: true, town: 'TOWN' },
-    { id: 'winslow', mayor: ['罗宾·博伊德', 'Robin Boyd'], town: 1, zh: '温斯洛', en: 'Winslow', ll: [-110.6974, 35.0242], pop: 9655, cases: 11, mood: 58 },
-    { id: 'showlow', mayor: ['里克·弗瑙', 'Rick Fernau'], town: 1, zh: '肖洛', en: 'Show Low', ll: [-110.0298, 34.2542], pop: 10660, cases: 6, mood: 66 },
-    { id: 'snowflake', mayor: ['凯利·威利斯', 'Kelly Willis'], town: 1, zh: '斯诺弗莱克', en: 'Snowflake', ll: [-110.0782, 34.5134], pop: 5590, cases: 2, mood: 72 },
-    { id: 'taylor', town: 1, zh: '泰勒', en: 'Taylor', ll: [-110.0918, 34.4653], pop: 4112, cases: 1, mood: 70 },
-    { id: 'pinetop', mayor: ['卢克·史密斯', 'Luke Smith'], town: 1, zh: '派恩托普-莱克赛德', en: 'Pinetop-Lakeside', ll: [-109.9293, 34.1425], pop: 4282, cases: 2, mood: 67 },
+    { id: 'holbrook', mayor: ['杰夫·希尔', 'Jeff Hill'], zh: '霍尔布鲁克', en: 'Holbrook', ll: [-110.1582, 34.9022], pop: 5053, cases: 0, mood: 61, seat: true, town: 'TOWN' },
+    { id: 'winslow', mayor: ['罗宾·博伊德', 'Robin Boyd'], town: 1, zh: '温斯洛', en: 'Winslow', ll: [-110.6974, 35.0242], pop: 9655, cases: 0, mood: 58 },
+    { id: 'showlow', mayor: ['里克·弗瑙', 'Rick Fernau'], town: 1, zh: '肖洛', en: 'Show Low', ll: [-110.0298, 34.2542], pop: 10660, cases: 0, mood: 66 },
+    { id: 'snowflake', mayor: ['凯利·威利斯', 'Kelly Willis'], town: 1, zh: '斯诺弗莱克', en: 'Snowflake', ll: [-110.0782, 34.5134], pop: 5590, cases: 0, mood: 72 },
+    { id: 'taylor', town: 1, zh: '泰勒', en: 'Taylor', ll: [-110.0918, 34.4653], pop: 4112, cases: 0, mood: 70 },
+    { id: 'pinetop', mayor: ['卢克·史密斯', 'Luke Smith'], town: 1, zh: '派恩托普-莱克赛德', en: 'Pinetop-Lakeside', ll: [-109.9293, 34.1425], pop: 4282, cases: 0, mood: 67 },
     { id: 'heber', zh: '希伯-奥弗加德', en: 'Heber-Overgaard', ll: [-110.5665, 34.4156], pop: 2822, cases: 0, mood: 64 },
     { id: 'joseph', zh: '约瑟夫城', en: 'Joseph City', ll: [-110.3343, 34.9561], pop: 1386, cases: 0, mood: 69 },
     { id: 'linden', zh: '林登', en: 'Linden', ll: [-110.1593, 34.2845], pop: 2597, cases: 0, mood: 65 },
@@ -136,6 +136,27 @@ var DATA = {
   promises: [
     { zh: '霍尔布鲁克公共图书馆周六恢复开放', en: 'Reopen the Holbrook Public Library on Saturday', left: 3, cost: 15, by: ['霍尔布鲁克居民联署', 'Holbrook residents\' petition'] },
     { zh: '周五前公布全县病例分布图', en: 'Publish the county case map by Friday', left: 2, cost: 5, by: ['《霍尔布鲁克论坛新闻》', 'Holbrook Tribune-News'] }
+  ],
+  // ---------- 驻军 · 检查站 · 叛军 ----------
+  // f 战斗系数；cap 最多调用几支；wk 每周县账户（千美元）；need 调用条件；hire 调用时的影响
+  forces: [
+    { id: 'ng', zh: '亚利桑那国民警卫队（一个连）', en: 'Arizona National Guard (one company)', short: ['国民警卫队', 'Guard'], tag: 'G', col: '#3b6db3', str: 40, f: 1.1, cap: 2, wk: 0, need: { fed: 40 }, hire: { fed: 1 }, d: ['州里出钱，县里不付费；联邦关系要 40 以上', 'Paid by the state; needs Federal relations 40+'] },
+    { id: 'posse', zh: '县警长后备队', en: "Sheriff's Posse", short: ['警长后备队', 'Posse'], tag: 'S', col: '#7a5a2e', str: 12, f: .8, cap: 4, wk: 4, hire: { trust: 1 }, d: ['每队 12 人，每周 $4K', '12 deputies, $4K a week'] },
+    { id: 'militia', zh: '地方民兵', en: 'Local militia', short: ['民兵', 'Militia'], tag: 'M', col: '#6b7d35', str: 18, f: .75, cap: 4, wk: 2, hire: { navajo: -2, panic: 1 }, d: ['每队 18 人，每周 $2K；纳瓦霍族 −2', '18 volunteers, $2K a week; Navajo −2'] },
+    { id: 'merc', zh: 'Xe Services（原黑水）保安队', en: 'Xe Services (formerly Blackwater) team', short: ['雇佣兵', 'Contractors'], tag: 'X', col: '#444', str: 30, f: 1.3, cap: 3, wk: 75, hire: { trust: -2, navajo: -3 }, d: ['每队 30 人，每周 $75K；信任 −2', '30 men, $75K a week; Trust −2'] },
+    { id: 'fed', zh: '联邦军队（布利斯堡派出营）', en: 'Federal troops (battalion from Fort Bliss)', short: ['联邦军', 'Federal'], tag: 'F', col: '#2a4a2a', str: 60, f: 1.4, cap: 1, wk: 0, need: { fed: 60 }, hire: { trust: -1, ctl: { adem: 5 } }, d: ['不付费；联邦关系要 60 以上；州应急管理局更有话语权', 'Free; needs Federal relations 60+; ADEM gains sway'] }
+  ],
+  checkpoints: [
+    { id: 'i40w', zh: 'I-40 西口（科科尼诺县界）', en: 'I-40 west (Coconino line)', ll: [-110.86, 35.05] },
+    { id: 'i40e', zh: 'I-40 东口（阿帕奇县界）', en: 'I-40 east (Apache line)', ll: [-109.86, 35.08] },
+    { id: 'us60s', zh: '60 号公路南口（肖洛以南）', en: 'US 60 south of Show Low', ll: [-110.06, 34.19] },
+    { id: 'sr260w', zh: '260 号公路西口（希伯以西）', en: 'SR 260 west of Heber', ll: [-110.74, 34.40] },
+    { id: 'sr87n', zh: '87 号公路北口（往霍皮）', en: 'SR 87 north (toward Hopi)', ll: [-110.62, 35.25] },
+    { id: 'sr77n', zh: '77 号公路北口（霍尔布鲁克以北）', en: 'SR 77 north of Holbrook', ll: [-110.12, 35.15] }
+  ],
+  // 叛军出没处；cp 是挡在前面的检查站
+  rebelSpawns: [
+    { ll: [-110.92, 34.36], cp: 'sr260w' }, { ll: [-110.38, 34.28], cp: 'us60s' }, { ll: [-109.80, 34.92], cp: 'i40e' }, { ll: [-110.40, 35.32], cp: 'sr77n' }
   ],
   teams: [
     { zh: '县警长办公室 · 警长 K.C. 克拉克', en: "Sheriff's Office · Sheriff K.C. Clark", where: ['巡逻车 14 辆', '14 patrol units'] },
