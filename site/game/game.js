@@ -22,7 +22,7 @@
     facilities: D.facilities.map(function (f) { var b = bdefOf(f.b); return Object.assign({ size: b.size || [20, 12], roof: b.roof, grid: b.grid, tower: b.tower, look: b.look, progress: f.done ? 1 : Math.max(0, 1 - (f.eta || b.days) / b.days) }, f); }),
     laws: {}, mail: [], promises: D.promises.map(function (p) { return Object.assign({}, p); }),
     sim: { arr: 1240, cap0: 930, stock: 34, newT: 3, rec: 0, acc: { trust: 0, panic: 0 }, over: false },
-    staff: { county: 34, vol: 0, train: [], ot: false }, teams: [], trade: {}, aid: {}, press: [], presserDay: -9,
+    mil: { g: [], r: [], nid: 1, raid: {}, log: [] }, staff: { county: 34, vol: 0, train: [], ot: false }, teams: [], trade: {}, aid: {}, press: [], presserDay: -9,
     st: { ctl: { gov: 46, sec: 22, adem: 32 }, rel: { gov: 50, sec: 45 }, fin: null },
     flags: {}, seen: {}, chain: [], votes: {}, evq: [], tab: 'ov', bsel: null, bfund: null, placing: false, openMail: -1
   };
@@ -138,7 +138,7 @@
   // ---------- sidebar ----------
   function sect(title, right) { return '<div class="sect"><div class="sh"><span style="font-weight:bold;font-size:13px">' + title + '</span>' + (right || '') + '</div>'; }
   function render() {
-    var h = { ov: tabOverview, ppl: tabPeople, nb: tabRegion, law: tabLaws, build: tabBuild, bank: tabBank, mail: tabMail }[S.tab]();
+    var h = { ov: tabOverview, ppl: tabPeople, nb: tabRegion, law: tabLaws, build: tabBuild, bank: tabBank, mail: tabMail, mil: tabMil }[S.tab]();
     $('#results').innerHTML = h;
     document.querySelectorAll('#barl [data-tab]').forEach(function (a) { a.classList.toggle('on', a.dataset.tab === S.tab); });
     meters();
@@ -171,7 +171,7 @@
   // ---------- 今天 ----------
   // 第一屏只放要你做决定的事和会让你输的趋势；背景信息折叠在下面，点标题展开
   function supplyNet() { return (S.laws.bnsf ? .4 : 0) + runSum('supply') - runSum('use') + (S.stand.fed >= 40 ? 5 / 7 : 0) - (1 + unhoused() / 2000); }
-  function arrivalsPerDay() { return Math.max(4, 18 - runSum('divert')) + (S.laws.quota ? 300 / 7 : 0); }
+  function arrivalsPerDay() { return Math.max(4, 18 - runSum('divert') - cpDivert()) + (S.laws.quota ? 300 / 7 : 0); }
   function pushHist() { var h = S.hist || (S.hist = []); h.push({ d: ymdOf(S.date), trust: S.trust, panic: S.panic, cases: totalCases(), uh: unhoused(), stock: Math.round(S.sim.stock * 10) / 10, fund: Math.round(S.funds.county) }); if (h.length > 40) h.shift(); }
   function histAgo(n) { var h = S.hist || []; return h.length > n ? h[h.length - 1 - n] : h[0]; }
   function fundPerDay() { var h = S.hist || [], a = histAgo(7); if (!a || h.length < 2) return 0; var n = Math.min(7, h.length - 1); return (S.funds.county - a.fund) / Math.max(1, n); }
@@ -407,7 +407,7 @@
   function simDay() {
     var sm = S.sim, L = S.laws, wd = S.date.getDay();
     // 人口：沿 I-40 和 77 号公路北上的人，检查点会分流一部分；配额条例按周接收
-    var drift = Math.max(4, 18 - runSum('divert')), quota = L.quota ? 300 / 7 : 0;
+    var drift = Math.max(4, 18 - runSum('divert') - cpDivert()), quota = L.quota ? 300 / 7 : 0;
     var inn = Math.round(drift + quota + (MAP.hash(S.day, 3, 11) - .5) * 8); sm.arr += inn;
     // 物资（天数）
     var use = 1 + unhoused() / 2000;
@@ -417,7 +417,7 @@
     var iso = runSum('hold'), act = totalCases(), spreadable = Math.max(0, act - iso) / Math.max(1, act);
     var r = .055 * spreadMult() * Math.max(.4, 1 + runSum('spread')), rec = 1 / 18 + runSum('recover'), newT = 0, recT = 0;
     D.towns.forEach(function (t, i) {
-      var seed = t.cases > 0 ? t.cases : (MAP.hash(S.day, i, 5) < .04 * (1 + act / 200) ? 1 : 0);
+      var seed = t.cases > 0 ? t.cases : elapsed() < CASE_DAY ? 0 : (MAP.hash(S.day, i, 5) < .04 * (1 + act / 200) ? 1 : 0);
       var n = Math.round(t.cases * spreadable * r * (.7 + MAP.hash(S.day, i, 9) * .6)) + (t.cases ? 0 : seed);
       var rc = Math.round(t.cases * rec * (.6 + MAP.hash(S.day, i, 13) * .8));
       t.cases = Math.max(0, t.cases + n - rc); newT += n; recT += rc;
@@ -993,6 +993,7 @@
     if (z >= 17) MAP.POI.forEach(function (p) { var q = px(p.ll); if (q[0] < -50 || q[1] < -20 || q[0] > W + 50 || q[1] > H + 20) return; cx.fillStyle = sat ? '#fff' : '#7a6f62'; cx.beginPath(); cx.arc(q[0], q[1], 2.5, 0, 7); cx.fill(); label(q[0] + 5, q[1] + 3, p.n, p.n, '11px Arial', sat ? '#fff' : '#5b5045', 'left', dark); });
     // facilities
     if (layers.fac) S.facilities.forEach(function (f) { var q = px(f.ll); facMarker(q[0], q[1], f); });
+    drawMil();
   }
   function dot(x, y, r) { cx.beginPath(); cx.arc(x, y, r, 0, 7); cx.fillStyle = '#fff'; cx.fill(); cx.strokeStyle = '#555'; cx.lineWidth = 1.2; cx.stroke(); }
   function star(x, y, r) { cx.beginPath(); for (var i = 0; i < 10; i++) { var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; cx.lineTo(x + rr * Math.cos(a), y + rr * Math.sin(a)); } cx.closePath(); cx.fill(); }
@@ -1160,6 +1161,10 @@
     if (ds.aid) { S.aid[ds.aid] = S.day; var ra = region[ds.aid]; if (ra && ra.stance && S.stand[ra.stance] != null) apply((function () { var o = {}; o[ra.stance] = 2; return o; })(), ['互助协议', 'Mutual aid']); render(); return; }
     if (ds.cert) { if (S.funds.county < 8) { notice(L('县账户不够 $8K，开不了培训。', 'The county account is short of $8K for the class.')); return; } S.funds.county -= 8; S.staff.train.push({ n: 6, days: 3 }); render(); return; }
     if (ds.ot) { S.staff.ot = !S.staff.ot; crewPlan(); render(); return; }
+    if (ds.hire) { hireForce(ds.hire); return; }
+    if (ds.mgo) { var sel = document.querySelector('select[data-mv="' + ds.mgo + '"]'); if (sel) moveGarrison(+ds.mgo, sel.value); return; }
+    if (ds.mdis) { M().g = M().g.filter(function (g) { return g.id !== +ds.mdis; }); render(); draw(); return; }
+    if (ds.cpz) { var c = cpdef(ds.cpz); center(c.ll[0], c.ll[1], 12); draw(); return; }
     if (ds.wk) { S.staff.wk = !S.staff.wk; crewPlan(); render(); return; }
     if (ds.endr) { location.reload(); return; }
     if (ds.endc) { $('#dlgwrap').hidden = true; return; }
@@ -1220,6 +1225,7 @@
     pauseAtlas();
     S.hour++;
     buildHour();
+    if (milHour() && !(S.hour === 23)) draw();
     meters();
     if (S.hour >= 24) {
       S.hour = 0; S.day++; S.date = new Date(S.date.getTime() + 864e5); S.dstand = { fed: 0, navajo: 0, lds: 0 };
@@ -1227,7 +1233,7 @@
       S.promises.forEach(function (p) { p.left--; if (p.left === 0) apply({ trust: -8 }, ['没兑现承诺：' + p.zh, 'Broken promise: ' + p.en]); }); S.promises = S.promises.filter(function (p) { return p.left > 0; });
       D.towns.forEach(function (t) { if (t.cases) t.cases += Math.round(MAP.hash(S.day, t.pop, 1) * 2); });
       if (S.laws.hours) apply({ trust: -1 }, ['每周 50 小时', '50-hour weeks']);
-      simDay(); econDay();
+      milDay(); simDay(); econDay();
       var ymd = S.date.getFullYear() + '-' + ('0' + (S.date.getMonth() + 1)).slice(-2) + '-' + ('0' + S.date.getDate()).slice(-2);
       contentDay();
       stateDay(); staffDay(); teamsDay(); pressDay(); calDay(); pushHist(); syncFac(); render(); draw(); checkEnd(); if (!S.sim.over) (window.requestIdleCallback || setTimeout)(function () { saveGame(AUTO_KEY); });
@@ -1236,6 +1242,137 @@
   }
   setInterval(function () { for (var i = 0; i < S.speed; i++) tick(); lastBatch = (window.performance || Date).now(); }, 1000);
 
+
+
+  // ---------- 驻军 · 检查站 · 叛军 ----------
+  // 开局第 7 天出现首批病例，第 14 天叛军开始出没。叛军是地图上移动的点，会袭击城镇、驻地和检查站。
+  // 驻军可以调到城镇或检查站；40 km 以内的驻军互相联动：一处被攻击时，邻近驻军按一半战力支援。
+  var LINK_KM = 40, CASE_DAY = 7, REBEL_DAY = 14;
+  function M() { return S.mil || (S.mil = { g: [], r: [], nid: 1, raid: {}, log: [] }); }
+  function elapsed() { return S.day - D.start.day; }
+  function fdef(k) { return D.forces.filter(function (f) { return f.id === k; })[0]; }
+  function cpdef(k) { return D.checkpoints.filter(function (c) { return c.id === k; })[0]; }
+  function locLL(at) { if (!at) return null; var k = at.slice(2); if (at[0] === 't') return town[k].ll; var c = cpdef(k); return c ? c.ll : null; }
+  function locName(at) { var k = at.slice(2); if (at[0] === 't') return L(town[k].zh, town[k].en); var c = cpdef(k); return L(c.zh, c.en); }
+  function locT(at) { var k = at.slice(2); if (at[0] === 't') return T(town[k].zh, town[k].en); var c = cpdef(k); return T(c.zh, c.en); }
+  function km(a, b) { var dx = (a[0] - b[0]) * 91.3, dy = (a[1] - b[1]) * 111; return Math.sqrt(dx * dx + dy * dy); }
+  function gLL(g) { if (g.at) return locLL(g.at); var a = locLL(g.from), b = locLL(g.to), t = g.prog || 0; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; }
+  function garrisonsAt(at) { return M().g.filter(function (g) { return g.at === at; }); }
+  function power(g) { return g.str * fdef(g.k).f; }
+  function linked(at) { var p = locLL(at); return M().g.filter(function (g) { return g.at && g.at !== at && km(locLL(g.at), p) <= LINK_KM; }); }
+  function defenseAt(at) { return garrisonsAt(at).reduce(function (a, g) { return a + power(g); }, 0) + linked(at).reduce(function (a, g) { return a + power(g) * .5; }, 0); }
+  function cpManned(id) { return garrisonsAt('c:' + id).length > 0; }
+  function cpDivert() { return D.checkpoints.filter(function (c) { return cpManned(c.id); }).length * 3; }
+  function milLog(zh, en) { var m = M(); m.log.unshift({ d: (S.date.getMonth() + 1) + '/' + S.date.getDate() + ' ' + S.hour + ':00', t: [zh, en] }); m.log = m.log.slice(0, 8); }
+  function hireForce(k) {
+    var f = fdef(k), m = M(), n = m.g.filter(function (g) { return g.k === k; }).length;
+    if (n >= f.cap) { notice(L(f.short[0] + '已经调满 ' + f.cap + ' 支。', 'All ' + f.cap + ' ' + f.short[1] + ' units are already out.')); return; }
+    if (f.need && f.need.fed && S.stand.fed < f.need.fed) { notice(L('联邦关系不到 ' + f.need.fed + '，州里不批。', 'Federal relations below ' + f.need.fed + '; the state says no.')); return; }
+    m.g.push({ id: m.nid++, k: k, str: f.str, at: 't:holbrook' }); apply(f.hire, [f.zh, f.en]); if (f.hire && f.hire.ctl) ctlShift(f.hire.ctl);
+    milLog(f.zh + '到霍尔布鲁克报到', f.en + ' reports in Holbrook'); render(); draw();
+  }
+  function moveGarrison(id, to) {
+    var g = M().g.filter(function (x) { return x.id === id; })[0]; if (!g || !g.at || g.at === to) return;
+    var d = km(locLL(g.at), locLL(to)) * 1.3; g.from = g.at; g.to = to; g.at = null; g.prog = 0; g.hrs = Math.max(1, Math.round(d / 55)); g.left = g.hrs;
+    render(); draw();
+  }
+  function spawnRebels(first) {
+    var m = M(), sp = D.rebelSpawns[Math.floor(MAP.hash(S.day, m.nid, 3) * D.rebelSpawns.length) % D.rebelSpawns.length];
+    var str = Math.round(10 + MAP.hash(S.day, m.nid, 7) * 8 + Math.max(0, elapsed() - REBEL_DAY) / 7 * 2);
+    var r = { id: m.nid++, ll: sp.ll.slice(), spawn: sp.ll.slice(), str: str, cp: sp.cp }; pickTarget(r); m.r.push(r);
+    var where = cpdef(sp.cp);
+    if (first) { notice(L('有人在' + where.zh + '一带看到武装人员，约 ' + str + ' 人，正往县里来。', 'Armed men spotted near ' + where.en + ', about ' + str + ' of them, heading into the county.')); S.tab = 'mil'; }
+    milLog('叛军出现：' + where.zh + '，约 ' + str + ' 人', 'Insurgents near ' + where.en + ', about ' + str);
+  }
+  function pickTarget(r) {
+    var m = M(), best = null, bs = 1e9;
+    if (r.cp && cpManned(r.cp)) { r.tgt = 'c:' + r.cp; r.cp = null; return; }   // 前面有人守的检查站先打检查站
+    r.cp = null;
+    D.towns.forEach(function (t, i) {
+      var at = 't:' + t.id; if (m.raid[t.id] && S.day - m.raid[t.id] < 4) return;
+      var sc = km(r.ll, t.ll) + defenseAt(at) * 1.2 - t.pop / 800 + MAP.hash(S.day, r.id, i) * 25; if (sc < bs) { bs = sc; best = at; }
+    });
+    r.tgt = best || 't:holbrook';
+  }
+  function milHour() {
+    var m = M(), ch = false;
+    m.g.forEach(function (g) { if (g.at) return; g.left--; g.prog = 1 - g.left / g.hrs; ch = true; if (g.left <= 0) { g.at = g.to; g.from = g.to = null; milLog(fdef(g.k).short[0] + '到达' + locT(g.at), fdef(g.k).short[1] + ' arrives at ' + locT(g.at)); } });
+    m.r = m.r.filter(function (r) {
+      if (r.wait > 0) { r.wait--; return true; }   // 抢完之后在镇上停留
+      if (r.home) { var hd = km(r.ll, r.home); if (hd <= 2) { milLog('一股叛军撤回山里', 'A group withdrew into the hills'); return false; } var hs = Math.min(1, 4 / hd); r.ll = [r.ll[0] + (r.home[0] - r.ll[0]) * hs, r.ll[1] + (r.home[1] - r.ll[1]) * hs]; ch = true; return true; }
+      var p = locLL(r.tgt), d = km(r.ll, p); ch = true;
+      if (d > 1) { var step = Math.min(1, 4 / d); r.ll = [r.ll[0] + (p[0] - r.ll[0]) * step, r.ll[1] + (p[1] - r.ll[1]) * step]; return true; }
+      var here = garrisonsAt(r.tgt), def = defenseAt(r.tgt);
+      if (!here.length) {
+        if (r.tgt[0] === 't') { var t = town[r.tgt.slice(2)]; m.raid[t.id] = S.day; t.mood = clamp(t.mood - 6); nudge('panic', 1.5, ['叛军袭击' + t.zh, 'Raid on ' + t.en]); nudge('trust', -.5, ['叛军袭击' + t.zh, 'Raid on ' + t.en]); S.sim.stock = Math.max(0, S.sim.stock - .5); r.str += 2; r.wait = 12; r.raids = (r.raids || 0) + 1;
+          notice(L('叛军袭击了' + t.zh + '：加油站和杂货店被抢，民心 −6。', 'Insurgents raided ' + t.en + ': a gas station and grocery looted, mood −6.')); milLog('叛军袭击' + t.zh, 'Raid on ' + t.en); }
+        if (r.raids >= 3) { r.home = r.spawn; return true; }   // 抢过三处就带着东西撤走
+        pickTarget(r); return true;
+      }
+      // 交火：叛军按防御力减员，驻地的部队按叛军人数减员，联动的邻近驻军不减员
+      r.str -= def * .06 * (.7 + MAP.hash(S.day * 24 + S.hour, r.id, 2) * .6);
+      var hit = r.str * .04, tot = here.reduce(function (a, g) { return a + power(g); }, 0);
+      here.forEach(function (g) { g.str -= hit * power(g) / tot; });
+      m.g = m.g.filter(function (g) { if (g.str > 2) return true; notice(L(fdef(g.k).short[0] + '在' + locT(g.at) + '被打散了。', 'The ' + fdef(g.k).short[1] + ' unit at ' + locT(g.at) + ' was broken up.')); milLog(fdef(g.k).short[0] + '在' + locT(g.at) + '被打散', fdef(g.k).short[1] + ' broken at ' + locT(g.at)); apply({ trust: -2 }, ['驻军被打散', 'Garrison lost']); return false; });
+      if (r.str < 3) { apply({ trust: 1, panic: -1 }, ['击退叛军', 'Insurgents driven off']); milLog('在' + locT(r.tgt) + '击退叛军', 'Insurgents driven off at ' + locT(r.tgt)); notice(L('叛军在' + locT(r.tgt) + '被击退。', 'Insurgents driven off at ' + locT(r.tgt) + '.')); return false; }
+      if (r.str < 6) { r.home = r.spawn; }   // 打不动就撤
+      return true;
+    });
+    return ch;
+  }
+  function milDay() {
+    var m = M(), e = elapsed();
+    if (e === CASE_DAY && !m.cases) { m.cases = true; town.holbrook.cases = 2; town.winslow.cases = 1; notice(L('县卫生局确认首批病例：霍尔布鲁克 2 例、温斯洛 1 例。', 'Public Health confirms the first cases: 2 in Holbrook, 1 in Winslow.')); }
+    if (e >= REBEL_DAY) {
+      if (!m.rebels) { m.rebels = true; spawnRebels(true); }
+      else { var avgMood = D.towns.reduce(function (a, t) { return a + t.mood; }, 0) / D.towns.length, pr = .1 + S.panic / 400 + (avgMood < 55 ? .1 : 0), cap = Math.min(4, 1 + Math.floor((e - REBEL_DAY) / 12)); if (m.r.length < cap && MAP.hash(S.day, 77, m.nid) < pr) spawnRebels(false); }
+    }
+    if (S.date.getDay() === 1) m.g.forEach(function (g) { var w = fdef(g.k).wk; if (w) { S.funds.county -= w; S.econ.wk.exp += w; } });
+    m.g.forEach(function (g) { var f = fdef(g.k); if (g.at && g.str < f.str) g.str = Math.min(f.str, g.str + f.str * .05); });   // 补员
+  }
+  function tabMil() {
+    var m = M(), e = elapsed(), h = '';
+    h += sect(L('叛军', 'Insurgents'), '<span>' + (m.r.length ? L(m.r.length + ' 股', m.r.length + ' groups') : e < REBEL_DAY ? L('暂无', 'None yet') : L('暂无', 'None')) + '</span>');
+    if (!m.r.length) h += '<div class="row"><div class="s">' + (e < REBEL_DAY ? L('目前没有武装人员的消息。', 'No reports of armed groups so far.') : L('县里暂时没有叛军活动。', 'No insurgent activity in the county right now.')) + '</div></div>';
+    m.r.forEach(function (r) { var d = km(r.ll, locLL(r.tgt)); h += '<div class="row mrow">' + ico('err') + '<div style="flex:1"><div class="t">' + L('约 ' + Math.round(r.str) + ' 人 → ', 'About ' + Math.round(r.str) + ' → ') + locName(r.tgt) + '</div><div class="s">' + (r.home ? L('正在撤走', 'Withdrawing') : r.wait > 0 ? L('在镇上停留', 'Holding the town') : d > 1 ? L('还有 ' + Math.round(d) + ' km，约 ' + Math.ceil(d / 4) + ' 小时', Math.round(d) + ' km, about ' + Math.ceil(d / 4) + ' hours') : L('正在交火', 'Fighting now')) + '</div></div></div>'; });
+    h += '</div>';
+    var opts = D.towns.map(function (t) { return ['t:' + t.id, T(t.zh, t.en)]; }).concat(D.checkpoints.map(function (c) { return ['c:' + c.id, T(c.zh, c.en)]; }));
+    h += sect(L('驻军', 'Garrisons'), '<span>' + L('40 km 内互相联动', 'Linked within 40 km') + '</span>');
+    if (!m.g.length) h += '<div class="row"><div class="s">' + L('还没有调用任何部队。', 'No units called up yet.') + '</div></div>';
+    m.g.forEach(function (g) {
+      var f = fdef(g.k), lk = g.at ? linked(g.at).length : 0;
+      h += '<div class="row mrow"><span class="mtag" style="background:' + f.col + '">' + f.tag + '</span><div style="flex:1"><div class="t">' + L(f.short[0], f.short[1]) + ' · ' + Math.round(g.str) + '/' + f.str + L(' 人', '') + '</div><div class="s">' +
+        (g.at ? locName(g.at) + (lk ? ' · ' + L('与 ' + lk + ' 处联动', 'linked to ' + lk) : '') : L('在途 → ', 'Moving → ') + locName(g.to) + L('，还要 ' + g.left + ' 小时', ', ' + g.left + ' h')) + '</div>' +
+        (g.at ? '<div class="s"><select data-mv="' + g.id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === g.at ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select> <button class="wb7" data-mgo="' + g.id + '">' + L('调动', 'Move') + '</button> <a href="#" data-mdis="' + g.id + '">' + L('解散', 'Disband') + '</a></div>' : '') + '</div></div>';
+    });
+    h += '</div>' + sect(L('可调用的部队', 'Units you can call up'));
+    D.forces.forEach(function (f) { var n = m.g.filter(function (g) { return g.k === f.id; }).length, lock = f.need && f.need.fed && S.stand.fed < f.need.fed;
+      h += '<div class="row mrow"><span class="mtag" style="background:' + f.col + '">' + f.tag + '</span><div style="flex:1"><div class="t">' + L(f.zh, f.en) + '</div><div class="s">' + LA(f.d) + ' · ' + L('已调用 ' + n + '/' + f.cap, n + '/' + f.cap + ' out') + '</div></div><button class="wb7" data-hire="' + f.id + '"' + (n >= f.cap || lock ? ' disabled' : '') + '>' + L('调用', 'Call up') + '</button></div>'; });
+    h += '</div>' + sect(L('检查站', 'Checkpoints'), '<span>' + L('有人守：外来人员每天 −3', 'Manned: arrivals −3/day') + '</span>');
+    D.checkpoints.forEach(function (c) { var gs = garrisonsAt('c:' + c.id); h += '<div class="row mrow">' + ico(gs.length ? 'mil' : 'q') + '<div style="flex:1"><div class="t"><a href="#" data-cpz="' + c.id + '">' + L(c.zh, c.en) + '</a></div><div class="s">' + (gs.length ? gs.map(function (g) { return L(fdef(g.k).short[0], fdef(g.k).short[1]) + ' ' + Math.round(g.str); }).join(' · ') : L('无人值守', 'Unmanned')) + '</div></div></div>'; });
+    h += '</div>';
+    if (m.log.length) { h += sect(L('记录', 'Log')); m.log.forEach(function (x) { h += '<div class="row"><div class="s">' + x.d + ' · ' + LA(x.t) + '</div></div>'; }); h += '</div>'; }
+    return h;
+  }
+  function drawMil() {
+    var m = M(), z = V.z, r0 = z >= 11 ? 9 : 7;
+    D.checkpoints.forEach(function (c) { var q = px(c.ll), on = cpManned(c.id); cx.fillStyle = '#fff'; cx.strokeStyle = on ? '#1f4e8c' : '#888'; cx.lineWidth = 1.5; cx.fillRect(q[0] - 7, q[1] - 3, 14, 6); cx.strokeRect(q[0] - 7, q[1] - 3, 14, 6); cx.fillStyle = on ? '#c0392b' : '#bbb'; for (var i = 0; i < 3; i++) cx.fillRect(q[0] - 6 + i * 5, q[1] - 2, 2.5, 4); });
+    // 联动线
+    cx.save(); cx.setLineDash([4, 3]); cx.strokeStyle = 'rgba(31,78,140,.9)'; cx.lineWidth = 2;
+    var st = m.g.filter(function (g) { return g.at; });
+    st.forEach(function (a, i) { st.slice(i + 1).forEach(function (b) { if (a.at === b.at) return; var p = locLL(a.at), q = locLL(b.at); if (km(p, q) > LINK_KM) return; var A = px(p), B = px(q); cx.beginPath(); cx.moveTo(A[0], A[1]); cx.lineTo(B[0], B[1]); cx.stroke(); }); });
+    cx.restore();
+    var seen = {};
+    m.g.forEach(function (g) { var f = fdef(g.k), q = px(gLL(g)), key = g.at || ''; var off = (seen[key] = (seen[key] || 0) + 1) - 1; q = [q[0] + 12 + off * 16, q[1] + 10];
+      cx.fillStyle = f.col; cx.strokeStyle = '#fff'; cx.lineWidth = 1.5; cx.fillRect(q[0] - 7, q[1] - 7, 14, 14); cx.strokeRect(q[0] - 7, q[1] - 7, 14, 14);
+      cx.fillStyle = '#fff'; cx.font = 'bold 10px Arial'; cx.textAlign = 'center'; cx.fillText(f.tag, q[0], q[1] + 3.5); if (!g.at) { cx.strokeStyle = f.col; cx.setLineDash([2, 2]); var B = px(locLL(g.to)); cx.beginPath(); cx.moveTo(q[0], q[1]); cx.lineTo(B[0], B[1]); cx.stroke(); cx.setLineDash([]); } });
+    var pulse = (S.hour % 2) ? 1 : .6;
+    m.r.forEach(function (r) { var q = px(r.ll), T2 = px(r.home || locLL(r.tgt)); cx.strokeStyle = 'rgba(200,30,30,.55)'; cx.lineWidth = 1.5; cx.setLineDash([6, 4]); cx.beginPath(); cx.moveTo(q[0], q[1]); cx.lineTo(T2[0], T2[1]); cx.stroke(); cx.setLineDash([]);
+      cx.beginPath(); cx.arc(q[0], q[1], r0 + 5 * pulse, 0, 7); cx.fillStyle = 'rgba(214,40,40,.22)'; cx.fill();
+      cx.beginPath(); cx.arc(q[0], q[1], r0, 0, 7); cx.fillStyle = '#d62828'; cx.fill(); cx.strokeStyle = '#fff'; cx.lineWidth = 1.5; cx.stroke();
+      cx.fillStyle = '#fff'; cx.font = 'bold 9px Arial'; cx.textAlign = 'center'; cx.fillText('' + Math.round(r.str), q[0], q[1] + 3); });
+    cx.textAlign = 'left';
+  }
 
   // ---------- 存档 ----------
   var SAVE_KEY = 'fna-navajo-save', AUTO_KEY = 'fna-navajo-auto';

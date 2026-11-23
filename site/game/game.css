@@ -347,3 +347,5 @@ ul.help li{margin:0 0 6px;line-height:17px}
 #magi .rt-meta{flex:1;font-size:11px;color:#888}
 #magi .rt-ok{min-width:80px}
 .shifts{width:calc(100% - 20px);margin:4px 10px;border-collapse:collapse;font-size:12px}.shifts th,.shifts td{padding:3px 4px;text-align:right;border-bottom:1px solid #e3e8ef}.shifts th:first-child,.shifts td:first-child{text-align:left}.shifts tr.cur td{background:#eef5fd}.shifts td.bad{color:#c00;font-weight:bold}
+.mtag{display:inline-block;width:16px;height:16px;line-height:16px;margin:1px 6px 0 0;color:#fff;font:bold 10px Arial;text-align:center;border:1px solid #fff;box-shadow:0 0 0 1px #999;flex:none}
+.row.mrow{display:flex;align-items:flex-start;gap:6px}.row.mrow>img{margin-top:2px}.row.mrow .wb7{flex:none;align-self:center}
