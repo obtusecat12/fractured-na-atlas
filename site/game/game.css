@@ -318,3 +318,35 @@ ul.help li{margin:0 0 6px;line-height:17px}
 #hud .g2 .gl,#hud .g2 .gs{line-height:12px}
 #hud .g2 .gv2{line-height:17px}
 #hud .hmail{margin-left:2px}
+/* 监事会表决屏（五角星，仿 MAGI） */
+#magi{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+#magi[hidden]{display:none}
+#magi .mg-box{width:760px;max-width:96vw;background:#050505;border:2px solid #f28c1c;box-shadow:0 0 0 4px #050505,0 0 0 5px #f28c1c;color:#f28c1c;font-family:"Times New Roman","Noto Serif CJK SC","Songti SC","SimSun",serif;padding:10px 16px 12px}
+#magi .mg-hd{display:flex;justify-content:space-between;border-bottom:3px double #f28c1c;padding-bottom:4px;font-weight:bold;letter-spacing:2px;font-size:15px}
+#magi .mg-code{font-family:"Courier New",monospace;letter-spacing:1px}
+#magi .mg-title{margin:8px 0 0;font-size:22px;font-weight:bold;color:#ffb04a;text-align:center;transform:scaleY(1.15);letter-spacing:1px}
+#magi .mg-svg{display:block;width:100%;height:auto}
+#magi .mg-core{fill:#050505;stroke:#f28c1c;stroke-width:2}
+#magi .mg-pt{fill:#1c1206;stroke:#f28c1c;stroke-width:2;transition:fill .15s}
+#magi .mg-pt.yes{fill:#19c26a}
+#magi .mg-pt.no{fill:#d8202a}
+#magi text{font-family:"Times New Roman","Noto Serif CJK SC","Songti SC","SimSun",serif;fill:#f28c1c}
+#magi .mg-n{font-size:15px;font-weight:bold}
+#magi .mg-f{font-size:12px;font-family:"Courier New","Noto Sans Mono CJK SC",monospace;fill:#b86c18}
+#magi .mg-v{font-size:17px;font-weight:bold;letter-spacing:3px;animation:mgblink 1s steps(2) infinite}
+#magi .mg-v.yes{fill:#19c26a;animation:none}
+#magi .mg-v.no{fill:#ff3b3b;animation:none}
+#magi .mg-c{font-size:30px;font-weight:bold;letter-spacing:2px;font-family:"Courier New",monospace}
+#magi .mg-st{fill:none;stroke:#f28c1c;stroke-width:2}
+#magi .mg-st.yes{fill:#19c26a;stroke:#19c26a}
+#magi .mg-st.no{fill:#d8202a;stroke:#d8202a}
+#magi .mg-sx{font-size:22px;font-weight:bold;letter-spacing:6px;animation:mgblink 1s steps(2) infinite}
+#magi .mg-sx.on{fill:#050505;animation:none}
+#magi .mg-c.yes{fill:#19c26a}
+#magi .mg-c.no{fill:#ff3b3b}
+#magi .mg-ft{display:flex;justify-content:space-between;align-items:center;border-top:3px double #f28c1c;padding-top:7px;font-family:"Courier New","Noto Sans Mono CJK SC",monospace;font-size:12px}
+#magi .mg-ok{background:#050505;color:#f28c1c;border:2px solid #f28c1c;font:bold 14px "Times New Roman","Noto Serif CJK SC",serif;letter-spacing:3px;padding:3px 18px;cursor:pointer}
+#magi .mg-ok:disabled{opacity:.35;cursor:default}
+#magi .mg-ok:not(:disabled):hover{background:#f28c1c;color:#050505}
+@keyframes mgblink{50%{opacity:.25}}
+.shifts{width:calc(100% - 20px);margin:4px 10px;border-collapse:collapse;font-size:12px}.shifts th,.shifts td{padding:3px 4px;text-align:right;border-bottom:1px solid #e3e8ef}.shifts th:first-child,.shifts td:first-child{text-align:left}.shifts tr.cur td{background:#eef5fd}.shifts td.bad{color:#c00;font-weight:bold}

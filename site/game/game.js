@@ -183,7 +183,7 @@
     if (c7 && c7.cases > 5 && cases > c7.cases * 1.3) out.push({ lv: cases > c7.cases * 2 ? 2 : 1, ico: 'imp', t: L('病例一周增加 ' + Math.round((cases / c7.cases - 1) * 100) + '%', 'Cases up ' + Math.round((cases / c7.cases - 1) * 100) + '% in a week'), s: L('现有 ' + cases + ' 例，今天新增 ' + S.sim.newT, cases + ' active, ' + S.sim.newT + ' new today'), go: [['vaccine', L('改建接种点', 'Vaccine clinic')], ['isolation', L('改建隔离点', 'Isolation site')]] });
     if (fpd < 0 && fund > 0 && fund / -fpd < 21) out.push({ lv: fund / -fpd < 7 ? 2 : 1, ico: 'bank', t: L('县账户约 ' + Math.floor(fund / -fpd) + ' 天后透支', 'County account overdrawn in about ' + Math.floor(fund / -fpd) + ' days'), s: L('近一周每天 ' + fmtK(fpd), 'Last week ' + fmtK(fpd) + ' a day'), go: [['bank', L('看财政', 'Finance')]] });
     if (fund <= 0) out.push({ lv: 2, ico: 'bank', t: L('县账户已透支 ' + fmtK(fund), 'County account overdrawn ' + fmtK(fund)), s: L('欠款按 2% 计息，每周一信任 −1', 'Unpaid bills at 2%; trust −1 every Monday'), go: [['bank', L('借款', 'Borrow')]] });
-    var short = opsStaff() - staffTotal(); if (short > 0) out.push({ lv: 1, ico: 'sheet', t: L('设施运营缺 ' + short + ' 人', short + ' short to run facilities'), s: L('每天信任 −0.3', 'Trust −0.3 a day'), go: [['volcenter', L('改建志愿者中心', 'Volunteer center')], ['build', L('开 CERT 培训', 'Run a CERT class')]] });
+    var short = opsStaff(false) - staffTotal(false); if (short > 0) out.push({ lv: 1, ico: 'sheet', t: L('设施运营缺 ' + short + ' 人', short + ' short to run facilities'), s: L('每天信任 −0.3', 'Trust −0.3 a day'), go: [['volcenter', L('改建志愿者中心', 'Volunteer center')], ['build', L('开 CERT 培训', 'Run a CERT class')]] });
     var wait = S.facilities.filter(function (f) { return !f.done && f.wait === 'crew'; }).length; if (wait) out.push({ lv: 0, ico: 'build', t: L(wait + ' 处工地等人手', wait + ' sites waiting for crew'), s: L('人手空出来才会开工', 'Work starts when staff free up'), go: [['build', L('看施工', 'Construction')]] });
     return out.sort(function (a, b) { return b.lv - a.lv; });
   }
@@ -279,13 +279,51 @@
     D.towns.forEach(function (t) { if (t.mayor) h += '<div class="row"><div class="t">' + LA(t.mayor) + '</div><div class="s">' + L(t.zh + '镇长', 'Mayor of ' + t.en) + '</div></div>'; });
     return h + '</div>';
   }
-  function boardVote(l) {
-    var v = D.board.map(function (b, i) {
-      var base = (l.sup || [0, 0, 0, 0, 0])[i], s = b.tie === 'navajo' ? (S.stand.navajo - 50) / 15 : (S.trust - 50) / 15;
-      return base + s + (MAP.hash(S.day, i, l.id.length) - .5) * .8 > 0;
+  // 表决：每位监事得分 = 条例预设立场 l.sup[i] + (信任 − 50) / 15（第 1、2 区看纳瓦霍族关系）+ 当日波动 ±0.4；得分 > 0 投赞成，3 票通过
+  function voteParts(l) {
+    return D.board.map(function (b, i) {
+      var base = (l.sup || [0, 0, 0, 0, 0])[i], nav = b.tie === 'navajo', s = nav ? (S.stand.navajo - 50) / 15 : (S.trust - 50) / 15, n = (MAP.hash(S.day, i, l.id.length) - .5) * .8;
+      return { base: base, s: s, nav: nav, n: n, sum: base + s + n, yes: base + s + n > 0 };
     });
-    var yes = v.filter(Boolean).length; S.lastVote = { id: l.id, v: v, yes: yes }; S.votes[l.id] = { yes: yes, day: S.day };
+  }
+  function boardVote(l) {
+    var P = voteParts(l), v = P.map(function (p) { return p.yes; });
+    var yes = v.filter(Boolean).length; S.lastVote = { id: l.id, v: v, yes: yes, P: P }; S.votes[l.id] = { yes: yes, day: S.day };
     return yes >= 3;
+  }
+  // ---------- 表决界面（五角星，仿 MAGI 表决屏） ----------
+  function sg(n) { return (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(1); }
+  function voteScreen(l, done) {
+    var ok = boardVote(l), P = S.lastVote.P, yes = S.lastVote.yes, R = 140, r = R * .382, cx = 360, cy = 238;
+    function pt(rad, a) { a = (a - 90) * Math.PI / 180; return [cx + rad * Math.cos(a), cy + rad * Math.sin(a)]; }
+    function pp(a) { return a.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' '); }
+    var svg = '<svg viewBox="0 0 720 470" class="mg-svg">';
+    svg += '<polygon class="mg-core" points="' + pp([0, 1, 2, 3, 4].map(function (k) { return pt(r, 36 + 72 * k); })) + '"/>';
+    D.board.forEach(function (b, k) {
+      var A = 72 * k, tri = [pt(R, A), pt(r, A + 36), pt(r, A - 36)], lab = pt(R + 30, A), anc = Math.abs(lab[0] - cx) < 20 ? 'middle' : lab[0] > cx ? 'start' : 'end';
+      var dy = k === 0 ? -34 : (k === 2 || k === 3) ? 14 : -6, p = P[k];
+      svg += '<polygon class="mg-pt" id="mgp' + k + '" points="' + pp(tri) + '"/>';
+      svg += '<text class="mg-n" x="' + lab[0].toFixed(0) + '" y="' + (lab[1] + dy).toFixed(0) + '" text-anchor="' + anc + '">' + T('第' + b.d + '区 · ' + b.zh, 'DIST.' + b.d + ' · ' + b.en.toUpperCase()) + '</text>';
+      svg += '<text class="mg-f" x="' + lab[0].toFixed(0) + '" y="' + (lab[1] + dy + 16).toFixed(0) + '" text-anchor="' + anc + '">' + T('立场', 'STN ') + sg(p.base) + (p.nav ? T(' 族关系', ' NAV ') : T(' 信任', ' TRU ')) + sg(p.s) + T(' 波动', ' DRF ') + sg(p.n) + '</text>';
+      svg += '<text class="mg-v" id="mgv' + k + '" x="' + lab[0].toFixed(0) + '" y="' + (lab[1] + dy + 36).toFixed(0) + '" text-anchor="' + anc + '">' + T('审议中', 'PENDING') + '</text>';
+    });
+    svg += '<text class="mg-c" id="mgc" x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle">0:0</text>';
+    svg += '<rect class="mg-st" id="mgs" x="' + (cx - 90) + '" y="420" width="180" height="40"/><text class="mg-sx" id="mgsx" x="' + cx + '" y="448" text-anchor="middle">' + T('审 议 中', 'VOTING') + '</text></svg>';
+    var w = document.getElementById('magi'); if (!w) { w = document.createElement('div'); w.id = 'magi'; document.body.appendChild(w); }
+    w.innerHTML = '<div class="mg-box"><div class="mg-hd"><span>' + T('纳瓦霍县监事会 · 表决', 'NAVAJO COUNTY BOARD OF SUPERVISORS') + '</span><span class="mg-code">' + T('提案 ', 'RES. ') + '2009-' + String(100 + S.day).slice(-3) + '</span></div>' +
+      '<div class="mg-title">' + T(l.zh, l.en) + '</div>' + svg +
+      '<div class="mg-ft"><span>' + T('信任 ', 'TRUST ') + Math.round(S.trust) + ' · ' + T('纳瓦霍族关系 ', 'NAVAJO ') + Math.round(S.stand.navajo) + ' · ' + T('三票通过', '3 TO PASS') + '</span><button class="mg-ok" disabled>' + T('确认', 'CONFIRM') + '</button></div></div>';
+    w.hidden = false; var sp0 = S.speed; S.speed = 0; clock();
+    var i = 0, tm = setInterval(function () {
+      if (i < 5) {
+        var y = P[i].yes; w.querySelector('#mgp' + i).setAttribute('class', 'mg-pt ' + (y ? 'yes' : 'no'));
+        var ay = P.slice(0, i + 1).filter(function (q) { return q.yes; }).length; w.querySelector('#mgc').textContent = ay + ':' + (i + 1 - ay);
+        var vv = w.querySelector('#mgv' + i); vv.textContent = y ? T('赞成', 'AYE') : T('反对', 'NAY'); vv.setAttribute('class', 'mg-v ' + (y ? 'yes' : 'no')); i++; return;
+      }
+      clearInterval(tm); w.querySelector('#mgc').setAttribute('class', 'mg-c ' + (ok ? 'yes' : 'no'));
+      w.querySelector('#mgs').setAttribute('class', 'mg-st ' + (ok ? 'yes' : 'no')); var sx = w.querySelector('#mgsx'); sx.textContent = ok ? T('可 决', 'PASSED') : T('否 决', 'REJECTED'); sx.setAttribute('class', 'mg-sx on');
+      var b = w.querySelector('.mg-ok'); b.disabled = false; b.onclick = function () { w.hidden = true; S.speed = sp0; clock(); done(ok); };
+    }, 420);
   }
   function vtz(l) { var v = S.votes[l.id]; return v ? '赞成 ' + v.yes + ' · 反对 ' + (5 - v.yes) : '开局已生效'; }
   function vte(l) { var v = S.votes[l.id]; return v ? v.yes + ' aye, ' + (5 - v.yes) + ' nay' : 'in force at start'; }
@@ -311,10 +349,18 @@
       rec.slice(0, 3).forEach(function (id) { var b = bdefOf(id); h += '<div class="row bitem rec" data-pick="' + id + '"><span class="bico" style="background:' + (b.roof || '#b9a37e') + '"></span><div style="flex:1"><div class="t"><a href="#" data-pick="' + id + '">' + L(b.zh, b.en) + '</a> <span class="s">' + money(b.cost) + ' · ' + L(b.days + ' 天', b.days + ' days') + '</span></div><div class="s">' + LA(bfx(b)) + '</div><div class="s why">' + why[id] + '</div></div></div>'; });
       h += '</div>';
     }
-    var sf = S.staff, ops = opsStaff(), busy = S.facilities.reduce(function (a, f) { return a + (!f.done && !f.wait ? (bdefOf(f.b) || {}).crew || 3 : 0); }, 0);
-    h += sect(L('人手', 'Staff'), '<span>' + (isNight() ? L('夜间', 'Night') : L('白天', 'Day')) + '</span>') + '<div class="stats"><div>' + L('县员工', 'County staff') + '<b>' + sf.county + '</b></div><div>' + L('志愿者', 'Volunteers') + '<b>' + Math.round(sf.vol) + '</b></div><div>' + L('设施运营', 'Running sites') + '<b' + (ops > staffTotal() ? ' class="bad"' : '') + '>' + ops + '</b></div><div>' + L('施工中', 'On builds') + '<b>' + busy + '</b></div><div>' + L('空闲', 'Free') + '<b>' + Math.max(0, staffTotal() - ops - busy) + '</b></div></div>' +
+    var sf = S.staff, busy = S.facilities.reduce(function (a, f) { return a + (!f.done && !f.wait ? (bdefOf(f.b) || {}).crew || 3 : 0); }, 0), nt = isNight();
+    function srow(night, zh, en) {
+      var on = staffTotal(night), op = opsStaff(night), bz = nt === night ? busy : 0, cur = nt === night;
+      return '<tr' + (cur ? ' class="cur"' : '') + '><td>' + L(zh, en) + (cur ? ' <span class="s">' + L('当前', 'now') + '</span>' : '') + '</td><td>' + on + '</td><td' + (op > on ? ' class="bad"' : '') + '>' + op + '</td><td>' + bz + '</td><td>' + Math.max(0, on - op - bz) + '</td></tr>';
+    }
+    h += sect(L('排班', 'Shifts'), '<span>' + (offDay() ? (holiday() ? L('节假日', 'Holiday') : L('周末', 'Weekend')) : L('工作日', 'Workday')) + '</span>') +
+      '<table class="shifts"><tr><th></th><th>' + L('在岗', 'On duty') + '</th><th>' + L('设施', 'Sites') + '</th><th>' + L('施工', 'Builds') + '</th><th>' + L('空闲', 'Free') + '</th></tr>' +
+      srow(false, '白班 06–19', 'Day 06–19') + srow(true, '夜班 19–06', 'Night 19–06') + '</table>' +
+      '<div class="s" style="padding:2px 10px">' + L('县员工 ' + sf.county + ' 人 · 志愿者 ' + Math.round(sf.vol) + ' 人（只上白班）· 夜班留三成县员工值守，设施夜里半数运营', sf.county + ' county staff · ' + Math.round(sf.vol) + ' volunteers (days only) · 30% of county staff on nights; sites run at half strength overnight') + '</div>' +
       '<div class="lk" style="padding:4px 10px 8px"><a href="#" data-cert="1">' + L('开一期社区应急队（CERT）培训', 'Run a CERT class') + '</a> <span class="s">$8K · ' + L('3 天 · 志愿者 +6', '3 days · +6 volunteers') + (sf.train.length ? ' · ' + L('培训中 ' + sf.train.length + ' 期', sf.train.length + ' in class') : '') + '</span><br>' +
-      '<label style="color:#000"><input type="checkbox" data-ot="1"' + (sf.ot ? ' checked' : '') + '> ' + L('夜间加班施工', 'Night shifts on builds') + '</label> <span class="s">' + L('约 $53/人·小时', 'about $53 per worker-hour') + '</span></div></div>';
+      '<label style="color:#000"><input type="checkbox" data-ot="1"' + (sf.ot ? ' checked' : '') + '> ' + L('夜班继续施工', 'Keep building on night shift') + '</label> <span class="s">' + L('施工人手按 $53/人·小时', '$53 per worker-hour') + '</span><br>' +
+      '<label style="color:#000"><input type="checkbox" data-wk="1"' + (sf.wk ? ' checked' : '') + '> ' + L('周末全员加班', 'Full staff on weekends') + '</label> <span class="s">' + L('周末白班约 $' + Math.round(sf.county * .5 * .053 * 13) + 'K/天', 'about $' + Math.round(sf.county * .5 * .053 * 13) + 'K a weekend day') + '</span></div></div>';
     var cat = null;
     D.buildings.forEach(function (b) {
       if (cat !== b.cat) { if (cat) h += '</div>'; cat = b.cat; h += sect(LA(D.bcats[cat])); }
@@ -388,8 +434,15 @@
   var CSTAGE = [['清场', 'Clearing out'], ['清场', 'Clearing out'], ['改造', 'Refitting'], ['改造', 'Refitting'], ['验收', 'Inspection']];
   // ---------- 人手 · 昼夜 ----------
   function isNight() { return S.hour >= 19 || S.hour < 6; }
-  function opsStaff() { return S.facilities.reduce(function (a, f) { var b = bdefOf(f.b); return a + (f.done && b ? b.ops || 0 : 0); }, 0) + S.teams.length * 4; }
-  function staffTotal() { var off = holiday() || [0, 6].indexOf(S.date.getDay()) >= 0; return Math.round(S.staff.county * (off && !S.staff.ot ? .5 : 1) * (S.laws.hours ? 1.25 : 1)) + Math.round(S.staff.vol); }   // 条例“每周 50 小时”：县雇员人手 +25%
+  // 排班：白班 06–19 全体县雇员 + 志愿者；夜班 19–06 只有值班的三成县雇员，志愿者不上夜班。
+  // 设施白天按满员运营，夜里留一半值守；外勤队算在白班里。周末和节假日县雇员半数到岗，勾选“周末全员加班”才满员（付加班费）。
+  // 条例“每周 50 小时”：县雇员人手 +25%。
+  function offDay() { return !!holiday() || [0, 6].indexOf(S.date.getDay()) >= 0; }
+  function opsBase() { return S.facilities.reduce(function (a, f) { var b = bdefOf(f.b); return a + (f.done && b ? b.ops || 0 : 0); }, 0); }
+  function opsStaff(night) { if (night === undefined) night = isNight(); return night ? Math.ceil(opsBase() * .5) : opsBase() + S.teams.length * 4; }
+  function dayStaff() { return Math.round(S.staff.county * (offDay() && !S.staff.wk ? .5 : 1) * (S.laws.hours ? 1.25 : 1)) + Math.round(S.staff.vol); }
+  function nightStaff() { return Math.round(S.staff.county * .3 * (S.laws.hours ? 1.25 : 1)); }
+  function staffTotal(night) { if (night === undefined) night = isNight(); return night ? nightStaff() : dayStaff(); }
   // ---------- 日历 ----------
   var HOL = { '2009-11-11': ['退伍军人节', 'Veterans Day'], '2009-11-26': ['感恩节', 'Thanksgiving'], '2009-11-27': ['感恩节次日', 'Day after Thanksgiving'], '2009-12-25': ['圣诞节', 'Christmas Day'], '2010-01-01': ['元旦', "New Year's Day"] };
   function holiday() { return HOL[ymdOf(S.date)]; }
@@ -440,11 +493,12 @@
   function staffDay() {
     var s = S.staff; s.train = s.train.filter(function (t) { if (--t.days > 0) return true; s.vol += t.n; notice(L('社区应急队培训结业：志愿者 +', 'CERT class graduates: volunteers +') + t.n); return false; });
     if (S.trust < 40) s.vol = Math.max(0, s.vol - .3); else if (S.trust > 65) s.vol += .1;
-    if (opsStaff() > staffTotal()) { nudge('trust', -.3, ['人手不够', 'Short of staff']); }
+    if (opsStaff(false) > staffTotal(false)) { nudge('trust', -.3, ['人手不够', 'Short of staff']); }
   }
   function buildHour() {
     var ch = false; crewPlan();
     if (isNight() && S.staff.ot) { var oc = otCost(); S.funds.county -= oc; S.econ.wk.exp += oc; }
+    if (!isNight() && offDay() && S.staff.wk) { var wc = S.staff.county * .5 * .053; S.funds.county -= wc; S.econ.wk.exp += wc; }   // 周末加班：另一半县雇员按 $53/小时
     S.facilities.forEach(function (f) {
       if (f.done || f.wait) return; var bd = bdefOf(f.b), days = f.days || (bd && bd.days) || 2, k0 = MAP.stageKey(f);
       f.progress = Math.min(1, (f.progress || 0) + 1 / (days * 24)); f.eta = Math.ceil((1 - f.progress) * days);
@@ -1080,7 +1134,7 @@
   function startEvent() { return CONTENT.events.filter(function (e) { return e.start; })[0]; }
   function eventDialog(e) { e = e || startEvent(); S.curEv = e; taskDialog({ icon: e.icon || 'info', title: LA(e.title), body: LA(e.body), links: e.opts.map(function (o, i) { return { attr: 'data-ev="' + i + '"', t: LA(o.t), n: LA(o.fx || CONTENT.fx(o.do)) }; }), foot: e.foot ? LA(e.foot) : null }); }
   document.addEventListener('click', function (e) {
-    var a = e.target.closest('[data-fold],a,button,[data-town],[data-region],[data-b],[data-mail],[data-ot]'); if (!a || a.closest('#logon')) return;
+    var a = e.target.closest('[data-fold],a,button,[data-town],[data-region],[data-b],[data-mail],[data-ot],[data-wk]'); if (!a || a.closest('#logon')) return;
     var holder = e.target.closest('[data-b],[data-region],[data-town],[data-mail]'); if (a.tagName === 'A' && !Object.keys(a.dataset).length && holder && holder.contains(a)) { e.preventDefault(); a = holder; }
     var ds = a.dataset;
     if (a.tagName === 'A' && a.getAttribute('href') === '#') e.preventDefault();
@@ -1098,6 +1152,7 @@
     if (ds.aid) { S.aid[ds.aid] = S.day; var ra = region[ds.aid]; if (ra && ra.stance && S.stand[ra.stance] != null) apply((function () { var o = {}; o[ra.stance] = 2; return o; })(), ['互助协议', 'Mutual aid']); render(); return; }
     if (ds.cert) { if (S.funds.county < 8) { notice(L('县账户不够 $8K，开不了培训。', 'The county account is short of $8K for the class.')); return; } S.funds.county -= 8; S.staff.train.push({ n: 6, days: 3 }); render(); return; }
     if (ds.ot) { S.staff.ot = !S.staff.ot; crewPlan(); render(); return; }
+    if (ds.wk) { S.staff.wk = !S.staff.wk; crewPlan(); render(); return; }
     if (ds.endr) { location.reload(); return; }
     if (ds.endc) { $('#dlgwrap').hidden = true; return; }
     if (ds.atsw) { if (atm.st === 'busy') return; atm.mode = atm.mode === 'in' ? 'out' : 'in'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); return; }
@@ -1116,7 +1171,7 @@
     if (ds.sat) { var t1 = town[ds.sat]; center(t1.ll[0], t1.ll[1], 17); setMode('sat'); closeInfo(); return; }
     if (ds.zr) { var r0 = region[ds.zr], c0 = r0.county ? COUNTY[r0.county].c : r0.res ? centroidRes(r0.res) : [-110.3, 34.9]; center(c0[0], c0[1], 9); closeInfo(); draw(); return; }
     if (ds.keep != null) { var pr = S.promises[+ds.keep]; S.funds.county -= (pr.cost || 20); S.promises.splice(+ds.keep, 1); apply({ trust: 4 }, ['兑现承诺', 'Promise kept']); render(); return; }
-    if (ds.sign) { var l = D.laws.filter(function (x) { return x.id === ds.sign; })[0]; if (!boardVote(l)) { render(); return; } S.laws[l.id] = true; if (l.d) apply(l.d, [l.zh, l.en]); var dd = { std_fed: { fed: 6, navajo: -6 }, std_navajo: { navajo: 6, fed: -6 }, school_close: { trust: -2 }, bnsf: { fed: 2 }, quota: { fed: 3, trust: -1 } }[l.id]; apply(dd, [l.zh, l.en]); render(); return; }
+    if (ds.sign) { var l = D.laws.filter(function (x) { return x.id === ds.sign; })[0]; voteScreen(l, function (ok) { if (!ok) { render(); return; } S.laws[l.id] = true; if (l.d) apply(l.d, [l.zh, l.en]); var dd = { std_fed: { fed: 6, navajo: -6 }, std_navajo: { navajo: 6, fed: -6 }, school_close: { trust: -2 }, bnsf: { fed: 2 }, quota: { fed: 3, trust: -1 } }[l.id]; apply(dd, [l.zh, l.en]); render(); }); return; }
     if (ds.conv) { var p = ds.conv.split(':'), bd = bdefOf(p[0]); S.bsel = bd.id; S.bfund = S.bfund && bd.fund.indexOf(S.bfund) >= 0 ? S.bfund : bd.fund[0]; convert(bd, MAP.BLD[+p[1]], S.bfund); S.tab = 'build'; render(); return; }
     if (ds.b && !e.target.closest('input,#place')) { S.bsel = S.bsel === ds.b ? null : ds.b; S.bfund = S.bsel ? bdefOf(S.bsel).fund[0] : null; render(); return; }
     if (a.id === 'place') { var bb = bdefOf(S.bsel); S.placing = true; cv.style.cursor = 'crosshair'; if (V.z < 15 || !MAP.inTown(MAP.xlon(V.x, V.z), MAP.ylat(V.y, V.z))) { center(town.holbrook.ll[0], town.holbrook.ll[1], 16); } hint(bb.convert ? L('点击一栋建筑。Esc 取消。', 'Click a building. Esc to cancel.') : L('点击本县辖区内的空地放置。Esc 取消。', 'Click open ground in county jurisdiction. Esc to cancel.')); draw(); return; }
