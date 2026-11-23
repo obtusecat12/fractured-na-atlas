@@ -318,35 +318,32 @@ ul.help li{margin:0 0 6px;line-height:17px}
 #hud .g2 .gl,#hud .g2 .gs{line-height:12px}
 #hud .g2 .gv2{line-height:17px}
 #hud .hmail{margin-left:2px}
-/* 监事会表决屏（五角星，仿 MAGI） */
-#magi{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+/* 监事会唱名表决（2009 新闻图表式圆桌，白底） */
+#magi{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18)}
 #magi[hidden]{display:none}
-#magi .mg-box{width:760px;max-width:96vw;background:#050505;border:2px solid #f28c1c;box-shadow:0 0 0 4px #050505,0 0 0 5px #f28c1c;color:#f28c1c;font-family:"Times New Roman","Noto Serif CJK SC","Songti SC","SimSun",serif;padding:10px 16px 12px}
-#magi .mg-hd{display:flex;justify-content:space-between;border-bottom:3px double #f28c1c;padding-bottom:4px;font-weight:bold;letter-spacing:2px;font-size:15px}
-#magi .mg-code{font-family:"Courier New",monospace;letter-spacing:1px}
-#magi .mg-title{margin:8px 0 0;font-size:22px;font-weight:bold;color:#ffb04a;text-align:center;transform:scaleY(1.15);letter-spacing:1px}
-#magi .mg-svg{display:block;width:100%;height:auto}
-#magi .mg-core{fill:#050505;stroke:#f28c1c;stroke-width:2}
-#magi .mg-pt{fill:#1c1206;stroke:#f28c1c;stroke-width:2;transition:fill .15s}
-#magi .mg-pt.yes{fill:#19c26a}
-#magi .mg-pt.no{fill:#d8202a}
-#magi text{font-family:"Times New Roman","Noto Serif CJK SC","Songti SC","SimSun",serif;fill:#f28c1c}
-#magi .mg-n{font-size:15px;font-weight:bold}
-#magi .mg-f{font-size:12px;font-family:"Courier New","Noto Sans Mono CJK SC",monospace;fill:#b86c18}
-#magi .mg-v{font-size:17px;font-weight:bold;letter-spacing:3px;animation:mgblink 1s steps(2) infinite}
-#magi .mg-v.yes{fill:#19c26a;animation:none}
-#magi .mg-v.no{fill:#ff3b3b;animation:none}
-#magi .mg-c{font-size:30px;font-weight:bold;letter-spacing:2px;font-family:"Courier New",monospace}
-#magi .mg-st{fill:none;stroke:#f28c1c;stroke-width:2}
-#magi .mg-st.yes{fill:#19c26a;stroke:#19c26a}
-#magi .mg-st.no{fill:#d8202a;stroke:#d8202a}
-#magi .mg-sx{font-size:22px;font-weight:bold;letter-spacing:6px;animation:mgblink 1s steps(2) infinite}
-#magi .mg-sx.on{fill:#050505;animation:none}
-#magi .mg-c.yes{fill:#19c26a}
-#magi .mg-c.no{fill:#ff3b3b}
-#magi .mg-ft{display:flex;justify-content:space-between;align-items:center;border-top:3px double #f28c1c;padding-top:7px;font-family:"Courier New","Noto Sans Mono CJK SC",monospace;font-size:12px}
-#magi .mg-ok{background:#050505;color:#f28c1c;border:2px solid #f28c1c;font:bold 14px "Times New Roman","Noto Serif CJK SC",serif;letter-spacing:3px;padding:3px 18px;cursor:pointer}
-#magi .mg-ok:disabled{opacity:.35;cursor:default}
-#magi .mg-ok:not(:disabled):hover{background:#f28c1c;color:#050505}
-@keyframes mgblink{50%{opacity:.25}}
+#magi .rt-win{width:760px;max-width:96vw}
+#magi .rt-body{background:#fff;margin:0;padding:12px 18px 12px;font-family:"Microsoft YaHei","微软雅黑","SimSun","宋体",Arial,sans-serif;color:#333}
+#magi .rt-hd{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #ddd;padding-bottom:5px}
+#magi .rt-k{font:bold 13px Arial,Helvetica,sans-serif;letter-spacing:1px;color:#1f4e8c}
+#magi .rt-no{font:11px Arial,"Microsoft YaHei",sans-serif;color:#888}
+#magi .rt-title{margin:8px 0 0;font-size:17px;font-weight:bold;color:#222;text-align:center}
+#magi .rt-svg{display:block;width:100%;height:auto}
+#magi .rt-svg text{font-family:"Microsoft YaHei","微软雅黑","SimSun","宋体",Arial,sans-serif}
+#magi .rt-svg .rt-tally{font:bold 34px Arial,Helvetica,sans-serif;fill:#333}
+#magi .rt-svg .rt-tl{font-size:11px;fill:#888}
+#magi .rt-svg .rt-nm{font-family:"Segoe Script","Lucida Handwriting","Bradley Hand ITC","Brush Script MT",cursive;font-size:21px;fill:#1d3f73}
+#magi .rt-svg .rt-ds{font-size:12px;fill:#555}
+#magi .rt-svg .rt-fx{font-size:10.5px;fill:#999}
+#magi .rt-svg .rt-sv{font:bold 15px Arial,sans-serif;fill:#777}
+#magi .rt-svg .rt-sv.on{font-family:"Microsoft YaHei","微软雅黑","SimSun",sans-serif;font-size:13px;fill:#fff}
+#magi .rt-bar{display:flex;height:14px;margin:2px 0 8px;border:1px solid #b9b9b9;border-radius:3px;background:linear-gradient(#f4f4f4,#e1e1e1);overflow:hidden}
+#magi .rt-bar i{display:block;width:0;transition:width .3s}
+#magi .rt-bar .g{background:linear-gradient(#8fd16a,#5cad34 50%,#4c9c26 51%,#3f8a1e)}
+#magi .rt-bar .r{background:linear-gradient(#f08a80,#d9392f 50%,#c82a21 51%,#ad1f18);margin-left:auto}
+#magi .rt-ft{display:flex;align-items:center;gap:14px}
+#magi .rt-res{font-size:18px;font-weight:bold;color:#888;min-width:70px}
+#magi .rt-res.yes{color:#3f8a1e}
+#magi .rt-res.no{color:#c82a21}
+#magi .rt-meta{flex:1;font-size:11px;color:#888}
+#magi .rt-ok{min-width:80px}
 .shifts{width:calc(100% - 20px);margin:4px 10px;border-collapse:collapse;font-size:12px}.shifts th,.shifts td{padding:3px 4px;text-align:right;border-bottom:1px solid #e3e8ef}.shifts th:first-child,.shifts td:first-child{text-align:left}.shifts tr.cur td{background:#eef5fd}.shifts td.bad{color:#c00;font-weight:bold}
