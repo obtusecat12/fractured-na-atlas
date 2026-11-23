@@ -291,39 +291,47 @@
     var yes = v.filter(Boolean).length; S.lastVote = { id: l.id, v: v, yes: yes, P: P }; S.votes[l.id] = { yes: yes, day: S.day };
     return yes >= 3;
   }
-  // ---------- 表决界面（五角星，仿 MAGI 表决屏） ----------
+  // ---------- 表决界面（2009 年新闻图表式圆桌唱名表决） ----------
   function sg(n) { return (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(1); }
   function voteScreen(l, done) {
-    var ok = boardVote(l), P = S.lastVote.P, yes = S.lastVote.yes, R = 140, r = R * .382, cx = 360, cy = 238;
+    var ok = boardVote(l), P = S.lastVote.P, yes = S.lastVote.yes, cx = 360, cy = 172, RS = 128, RL = 178;
     function pt(rad, a) { a = (a - 90) * Math.PI / 180; return [cx + rad * Math.cos(a), cy + rad * Math.sin(a)]; }
-    function pp(a) { return a.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' '); }
-    var svg = '<svg viewBox="0 0 720 470" class="mg-svg">';
-    svg += '<polygon class="mg-core" points="' + pp([0, 1, 2, 3, 4].map(function (k) { return pt(r, 36 + 72 * k); })) + '"/>';
+    var svg = '<svg viewBox="0 0 720 380" class="rt-svg"><defs>' +
+      '<radialGradient id="rtT" cx="45%" cy="35%" r="70%"><stop offset="0" stop-color="#fbfbfb"/><stop offset="1" stop-color="#d9dde2"/></radialGradient>' +
+      '<linearGradient id="rtG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd16a"/><stop offset=".5" stop-color="#5cad34"/><stop offset=".51" stop-color="#4c9c26"/><stop offset="1" stop-color="#3f8a1e"/></linearGradient>' +
+      '<linearGradient id="rtR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f08a80"/><stop offset=".5" stop-color="#d9392f"/><stop offset=".51" stop-color="#c82a21"/><stop offset="1" stop-color="#ad1f18"/></linearGradient>' +
+      '<linearGradient id="rtE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dcdcdc"/></linearGradient>' +
+      '<filter id="rtS" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".25"/></filter></defs>';
+    svg += '<ellipse cx="' + cx + '" cy="' + (cy + 6) + '" rx="92" ry="92" fill="#000" opacity=".08"/><circle cx="' + cx + '" cy="' + cy + '" r="90" fill="url(#rtT)" stroke="#b5bcc4" stroke-width="1.5"/>';
+    svg += '<text class="rt-tally" id="rtc" x="' + cx + '" y="' + (cy + 8) + '" text-anchor="middle">0 – 0</text><text class="rt-tl" x="' + cx + '" y="' + (cy + 30) + '" text-anchor="middle">' + T('赞成 – 反对', 'AYE – NAY') + '</text>';
     D.board.forEach(function (b, k) {
-      var A = 72 * k, tri = [pt(R, A), pt(r, A + 36), pt(r, A - 36)], lab = pt(R + 30, A), anc = Math.abs(lab[0] - cx) < 20 ? 'middle' : lab[0] > cx ? 'start' : 'end';
-      var dy = k === 0 ? -34 : (k === 2 || k === 3) ? 14 : -6, p = P[k];
-      svg += '<polygon class="mg-pt" id="mgp' + k + '" points="' + pp(tri) + '"/>';
-      svg += '<text class="mg-n" x="' + lab[0].toFixed(0) + '" y="' + (lab[1] + dy).toFixed(0) + '" text-anchor="' + anc + '">' + T('第' + b.d + '区 · ' + b.zh, 'DIST.' + b.d + ' · ' + b.en.toUpperCase()) + '</text>';
-      svg += '<text class="mg-f" x="' + lab[0].toFixed(0) + '" y="' + (lab[1] + dy + 16).toFixed(0) + '" text-anchor="' + anc + '">' + T('立场', 'STN ') + sg(p.base) + (p.nav ? T(' 族关系', ' NAV ') : T(' 信任', ' TRU ')) + sg(p.s) + T(' 波动', ' DRF ') + sg(p.n) + '</text>';
-      svg += '<text class="mg-v" id="mgv' + k + '" x="' + lab[0].toFixed(0) + '" y="' + (lab[1] + dy + 36).toFixed(0) + '" text-anchor="' + anc + '">' + T('审议中', 'PENDING') + '</text>';
+      var A = 72 * k, st = pt(RS, A), lb = pt(RL, A), anc = Math.abs(lb[0] - cx) < 20 ? 'middle' : lb[0] > cx ? 'start' : 'end', p = P[k];
+      var y0 = (k === 2 || k === 3) ? lb[1] + 4 : lb[1] - 14;
+      if (k === 0) { lb = [st[0] + 42, st[1]]; anc = 'start'; y0 = st[1] - 10; }   // 顶上的座位：名字放右侧，避开标题
+      svg += '<g filter="url(#rtS)"><circle class="rt-seat" id="rts' + k + '" cx="' + st[0].toFixed(1) + '" cy="' + st[1].toFixed(1) + '" r="27" fill="url(#rtE)" stroke="#a7a7a7"/></g>';
+      svg += '<text class="rt-sv" id="rtv' + k + '" x="' + st[0].toFixed(1) + '" y="' + (st[1] + 5).toFixed(1) + '" text-anchor="middle">' + b.d + '</text>';
+      svg += '<text class="rt-nm" x="' + lb[0].toFixed(0) + '" y="' + y0.toFixed(0) + '" text-anchor="' + anc + '">' + b.en + '</text>';
+      svg += '<text class="rt-ds" x="' + lb[0].toFixed(0) + '" y="' + (y0 + 17).toFixed(0) + '" text-anchor="' + anc + '">' + T('第' + b.d + '区 · ' + b.zh, 'District ' + b.d) + '</text>';
+      svg += '<text class="rt-fx" x="' + lb[0].toFixed(0) + '" y="' + (y0 + 31).toFixed(0) + '" text-anchor="' + anc + '">' + T('立场 ', 'stance ') + sg(p.base) + (p.nav ? T(' · 族关系 ', ' · Navajo ') : T(' · 信任 ', ' · trust ')) + sg(p.s) + T(' · 波动 ', ' · drift ') + sg(p.n) + '</text>';
     });
-    svg += '<text class="mg-c" id="mgc" x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle">0:0</text>';
-    svg += '<rect class="mg-st" id="mgs" x="' + (cx - 90) + '" y="420" width="180" height="40"/><text class="mg-sx" id="mgsx" x="' + cx + '" y="448" text-anchor="middle">' + T('审 议 中', 'VOTING') + '</text></svg>';
-    var w = document.getElementById('magi'); if (!w) { w = document.createElement('div'); w.id = 'magi'; document.body.appendChild(w); }
-    w.innerHTML = '<div class="mg-box"><div class="mg-hd"><span>' + T('纳瓦霍县监事会 · 表决', 'NAVAJO COUNTY BOARD OF SUPERVISORS') + '</span><span class="mg-code">' + T('提案 ', 'RES. ') + '2009-' + String(100 + S.day).slice(-3) + '</span></div>' +
-      '<div class="mg-title">' + T(l.zh, l.en) + '</div>' + svg +
-      '<div class="mg-ft"><span>' + T('信任 ', 'TRUST ') + Math.round(S.trust) + ' · ' + T('纳瓦霍族关系 ', 'NAVAJO ') + Math.round(S.stand.navajo) + ' · ' + T('三票通过', '3 TO PASS') + '</span><button class="mg-ok" disabled>' + T('确认', 'CONFIRM') + '</button></div></div>';
+    svg += '</svg>';
+    var w = document.getElementById('magi'); if (!w) { w = document.createElement('div'); w.id = 'magi'; w.className = 'win7'; document.body.appendChild(w); }
+    w.innerHTML = '<div class="window glass active rt-win"><div class="title-bar"><div class="title-bar-text">' + T('纳瓦霍县监事会 · 唱名表决', 'Navajo County Board of Supervisors · Roll call') + '</div></div><div class="window-body rt-body">' +
+      '<div class="rt-hd"><span class="rt-k">ROLL CALL VOTE</span><span class="rt-no">' + T('提案 ', 'Res. ') + '2009-' + String(100 + S.day).slice(-3) + ' · ' + (S.date.getMonth() + 1) + '/' + S.date.getDate() + '/2009</span></div>' +
+      '<div class="rt-title">' + T(l.zh, l.en) + '</div>' + svg +
+      '<div class="rt-bar"><i class="g" id="rtbg"></i><i class="r" id="rtbr"></i></div>' +
+      '<div class="rt-ft"><span id="rtres" class="rt-res">' + T('表决中…', 'Voting…') + '</span><span class="rt-meta">' + T('信任 ', 'Trust ') + Math.round(S.trust) + ' · ' + T('纳瓦霍族关系 ', 'Navajo ') + Math.round(S.stand.navajo) + ' · ' + T('三票通过', 'Three votes to pass') + '</span><button class="rt-ok" disabled>' + T('确定', 'OK') + '</button></div></div></div>';
     w.hidden = false; var sp0 = S.speed; S.speed = 0; clock();
     var i = 0, tm = setInterval(function () {
       if (i < 5) {
-        var y = P[i].yes; w.querySelector('#mgp' + i).setAttribute('class', 'mg-pt ' + (y ? 'yes' : 'no'));
-        var ay = P.slice(0, i + 1).filter(function (q) { return q.yes; }).length; w.querySelector('#mgc').textContent = ay + ':' + (i + 1 - ay);
-        var vv = w.querySelector('#mgv' + i); vv.textContent = y ? T('赞成', 'AYE') : T('反对', 'NAY'); vv.setAttribute('class', 'mg-v ' + (y ? 'yes' : 'no')); i++; return;
+        var y = P[i].yes; w.querySelector('#rts' + i).setAttribute('fill', y ? 'url(#rtG)' : 'url(#rtR)'); w.querySelector('#rts' + i).setAttribute('stroke', y ? '#3a7d1b' : '#9b1c16');
+        var vv = w.querySelector('#rtv' + i); vv.textContent = y ? T('赞成', 'AYE') : T('反对', 'NAY'); vv.setAttribute('class', 'rt-sv on');
+        var ay = P.slice(0, i + 1).filter(function (q) { return q.yes; }).length; w.querySelector('#rtc').textContent = ay + ' – ' + (i + 1 - ay);
+        w.querySelector('#rtbg').style.width = ay * 20 + '%'; w.querySelector('#rtbr').style.width = (i + 1 - ay) * 20 + '%'; i++; return;
       }
-      clearInterval(tm); w.querySelector('#mgc').setAttribute('class', 'mg-c ' + (ok ? 'yes' : 'no'));
-      w.querySelector('#mgs').setAttribute('class', 'mg-st ' + (ok ? 'yes' : 'no')); var sx = w.querySelector('#mgsx'); sx.textContent = ok ? T('可 决', 'PASSED') : T('否 决', 'REJECTED'); sx.setAttribute('class', 'mg-sx on');
-      var b = w.querySelector('.mg-ok'); b.disabled = false; b.onclick = function () { w.hidden = true; S.speed = sp0; clock(); done(ok); };
-    }, 420);
+      clearInterval(tm); var r = w.querySelector('#rtres'); r.textContent = ok ? T('通过', 'Passed') : T('未通过', 'Failed'); r.className = 'rt-res ' + (ok ? 'yes' : 'no');
+      var b = w.querySelector('.rt-ok'); b.disabled = false; b.focus(); b.onclick = function () { w.hidden = true; S.speed = sp0; clock(); done(ok); };
+    }, 450);
   }
   function vtz(l) { var v = S.votes[l.id]; return v ? '赞成 ' + v.yes + ' · 反对 ' + (5 - v.yes) : '开局已生效'; }
   function vte(l) { var v = S.votes[l.id]; return v ? v.yes + ' aye, ' + (5 - v.yes) + ' nay' : 'in force at start'; }
