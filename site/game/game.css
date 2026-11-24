@@ -318,97 +318,111 @@ ul.help li{margin:0 0 6px;line-height:17px}
 #hud .g2 .gl,#hud .g2 .gs{line-height:12px}
 #hud .g2 .gv2{line-height:17px}
 #hud .hmail{margin-left:2px}
-/* ---- 表决窗口：仿 2009 Granicus VoteCast 公共显示屏（白底、玻璃渐变、地图“无线电静默”同款无衬线字体） ---- */
-#magi{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.22)}
-#magi[hidden]{display:none}
-#magi .rt-win{width:820px;max-width:97vw}
-#magi .rt-body{background:#fff;margin:0;padding:0;color:#2b2b2b;font-family:Arial,Helvetica,"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","WenQuanYi Micro Hei","SimHei",sans-serif;font-size:12px;line-height:1.35}
-#magi .zh{font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","WenQuanYi Micro Hei","SimHei",sans-serif;letter-spacing:0}
-#magi .en{font-family:"IM Fell English",Georgia,serif;font-style:italic}
-/* 抬头：会徽 + 机构名 + 时钟 */
-#magi .vc-top{display:flex;align-items:center;gap:14px;padding:10px 16px 9px;background:linear-gradient(#ffffff,#eef2f7);border-bottom:3px solid #1d3f73;box-shadow:inset 0 -1px 0 #c9a54a}
-#magi .vc-seal{width:58px;height:58px;flex:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
-#magi .vc-org{flex:1;min-width:0}
-#magi .vc-o1{font-size:20px;font-weight:bold;color:#1d3f73;line-height:24px}
-#magi .vc-o1 .en{text-transform:uppercase;letter-spacing:.32em;font-size:18px}
-#magi .vc-o2{font:italic 15px "IM Fell English",Georgia,serif;letter-spacing:.05em;color:#9a7a2a;margin-top:1px}
-#magi .vc-o3{font-size:11px;color:#777;margin-top:3px}
-#magi .vc-o3 .en{text-transform:uppercase;letter-spacing:.12em;font-size:10px}
-#magi .vc-clk{flex:none;text-align:center;padding:5px 12px 4px;border:1px solid #8fa3bf;border-radius:4px;background:linear-gradient(#fdfdfd,#e3e9f1 55%,#d6dee9 56%,#e8edf3);box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(0,0,0,.12)}
-#magi .vc-clk b{display:block;font:bold 22px Arial,Helvetica,sans-serif;color:#1d3f73;letter-spacing:.04em;line-height:24px}
-#magi .vc-clk b small{font-size:11px;letter-spacing:.1em}
-#magi .vc-clk span{display:block;font-size:10px;color:#556;letter-spacing:.12em;white-space:nowrap}
-/* 议程条 */
-#magi .vc-item{display:flex;align-items:center;gap:12px;padding:6px 16px;background:linear-gradient(#4a6fa5,#2f5288 50%,#264a7f 51%,#2c5287);color:#fff;border-bottom:1px solid #1a3560}
-#magi .vc-tag{font-size:11px;text-transform:uppercase;letter-spacing:.2em}
-#magi .vc-tag b{display:inline-block;min-width:22px;margin-left:4px;padding:0 5px;border-radius:3px;background:#fff;color:#1d3f73;text-align:center;letter-spacing:0;font:bold 13px Arial,sans-serif}
-#magi .vc-res{flex:1;font-size:11px;color:#cfdcf0;letter-spacing:.14em;text-transform:uppercase}
-#magi .vc-st{padding:2px 10px;border-radius:10px;font-size:11px;font-weight:bold;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(0,0,0,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
-#magi .vc-st.wait{background:linear-gradient(#ffe08a,#f3b625 55%,#e9a30f);color:#5a3d00;animation:vcBl 1s steps(2) infinite}
-#magi .vc-st.yes{background:linear-gradient(#a6e07f,#5cad34 55%,#4c9c26);color:#fff}
-#magi .vc-st.no{background:linear-gradient(#f39a90,#d9392f 55%,#c82a21);color:#fff}
-@keyframes vcBl{50%{opacity:.55}}
-/* 动议 */
-#magi .vc-mo{padding:9px 16px 8px;border-bottom:1px solid #dde3ec;background:#fbfcfe}
-#magi .vc-lb{font-size:10px;font-weight:bold;color:#8a94a6;text-transform:uppercase;letter-spacing:.24em}
-#magi .vc-lb .zh{letter-spacing:.2em}
-#magi .vc-tt{font-size:17px;font-weight:bold;color:#1b1b1b;margin:2px 0 3px;line-height:22px}
-#magi .vc-sub{font-size:11px;color:#666}
-#magi .vc-sep{color:#c5ccd6;margin:0 8px}
-/* 唱名表 + 计票板 */
-#magi .vc-main{display:flex;gap:14px;padding:10px 16px 8px}
-#magi .vc-tb{flex:1;border-collapse:collapse;border:1px solid #b8c4d6}
-#magi .vc-tb th{background:linear-gradient(#f7f9fc,#e2e8f1);border-bottom:1px solid #b8c4d6;padding:4px 8px;text-align:left;font-size:10px;color:#4a5a75;text-transform:uppercase;letter-spacing:.18em;font-weight:bold}
-#magi .vc-tb th.r{text-align:right}#magi .vc-tb th.c{text-align:center}
-#magi .vc-tb td{border-bottom:1px solid #e4e9f0;padding:5px 8px;vertical-align:middle;height:34px}
-#magi .vc-tb tr:last-child td{border-bottom:0}
-#magi .vc-tb tr{transition:background .25s}
-#magi .vc-tb tr.cur{background:#fff7dc}
-#magi .vc-d{width:38px;text-align:center}
-#magi .vc-d b{display:block;width:28px;height:22px;margin:0 auto;border-radius:3px;background:linear-gradient(#5a7fb4,#2c5287 55%,#234677);color:#fff;font:bold 14px/22px Arial,sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
-#magi .vc-d small{display:block;font-size:8px;color:#8a94a6;letter-spacing:.15em;margin-top:1px}
-#magi .vc-nm{font-size:14px;font-weight:bold;color:#1d3f73}
-#magi .vc-nm .en{text-transform:uppercase;letter-spacing:.16em;font-size:12px}
-#magi .vc-ar{font-size:11px;color:#888}
-#magi .vc-fx{text-align:right;font-size:10.5px;color:#9aa1ab;white-space:nowrap;line-height:14px}
-#magi .vc-v{width:112px;white-space:nowrap}
-#magi .vc-lamp{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:7px;border:1px solid #9aa3ae;background:radial-gradient(circle at 35% 30%,#fff 0,#e6e9ed 35%,#b9c0c8 100%)}
-#magi .vc-vt{display:inline-block;min-width:68px;padding:2px 0;border-radius:3px;text-align:center;font-size:11px;font-weight:bold;color:#a0a7b0;text-transform:uppercase;letter-spacing:.16em;border:1px solid #d3d8df;background:#f4f6f8;vertical-align:middle}
-#magi tr.cur .vc-lamp{border-color:#c98a00;background:radial-gradient(circle at 35% 30%,#fff6c8 0,#ffc928 40%,#d98e00 100%);animation:vcBl .6s steps(2) infinite}
-#magi tr.cur .vc-vt{color:#8a5d00;border-color:#e8c25a;background:#fff3c4}
-#magi tr.yes .vc-lamp{border-color:#2f6f12;background:radial-gradient(circle at 35% 30%,#e3ffcf 0,#6fcf3d 40%,#2f7f12 100%);box-shadow:0 0 6px rgba(92,173,52,.7)}
-#magi tr.no .vc-lamp{border-color:#8e1a14;background:radial-gradient(circle at 35% 30%,#ffd9d4 0,#ec4a3c 40%,#a51d15 100%);box-shadow:0 0 6px rgba(217,57,47,.6)}
-#magi tr.yes .vc-vt{color:#fff;border-color:#3a7d1b;background:linear-gradient(#8fd16a,#5cad34 50%,#4c9c26 51%,#3f8a1e)}
-#magi tr.no .vc-vt{color:#fff;border-color:#9b1c16;background:linear-gradient(#f08a80,#d9392f 50%,#c82a21 51%,#ad1f18)}
-#magi .vc-tl{width:178px;flex:none;border:1px solid #b8c4d6;padding:7px 9px 8px;background:linear-gradient(#fbfcfe,#eef2f7)}
-#magi .vc-gr{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
-#magi .vc-n{border:1px solid #cdd5e0;border-radius:3px;background:#fff;text-align:center;padding:3px 0 4px;box-shadow:inset 0 1px 2px rgba(0,0,0,.06)}
-#magi .vc-n b{display:block;font:bold 30px/34px Arial,Helvetica,sans-serif;color:#555}
-#magi .vc-n span{display:block;font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.18em}
-#magi .vc-n.y b{color:#3f8a1e}#magi .vc-n.n b{color:#c82a21}
-#magi .vc-n.o b{font-size:20px;line-height:26px;color:#b7bdc6}
-#magi .vc-seg{position:relative;display:flex;gap:2px;margin-top:10px;height:12px;padding:2px;border:1px solid #9fadc2;border-radius:3px;background:#fff}
-#magi .vc-seg i{flex:1;border-radius:1px;background:#e7ebf0;transition:background .2s}
-#magi .vc-seg i.g{background:linear-gradient(#8fd16a,#4c9c26)}
-#magi .vc-seg i.r{background:linear-gradient(#f08a80,#c82a21)}
-#magi .vc-seg em{position:absolute;left:calc(60% + 1px);top:-4px;bottom:-4px;width:2px;background:#1d3f73}
-#magi .vc-need{font-size:10px;color:#7a8597;text-align:right;margin-top:4px;letter-spacing:.1em;text-transform:uppercase}
-/* 结果横幅 */
-#magi .vc-ban{margin:0 16px;height:34px;display:flex;align-items:center;justify-content:center;gap:14px;border:1px solid #c7ced8;border-radius:3px;background:linear-gradient(#fafbfc,#e9edf2);color:#8a94a6;font-size:13px;font-weight:bold;letter-spacing:.24em;text-transform:uppercase}
-#magi .vc-ban.yes{color:#fff;border-color:#3a7d1b;background:linear-gradient(#9ad874,#5cad34 50%,#4c9c26 51%,#3f8a1e);text-shadow:0 1px 1px rgba(0,0,0,.35);font-size:16px}
-#magi .vc-ban.no{color:#fff;border-color:#9b1c16;background:linear-gradient(#f29a90,#d9392f 50%,#c82a21 51%,#ad1f18);text-shadow:0 1px 1px rgba(0,0,0,.35);font-size:16px}
-#magi .vc-ban b{font:bold 20px Arial,sans-serif;letter-spacing:.08em}
-#magi .rt-ft{display:flex;align-items:center;gap:14px;padding:9px 16px 11px}
-#magi .rt-meta{flex:1;font-size:11px;color:#8a8f98}
-#magi .rt-ok{min-width:86px}
 .shifts{width:calc(100% - 20px);margin:4px 10px;border-collapse:collapse;font-size:12px}.shifts th,.shifts td{padding:3px 4px;text-align:right;border-bottom:1px solid #e3e8ef}.shifts th:first-child,.shifts td:first-child{text-align:left}.shifts tr.cur td{background:#eef5fd}.shifts td.bad{color:#c00;font-weight:bold}
 .mtag{display:inline-block;width:16px;height:16px;line-height:16px;margin:1px 6px 0 0;color:#fff;font:bold 10px Arial;text-align:center;border:1px solid #fff;box-shadow:0 0 0 1px #999;flex:none}
 .row.mrow{display:flex;align-items:flex-start;gap:6px}.row.mrow>img{margin-top:2px}.row.mrow .wb7{flex:none;align-self:center}
-/* 双语模式：次要英文收起，主要英文换行，保持网格不溢出 */
-body.l-both #magi .vc-o3 .en,body.l-both #magi .vc-ar .en,body.l-both #magi .vc-fx .en,body.l-both #magi .vc-ar .bi,body.l-both #magi .vc-fx .bi{display:none!important}
-body.l-both #magi .vc-o1 .en{font-size:13px;letter-spacing:.28em;margin-left:6px}
-body.l-both #magi .vc-tt .en{display:block;font-size:13px;line-height:17px;color:#555;font-weight:normal}
-body.l-both #magi .vc-nm .en{font-size:10px;letter-spacing:.14em;color:#6a7fa3;margin-left:4px}
-body.l-both #magi .vc-vt .en,body.l-both #magi .vc-n span .en,body.l-both #magi .vc-tb th .en,body.l-both #magi .vc-lb .en{font-size:9px;letter-spacing:.12em;margin-left:3px}
-body.l-both #magi .vc-vt{min-width:76px;letter-spacing:.04em}
-body.l-both #magi .vc-v{width:118px}
+/* ---- 表决窗口：千禧年代（1999–2009）选举之夜转播图。深海军蓝漆面 + 镀铬斜面 + 哑光金细线；英文 IM Fell English，中文雅黑 ---- */
+#magi{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;background:rgba(3,10,22,.45)}
+#magi[hidden]{display:none}
+#magi .rt-win{width:820px;max-width:97vw}
+#magi .rt-body{margin:0;padding:0;color:#e9edf2;font-family:"IM Fell English",Georgia,"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","WenQuanYi Micro Hei",serif;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.022) 0 1px,transparent 1px 4px),linear-gradient(#0f2442,#0a1a32 60%,#081427)}
+#magi .zh{font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","WenQuanYi Micro Hei",sans-serif;letter-spacing:0;font-style:normal}
+#magi .en{font-family:"IM Fell English",Georgia,serif}
+/* 抬头：拉丝铬板 */
+#magi .rt-hd{display:flex;align-items:center;gap:14px;padding:10px 18px 10px 16px;color:#13294b;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 1px,rgba(0,0,0,.025) 1px 2px,transparent 2px 3px),linear-gradient(#fbfcfd,#e3e8ee 47%,#cfd6de 53%,#e9edf1);
+  border-bottom:1px solid #6d7a8b;box-shadow:inset 0 -1px 0 #fff,0 1px 0 #c9ad6a,0 2px 0 #081427}
+#magi .rt-seal{flex:none;border-radius:50%;box-shadow:0 0 0 1px #8a95a3,0 0 0 3px #f4f6f8,0 0 0 4px #7f8b9a,0 3px 6px rgba(0,0,0,.35)}
+#magi .rt-org{flex:1;min-width:0}
+#magi .rt-o1{font:400 24px/26px "IM Fell English",Georgia,serif;color:#0f2546;text-shadow:0 1px 0 #fff;white-space:nowrap}
+#magi .rt-o2{margin-top:3px;font:italic 13px/16px "IM Fell English",Georgia,serif;color:#4c5b6e}
+#magi .rt-o2 .zh{font-size:12px;font-style:normal}
+#magi .rt-clk{flex:none;min-width:150px;padding:5px 12px 6px;text-align:right;border-radius:4px;border:1px solid #06101f;
+  background:linear-gradient(#1c355c,#0b1a33 55%,#0f2240);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 0 8px rgba(0,0,0,.6),0 1px 0 #fff}
+#magi .rt-clk b{display:block;font:400 25px/26px "IM Fell English",Georgia,serif;color:#f0dfae;text-shadow:0 0 6px rgba(240,223,174,.35)}
+#magi .rt-clk small{font-size:14px;font-style:italic;color:#c9b27a}
+#magi .rt-clk span{display:block;margin-top:1px;font:italic 12px/15px "IM Fell English",Georgia,serif;color:#b7c2d0}
+#magi .rt-clk span .zh{font-size:11px;font-style:normal}
+/* 议程条 */
+#magi .rt-ag{display:flex;align-items:center;gap:14px;padding:9px 18px 0}
+#magi .rt-tag{padding:2px 10px 3px;font:italic 14px/17px "IM Fell English",Georgia,serif;color:#0f2546;border-radius:3px;border:1px solid #8a7340;
+  background:linear-gradient(#f3e4b8,#d9bf7e 50%,#c8aa62 51%,#e1cc93);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 2px rgba(0,0,0,.5)}
+#magi .rt-tag .zh{font-size:12px}
+#magi .rt-res{font:15px/17px "IM Fell English",Georgia,serif;color:#b9c4d2;letter-spacing:.03em}
+#magi .rt-res .zh{font-size:12px}
+#magi .rt-st{margin-left:auto;padding:2px 12px 3px;border-radius:11px;font:italic 14px/17px "IM Fell English",Georgia,serif;color:#2a2108;border:1px solid #7a6127;
+  background:linear-gradient(#fbe7a6,#e0b552 50%,#cf9f36 51%,#ebc670);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 8px rgba(224,181,82,.35);animation:rtBl 1.1s ease-in-out infinite}
+#magi .rt-st .zh{font-size:12px}
+#magi .rt-st.y{animation:none;color:#fff;border-color:#13532f;background:linear-gradient(#7fcf9b,#2f9659 50%,#22814a 51%,#3aa364);text-shadow:0 -1px 0 rgba(0,0,0,.35)}
+#magi .rt-st.n{animation:none;color:#fff;border-color:#64171d;background:linear-gradient(#e99095,#b5363e 50%,#9e2830 51%,#c0464d);text-shadow:0 -1px 0 rgba(0,0,0,.35)}
+@keyframes rtBl{50%{opacity:.6}}
+/* 动议 */
+#magi .rt-mo{padding:7px 18px 2px}
+#magi .rt-mol{font:italic 13px/15px "IM Fell English",Georgia,serif;color:#d8bf7f;letter-spacing:.06em}
+#magi .rt-mol .zh{font-size:11px;letter-spacing:.2em}
+#magi .rt-mot{margin-top:2px;font:italic 25px/29px "IM Fell English",Georgia,serif;color:#f6f8fb;text-shadow:0 2px 3px rgba(0,0,0,.6)}
+#magi .rt-mot .zh{font-size:21px;font-weight:700}
+body.l-both #magi .rt-mot .en{display:block;font-size:18px;line-height:22px;color:#b9c4d2}
+/* 圆桌舞台 */
+#magi .rt-stage{position:relative;width:780px;height:388px;margin:8px auto 0;
+  background:radial-gradient(ellipse 46% 52% at 50% 54%,rgba(42,140,151,.28),rgba(42,140,151,0) 70%)}
+#magi .rt-svg{position:absolute;left:0;top:0;display:block}
+#magi .rt-ln{stroke:transparent;stroke-width:2.2;stroke-linecap:round;transition:stroke .35s}
+#magi .rt-ln.y{stroke:#6fdc98}
+#magi .rt-ln.n{stroke:#f07a80}
+/* 席位：玻璃珠 */
+#magi .rt-orb{position:absolute;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;text-align:center;font:400 24px/50px "IM Fell English",Georgia,serif;color:#16294a;text-shadow:0 1px 0 rgba(255,255,255,.7);
+  background:radial-gradient(circle at 50% 72%,#ffffff 0,#e6ebf1 30%,#a9b4c1 68%,#6e7b8b 100%);
+  box-shadow:0 0 0 1px #4a5768,0 0 0 3px #dfe4ea,0 0 0 4px #556274,0 5px 9px rgba(0,0,0,.6);transition:background .3s,box-shadow .3s}
+#magi .rt-orb::after{content:"";position:absolute;left:9px;right:9px;top:3px;height:20px;border-radius:50%/60% 60% 40% 40%;background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,.08))}
+#magi .rt-orb.cur{box-shadow:0 0 0 1px #4a5768,0 0 0 3px #f1dfa9,0 0 0 4px #8a7340,0 0 16px 4px rgba(240,215,140,.55),0 5px 9px rgba(0,0,0,.6)}
+#magi .rt-orb.y{color:#fff;text-shadow:0 -1px 1px rgba(0,0,0,.45);background:radial-gradient(circle at 50% 75%,#b9f3cf 0,#4cbc7a 32%,#1f7c48 70%,#0f4a2a 100%);
+  box-shadow:0 0 0 1px #0d3d23,0 0 0 3px #dfe4ea,0 0 0 4px #556274,0 0 14px 2px rgba(95,208,138,.45),0 5px 9px rgba(0,0,0,.6)}
+#magi .rt-orb.n{color:#fff;text-shadow:0 -1px 1px rgba(0,0,0,.45);background:radial-gradient(circle at 50% 75%,#ffc9cc 0,#d65159 32%,#991f29 70%,#5d1118 100%);
+  box-shadow:0 0 0 1px #4d0e14,0 0 0 3px #dfe4ea,0 0 0 4px #556274,0 0 14px 2px rgba(236,110,118,.45),0 5px 9px rgba(0,0,0,.6)}
+/* 名牌：拉丝铬牌 */
+#magi .rt-pl{position:absolute;width:168px;box-sizing:border-box;transform:translate(-50%,-50%);padding:4px 9px 5px;border-radius:4px;border:1px solid #5d6a7b;color:#13294b;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.3) 0 1px,rgba(0,0,0,.02) 1px 2px,transparent 2px 3px),linear-gradient(#fcfdfe,#e5e9ee 46%,#d0d7df 54%,#edf0f3);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(0,0,0,.08),0 3px 7px rgba(0,0,0,.55);transition:box-shadow .3s}
+#magi .rt-pl.y{box-shadow:inset 0 1px 0 #fff,inset 3px 0 0 #2f9659,0 3px 7px rgba(0,0,0,.55)}
+#magi .rt-pl.n{box-shadow:inset 0 1px 0 #fff,inset 3px 0 0 #b5363e,0 3px 7px rgba(0,0,0,.55)}
+#magi .rt-nm{font:400 18px/20px "IM Fell English",Georgia,serif;white-space:nowrap;text-shadow:0 1px 0 #fff}
+#magi .rt-l2{display:flex;align-items:center;justify-content:space-between;margin-top:2px;padding-top:3px;border-top:1px solid rgba(110,124,142,.35)}
+#magi .rt-ds{font:italic 13px/16px "IM Fell English",Georgia,serif;color:#5a6779}
+#magi .rt-ds .zh,#magi .rt-vt .zh{font-size:11px}
+#magi .rt-vt{padding:0 7px 1px;border-radius:8px;font:italic 13px/15px "IM Fell English",Georgia,serif;color:#7d8897;border:1px solid #b5bec9;background:linear-gradient(#f7f8fa,#e2e6eb)}
+#magi .rt-pl.y .rt-vt{color:#fff;border-color:#175c34;background:linear-gradient(#6cc58d,#2b8f53 52%,#22804a);text-shadow:0 -1px 0 rgba(0,0,0,.3)}
+#magi .rt-pl.n .rt-vt{color:#fff;border-color:#6e1a20;background:linear-gradient(#e2848a,#ad333b 52%,#982730);text-shadow:0 -1px 0 rgba(0,0,0,.3)}
+body.l-both #magi .rt-vt .en,body.l-both #magi .rt-ds .en{display:none}
+/* 中央计票徽章 */
+#magi .rt-med{position:absolute;width:132px;height:132px;margin:-66px 0 0 -66px;box-sizing:border-box;border-radius:50%;border:5px solid transparent;text-align:center;
+  background:radial-gradient(circle at 50% 30%,#1f4272,#0b1c37 72%) padding-box,linear-gradient(#f6f8fa,#b9c1cb 45%,#7d8898 52%,#dfe4e9) border-box;
+  box-shadow:0 0 0 1px #2e3b4c,inset 0 0 0 1px rgba(216,191,127,.7),inset 0 0 0 4px #0b1c37,inset 0 0 0 5px rgba(216,191,127,.3),0 6px 14px rgba(0,0,0,.6)}
+#magi .rt-mk{margin-top:17px;font:italic 13px/14px "IM Fell English",Georgia,serif;color:#d8bf7f;letter-spacing:.04em}
+#magi .rt-mk .zh{font-size:11px}
+body.l-both #magi .rt-mk .en,body.l-both #magi .rt-need .en{display:none}
+#magi .rt-tc{font:400 40px/42px "IM Fell English",Georgia,serif;color:#f6f8fb;text-shadow:0 2px 4px rgba(0,0,0,.7)}
+#magi .rt-tc span{display:inline-block;width:14px;height:2px;margin:0 9px;vertical-align:7px;background:#8995a6;box-shadow:0 1px 0 rgba(0,0,0,.5)}
+#magi .rt-pp{display:flex;justify-content:center;gap:4px;margin:2px 0 4px}
+#magi .rt-pp i{width:12px;height:6px;border-radius:2px;background:linear-gradient(#2a3d59,#1a2a42);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px #06101f}
+#magi .rt-pp i.ln{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px #06101f,1px 0 0 1px #d8bf7f}
+#magi .rt-pp i.y{background:linear-gradient(#8ee6ae,#2f9659)}
+#magi .rt-pp i.n{background:linear-gradient(#f3a2a7,#b5363e)}
+#magi .rt-need{font:italic 11px/13px "IM Fell English",Georgia,serif;color:#9eabbd}
+#magi .rt-need .zh{font-size:10px}
+/* 结果横幅：Vista 玻璃条 */
+#magi .rt-ban{display:flex;align-items:center;justify-content:center;gap:16px;height:40px;margin:8px 18px 12px;border-radius:5px;border:1px solid #06101f;
+  font:italic 20px/40px "IM Fell English",Georgia,serif;color:#c9d2de;letter-spacing:.04em;
+  background:linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.04) 50%,rgba(0,0,0,0) 51%,rgba(255,255,255,.05)),linear-gradient(#22385a,#13243f);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 0 rgba(255,255,255,.06)}
+#magi .rt-ban .zh{font-size:16px;font-weight:700}
+#magi .rt-ban b{font:400 26px/40px "IM Fell English",Georgia,serif;font-style:normal;padding-left:16px;border-left:1px solid rgba(255,255,255,.35)}
+#magi .rt-ban.y{color:#fff;border-color:#0d3d23;text-shadow:0 -1px 0 rgba(0,0,0,.4);background:linear-gradient(rgba(255,255,255,.32),rgba(255,255,255,.08) 50%,rgba(0,0,0,0) 51%,rgba(255,255,255,.08)),linear-gradient(#2f9659,#1a6b3c)}
+#magi .rt-ban.n{color:#fff;border-color:#4d0e14;text-shadow:0 -1px 0 rgba(0,0,0,.4);background:linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.08) 50%,rgba(0,0,0,0) 51%,rgba(255,255,255,.08)),linear-gradient(#b5363e,#7e1c24)}
+/* 底栏 */
+#magi .rt-ft{display:flex;align-items:center;justify-content:space-between;padding:8px 18px;border-top:1px solid #6d7a8b;
+  background:linear-gradient(#eef1f4,#d5dbe2);box-shadow:inset 0 1px 0 #fff}
+#magi .rt-meta{font:italic 13px "IM Fell English",Georgia,serif;color:#4c5b6e}
+#magi .rt-meta .zh{font-size:12px}
+#magi .rt-ban b i{display:inline-block;width:12px;height:2px;margin:0 8px;vertical-align:5px;background:currentColor;opacity:.85}
+#magi .rt-ok{min-width:92px}
