@@ -140,11 +140,11 @@ var DATA = {
   // ---------- 驻军 · 检查站 · 叛军 ----------
   // f 战斗系数；cap 最多调用几支；wk 每周县账户（千美元）；need 调用条件；hire 调用时的影响
   forces: [
-    { id: 'ng', zh: '亚利桑那国民警卫队（一个连）', en: 'Arizona National Guard (one company)', short: ['国民警卫队', 'Guard'], tag: 'G', col: '#3b6db3', str: 40, f: 1.1, cap: 2, wk: 0, need: { fed: 40 }, hire: { fed: 1 }, d: ['州里出钱，县里不付费；联邦关系要 40 以上', 'Paid by the state; needs Federal relations 40+'] },
-    { id: 'posse', zh: '县警长后备队', en: "Sheriff's Posse", short: ['警长后备队', 'Posse'], tag: 'S', col: '#7a5a2e', str: 12, f: .8, cap: 4, wk: 4, hire: { trust: 1 }, d: ['每队 12 人，每周 $4K', '12 deputies, $4K a week'] },
-    { id: 'militia', zh: '地方民兵', en: 'Local militia', short: ['民兵', 'Militia'], tag: 'M', col: '#6b7d35', str: 18, f: .75, cap: 4, wk: 2, hire: { navajo: -2, panic: 1 }, d: ['每队 18 人，每周 $2K；纳瓦霍族 −2', '18 volunteers, $2K a week; Navajo −2'] },
-    { id: 'merc', zh: 'Xe Services（原黑水）保安队', en: 'Xe Services (formerly Blackwater) team', short: ['雇佣兵', 'Contractors'], tag: 'X', col: '#444', str: 30, f: 1.3, cap: 3, wk: 75, hire: { trust: -2, navajo: -3 }, d: ['每队 30 人，每周 $75K；信任 −2', '30 men, $75K a week; Trust −2'] },
-    { id: 'fed', zh: '联邦军队（布利斯堡派出营）', en: 'Federal troops (battalion from Fort Bliss)', short: ['联邦军', 'Federal'], tag: 'F', col: '#2a4a2a', str: 60, f: 1.4, cap: 1, wk: 0, need: { fed: 60 }, hire: { trust: -1, ctl: { adem: 5 } }, d: ['不付费；联邦关系要 60 以上；州应急管理局更有话语权', 'Free; needs Federal relations 60+; ADEM gains sway'] }
+    { id: 'ng', zh: '亚利桑那国民警卫队（一个连）', en: 'Arizona National Guard (one company)', short: ['国民警卫队', 'Guard'], tag: 'G', col: '#3b6db3', str: 40, f: 1.1, cap: 2, wk: 0, need: { fed: 40 }, hire: { fed: 1 }, d: ['州政府派出，县里不用出钱', 'Sent by the state at no cost to the county'] },
+    { id: 'posse', zh: '县警长后备队', en: "Sheriff's Posse", short: ['警长后备队', 'Posse'], tag: 'S', col: '#7a5a2e', str: 12, f: .8, cap: 4, wk: 4, hire: { trust: 1 }, d: ['12 名后备警员', '12 reserve deputies'] },
+    { id: 'militia', zh: '地方民兵', en: 'Local militia', short: ['民兵', 'Militia'], tag: 'M', col: '#6b7d35', str: 18, f: .75, cap: 4, wk: 2, hire: { navajo: -2, panic: 1 }, d: ['18 名本地志愿者', '18 local volunteers'] },
+    { id: 'merc', zh: 'Xe Services（原黑水）保安队', en: 'Xe Services (formerly Blackwater) team', short: ['雇佣兵', 'Contractors'], tag: 'X', col: '#444', str: 30, f: 1.3, cap: 3, wk: 75, hire: { trust: -2, navajo: -3 }, d: ['30 名武装保安', '30 armed contractors'] },
+    { id: 'fed', zh: '联邦军队（布利斯堡派出营）', en: 'Federal troops (battalion from Fort Bliss)', short: ['联邦军', 'Federal'], tag: 'F', col: '#2a4a2a', str: 60, f: 1.4, cap: 1, wk: 0, need: { fed: 60 }, hire: { trust: -1, ctl: { adem: 5 } }, d: ['布利斯堡派来的一个营', 'A battalion out of Fort Bliss'] }
   ],
   checkpoints: [
     { id: 'i40w', zh: 'I-40 西口（科科尼诺县界）', en: 'I-40 west (Coconino line)', ll: [-110.86, 35.05] },

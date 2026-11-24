@@ -146,26 +146,18 @@
   // 建筑效果说明由 run / onBuilt 生成，和实际效果一致
   var SN = { trust: ['信任', 'Trust'], panic: ['恐慌', 'Panic'], fed: ['联邦', 'Federal'], navajo: ['纳瓦霍族', 'Navajo'], lds: ['教会', 'LDS'] };
   function sg(v) { return (v > 0 ? '+' : '−') + Math.abs(v); }
+  // 给玩家看的只是用途和规模，不列数值公式
+  var BDESC = { clinic: ['轻症病人就近看病', 'Treats mild cases close to home'], warehouse: ['存放食品、饮水和药品', 'Stores food, water and medicine'], check: ['在路口给过往的人量体温', 'Takes temperatures at the roadside'],
+    tower: ['扩大无线电覆盖', 'Extends radio coverage'], office: ['和出资方保持日常联系', 'Keeps a line open to the people paying'], vaccine: ['给居民接种疫苗', 'Vaccinates residents'], foodbank: ['每天发放食品', 'Hands out food every day'],
+    shower: ['给安置的人洗澡洗衣', 'Showers and laundry for the displaced'], morgue: ['临时存放遗体', 'Holds the dead until burial'], fuel: ['停电时供电、给车辆加油', 'Power during outages; fuel for vehicles'], helipad: ['直升机运来物资', 'Brings in supplies by air'], volcenter: ['招募和组织志愿者', 'Recruits and organises volunteers'] };
   function bfx(b) {
-    var r = b.run || {}, o = b.onBuilt || {}, zh = [], en = [];
+    var r = b.run || {}, zh = [], en = [], d = BDESC[b.id] || b.desc;
     function add(z, e) { zh.push(z); en.push(e); }
-    if (r.house) add('安置 ' + r.house + ' 人', 'Houses ' + r.house);
-    if (r.hold) add('隔离 ' + r.hold + ' 名病人', 'Isolates ' + r.hold + ' patients');
-    if (r.spread) add('传播 ' + sg(Math.round(r.spread * 100)) + '%', 'Spread ' + sg(Math.round(r.spread * 100)) + '%');
-    if (r.recover) add('康复加快 ' + Math.round(r.recover * 18 * 100) + '%', 'Recovery ' + Math.round(r.recover * 18 * 100) + '% faster');
-    if (r.divert) add('外来人员每天 −' + r.divert, 'Arrivals −' + r.divert + '/day');
-    if (r.supply) add('物资每天 +' + r.supply + ' 天', 'Supplies +' + r.supply + ' day/day');
-    if (r.use) add('物资每天 −' + r.use + ' 天', 'Uses ' + r.use + ' day of supplies/day');
-    if (r.stockCap) add('储备上限 +' + r.stockCap + ' 天', 'Reserve cap +' + r.stockCap + ' days');
-    if (r.sight) add('视野半径 ' + r.sight + ' 公里', 'Sight radius ' + r.sight + ' km');
-    if (r.reveal && r.reveal !== r.sight) add(r.reveal + ' 公里内的邻县可见', 'Neighbours within ' + r.reveal + ' km become visible');
-    if (r.vol) add('志愿者每周 +' + r.vol, 'Volunteers +' + r.vol + '/week');
-    if (r.otCut) add('夜间加班费 −' + Math.round(r.otCut * 100) + '%', 'Night overtime −' + Math.round(r.otCut * 100) + '%');
-    if (r.partner) add('出资方关系每天 +' + r.partner, 'Payer relations +' + r.partner + '/day');
-    if (r.daily) Object.keys(r.daily).forEach(function (k) { add(SN[k][0] + '每天 ' + sg(r.daily[k]), SN[k][1] + ' ' + sg(r.daily[k]) + '/day'); });
-    Object.keys(o).forEach(function (k) { if (k === 'stock') add('完工时物资 +' + o[k] + ' 天', 'Supplies +' + o[k] + ' days on completion'); else if (SN[k]) add('完工时' + SN[k][0] + ' ' + sg(o[k]), SN[k][1] + ' ' + sg(o[k]) + ' on completion'); });
-    if (b.ops) add('运营要 ' + b.ops + ' 人', 'Needs ' + b.ops + ' staff to run');
-    return zh.length ? [zh.join(' · '), en.join(' · ')] : (b.fx || ['', '']);
+    if (d) add(d[0], d[1]);
+    if (r.house) add('可住 ' + r.house + ' 人', 'Room for ' + r.house);
+    if (r.hold) add('可收治 ' + r.hold + ' 人', 'Beds for ' + r.hold);
+    if (b.ops) add('需要 ' + b.ops + ' 人值守', 'Needs ' + b.ops + ' staff');
+    return [zh.join(' · '), en.join(' · ')];
   }
   function ico(n) { return '<img src="icons/' + n + '16.png" width="16" height="16" alt="">'; }
   // ---------- 今天 ----------
@@ -179,11 +171,11 @@
   function alerts() {
     var out = [], sd = S.sim.stock, net = supplyNet(), uh = unhoused(), cases = totalCases(), c7 = histAgo(7), fpd = fundPerDay(), fund = S.funds.county;
     if (net < 0 && sd / -net < 12) { var dl = Math.max(0, sd / -net), md = mdLabel(dl); out.push({ lv: dl < 5 ? 2 : 1, ico: 'pkg', t: L('物资约 ' + Math.floor(dl) + ' 天后用完（' + md[0] + '）', 'Supplies run out in about ' + Math.floor(dl) + ' days (' + md[1] + ')'), s: L('每天净消耗 ' + (-net).toFixed(1) + ' 天', 'Net use ' + (-net).toFixed(1) + ' days a day'), go: [['warehouse', L('建物资仓库', 'Build a warehouse')], ['nb', L('向邻县买', 'Buy from neighbours')]] }); }
-    if (uh > 150) out.push({ lv: uh > 300 ? 2 : 1, ico: 'ppl', t: L(uh.toLocaleString() + ' 人等待安置', uh.toLocaleString() + ' people waiting for housing'), s: L('每天还来约 ' + Math.round(arrivalsPerDay()) + ' 人 · 超过 300 人恐慌上升', 'About ' + Math.round(arrivalsPerDay()) + ' more a day · panic rises above 300'), go: [['trailers', L('建拖车点', 'Trailer site')], ['shelter', L('改建收容所', 'Convert a shelter')]] });
+    if (uh > 150) out.push({ lv: uh > 300 ? 2 : 1, ico: 'ppl', t: L(uh.toLocaleString() + ' 人等待安置', uh.toLocaleString() + ' people waiting for housing'), s: L('每天还来约 ' + Math.round(arrivalsPerDay()) + ' 人', 'About ' + Math.round(arrivalsPerDay()) + ' more a day'), go: [['trailers', L('建拖车点', 'Trailer site')], ['shelter', L('改建收容所', 'Convert a shelter')]] });
     if (c7 && c7.cases > 5 && cases > c7.cases * 1.3) out.push({ lv: cases > c7.cases * 2 ? 2 : 1, ico: 'imp', t: L('病例一周增加 ' + Math.round((cases / c7.cases - 1) * 100) + '%', 'Cases up ' + Math.round((cases / c7.cases - 1) * 100) + '% in a week'), s: L('现有 ' + cases + ' 例，今天新增 ' + S.sim.newT, cases + ' active, ' + S.sim.newT + ' new today'), go: [['vaccine', L('改建接种点', 'Vaccine clinic')], ['isolation', L('改建隔离点', 'Isolation site')]] });
     if (fpd < 0 && fund > 0 && fund / -fpd < 21) out.push({ lv: fund / -fpd < 7 ? 2 : 1, ico: 'bank', t: L('县账户约 ' + Math.floor(fund / -fpd) + ' 天后透支', 'County account overdrawn in about ' + Math.floor(fund / -fpd) + ' days'), s: L('近一周每天 ' + fmtK(fpd), 'Last week ' + fmtK(fpd) + ' a day'), go: [['bank', L('看财政', 'Finance')]] });
-    if (fund <= 0) out.push({ lv: 2, ico: 'bank', t: L('县账户已透支 ' + fmtK(fund), 'County account overdrawn ' + fmtK(fund)), s: L('欠款按 2% 计息，每周一信任 −1', 'Unpaid bills at 2%; trust −1 every Monday'), go: [['bank', L('借款', 'Borrow')]] });
-    var short = opsStaff(false) - staffTotal(false); if (short > 0) out.push({ lv: 1, ico: 'sheet', t: L('设施运营缺 ' + short + ' 人', short + ' short to run facilities'), s: L('每天信任 −0.3', 'Trust −0.3 a day'), go: [['volcenter', L('改建志愿者中心', 'Volunteer center')], ['build', L('开 CERT 培训', 'Run a CERT class')]] });
+    if (fund <= 0) out.push({ lv: 2, ico: 'bank', t: L('县账户已透支 ' + fmtK(fund), 'County account overdrawn ' + fmtK(fund)), s: L('供应商在催款', 'Vendors want to be paid'), go: [['bank', L('借款', 'Borrow')]] });
+    var short = opsStaff(false) - staffTotal(false); if (short > 0) out.push({ lv: 1, ico: 'sheet', t: L('设施运营缺 ' + short + ' 人', short + ' short to run facilities'), s: L('有设施没人值守', 'Some sites are unstaffed'), go: [['volcenter', L('改建志愿者中心', 'Volunteer center')], ['build', L('开 CERT 培训', 'Run a CERT class')]] });
     var wait = S.facilities.filter(function (f) { return !f.done && f.wait === 'crew'; }).length; if (wait) out.push({ lv: 0, ico: 'build', t: L(wait + ' 处工地等人手', wait + ' sites waiting for crew'), s: L('人手空出来才会开工', 'Work starts when staff free up'), go: [['build', L('看施工', 'Construction')]] });
     return out.sort(function (a, b) { return b.lv - a.lv; });
   }
@@ -208,7 +200,7 @@
     var mails = S.mail.map(function (m, i) { return [m, i]; }).filter(function (x) { return x[0].acts && x[0].acts.length && !x[0].done; });
     mails.slice(0, 3).forEach(function (x) { n++; var m = x[0]; h += '<div class="row td1' + (m.unread ? ' lv1' : '') + '">' + ico('mail') + '<div><div class="t">' + LA(m.subject) + '</div><div class="s">' + (m.from === 'nb' ? LA(m.sender) : LA(P(m.from).short)) + ' · <a href="#" data-tab="mail">' + L('在 Gmail 里处理', 'Handle in Gmail') + '</a></div></div></div>'; });
     if (mails.length > 3) h += '<div class="row"><div class="s"><a href="#" data-tab="mail">' + L('还有 ' + (mails.length - 3) + ' 封公文要处理', (mails.length - 3) + ' more letters need an answer') + '</a></div></div>';
-    S.promises.forEach(function (p, i) { if (p.left > 2) return; n++; h += '<div class="row td1 lv' + (p.left <= 1 ? 2 : 1) + '">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + L('承诺 · 剩 ' + p.left + ' 天，过期信任 −8', 'Promise · ' + p.left + ' days left, trust −8 if missed') + ' · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
+    S.promises.forEach(function (p, i) { if (p.left > 2) return; n++; h += '<div class="row td1 lv' + (p.left <= 1 ? 2 : 1) + '">' + ico('warn') + '<div><div class="t">' + L(p.zh, p.en) + '</div><div class="s">' + L('承诺 · 剩 ' + p.left + ' 天', 'Promise · ' + p.left + ' days left') + ' · <a href="#" data-keep="' + i + '">' + L('兑现', 'Deliver') + ' $' + (p.cost || 20) + 'K</a></div></div></div>'; });
     alerts().forEach(function (a) { n++; h += '<div class="row td1 lv' + a.lv + '">' + ico(a.ico) + '<div><div class="t">' + a.t + '</div><div class="s">' + a.s + ' · ' + a.go.map(goLink).join(' · ') + '</div></div></div>'; });
     if (!n) h += '<div class="row"><div class="s">' + L('没有需要马上处理的事。', 'Nothing needs you right now.') + '</div></div>';
     h += '</div>';
@@ -219,7 +211,7 @@
         row(L('现有病例', 'Active cases'), 'cases', totalCases(), '#8a3b9a') + row(L('等待安置', 'Unhoused'), 'uh', unhoused().toLocaleString(), '#b06a10') +
         row(L('物资（天）', 'Supplies (days)'), 'stock', Math.round(S.sim.stock), '#2f6fdb') + row(L('县账户', 'County account'), 'fund', money(Math.round(S.funds.county)), '#3a8a3a') + '</div></div>';
     }
-    h += sect(L('三方关系', 'Relations'), '<span>' + L('低于 40 联邦每周不补物资', 'Below 40 the federal weekly supply stops') + '</span>') + PW.map(function (k) { var dd = S.dstand[k], v = S.stand[k]; return '<div class="row strow"><i class="sw" style="background:' + P(k).color + '"></i><div style="flex:1"><div class="t">' + LA(P(k).short) + ' <b>' + v + '</b>' + (dd ? ' <span class="' + (dd > 0 ? 'up' : 'dn') + '">' + (dd > 0 ? '▲' : '▼') + Math.abs(dd) + '</span>' : '') + '</div><div class="rbar"><i style="width:' + v + '%;background:' + P(k).color + '"></i></div></div></div>'; }).join('') + '</div>';
+    h += sect(L('三方关系', 'Relations'), '') + PW.map(function (k) { var dd = S.dstand[k], v = S.stand[k]; return '<div class="row strow"><i class="sw" style="background:' + P(k).color + '"></i><div style="flex:1"><div class="t">' + LA(P(k).short) + ' <b>' + v + '</b>' + (dd ? ' <span class="' + (dd > 0 ? 'up' : 'dn') + '">' + (dd > 0 ? '▲' : '▼') + Math.abs(dd) + '</span>' : '') + '</div><div class="rbar"><i style="width:' + v + '%;background:' + P(k).color + '"></i></div></div></div>'; }).join('') + '</div>';
     var c = S.st.ctl, r = S.st.rel, NM = { gov: ['州长办公室', "Governor's Office"], sec: ['州应急委员会', 'State Emergency Council'], adem: ['州应急管理局', 'ADEM'] }, WHO = { gov: ['州长 简·布鲁尔', 'Gov. Jan Brewer'], sec: ['州长任主席 · 14 名成员', 'Chaired by the governor · 14 members'], adem: ['隶属应急与军事事务部 · 联邦拨款渠道', 'Under DEMA · federal funding channel'] };
     var lead = STK.reduce(function (a, k) { return c[k] > c[a] ? k : a; }, 'gov');
     h += fold('phx', L('凤凰城', 'Phoenix'), '<span>' + L('主导：', 'Leading: ') + LA(NM[lead]) + ' ' + Math.round(c[lead]) + '%</span>',
@@ -244,14 +236,14 @@
     var h = sect(L('相邻政府', 'Neighbouring governments'), '<span>' + L('共 ' + (seen.length + 1) + ' 个', (seen.length + 1) + ' total') + '</span>');
     seen.forEach(function (r) {
       h += '<div class="row ri" data-region="' + r.id + '">' + ico(r.res ? 'ppl' : 'globe') + '<div><div class="t"><a href="#">' + L(r.zh, r.en) + '</a></div><div class="s">' + LA(r.seat) + ' · ' + chip(r.stance) + L('病例 ', 'Cases ') + r.cases + (r.ref ? ' · ' + L('外来 ', 'Arrivals ') + r.ref.toLocaleString() : '') + '</div>' +
-        '<div class="lk"><a href="#" data-zr="' + r.id + '">' + L('放大', 'Zoom') + '</a> - ' + (S.trade[r.id] > S.day - 7 ? '<span class="s">' + L('本周已买过', 'Bought this week') + '</span>' : '<a href="#" data-trade="' + r.id + '">' + L('买 3 天物资 $45K', 'Buy 3 days of supplies, $45K') + '</a>') + ' - ' + (S.teams.some(function (t) { return t.rid === r.id; }) ? '<span class="s">' + L('外勤队在途', 'Team on the road') + '</span>' : '<a href="#" data-team="' + r.id + '" title="' + T('4 人 · $6K · 回来时带回 1 天物资并更新情况', '4 staff · $6K · brings back 1 day of supplies and a report') + '">' + L('派外勤队', 'Send a field team') + '</a>') + ' - ' + (S.aid[r.id] ? '<span class="s">' + L('已签互助协议', 'Mutual aid signed') + '</span>' : '<a href="#" data-aid="' + r.id + '" title="' + T('关系 +2 · 每周县账户 −$8K · 物资每周 +0.6 天', 'Relations +2 · County −$8K a week · Supplies +0.6 day a week') + '">' + L('签互助协议', 'Sign mutual aid') + '</a>') + '</div></div></div>';
+        '<div class="lk"><a href="#" data-zr="' + r.id + '">' + L('放大', 'Zoom') + '</a> - ' + (S.trade[r.id] > S.day - 7 ? '<span class="s">' + L('本周已买过', 'Bought this week') + '</span>' : '<a href="#" data-trade="' + r.id + '">' + L('买 3 天物资 $45K', 'Buy 3 days of supplies, $45K') + '</a>') + ' - ' + (S.teams.some(function (t) { return t.rid === r.id; }) ? '<span class="s">' + L('外勤队在途', 'Team on the road') + '</span>' : '<a href="#" data-team="' + r.id + '" title="' + T('4 人 · $6K', '4 staff · $6K') + '">' + L('派外勤队', 'Send a field team') + '</a>') + ' - ' + (S.aid[r.id] ? '<span class="s">' + L('已签互助协议', 'Mutual aid signed') + '</span>' : '<a href="#" data-aid="' + r.id + '" title="' + T('关系 +2 · 每周县账户 −$8K · 物资每周 +0.6 天', 'Relations +2 · County −$8K a week · Supplies +0.6 day a week') + '">' + L('签互助协议', 'Sign mutual aid') + '</a>') + '</div></div></div>';
     });
     var f = region.Maricopa;
     h += '<div class="row" data-region="Maricopa"><div class="t"><a href="#">' + L('联邦控制区', 'Federal zone') + '</a></div><div class="s">' + L('凤凰城 · 马里科帕、皮纳尔、格雷厄姆、格林利', 'Phoenix · Maricopa, Pinal, Graham, Greenlee') + '</div></div>';
     h += '</div>' + sect(L('情况不明', 'No information'));
     D.regions.filter(function (r) { return !r.seen; }).forEach(function (r) { h += '<div class="row"><div class="t" style="color:#676767">' + L(r.zh, r.en) + '</div><div class="s">' + LA(r.status) + ' · ' + (S.teams.some(function (t) { return t.rid === r.id; }) ? L('外勤队在途', 'Team on the road') : '<a href="#" data-team="' + r.id + '">' + L('派外勤 »', 'Send team »')) + '</a></div></div>'; });
     h += '</div>' + sect(L('外勤', 'Field teams'));
-    if (!S.teams.length) h += '<div class="row"><div class="s">' + L('没有在外的外勤队。每队 4 人、$6K，保留地 2 天、邻县 3 天回来。', 'No teams out. Each takes 4 staff and $6K; 2 days to a reservation, 3 to a county.') + '</div></div>';
+    if (!S.teams.length) h += '<div class="row"><div class="s">' + L('没有在外的外勤队。', 'No teams out.') + '</div></div>';
     S.teams.forEach(function (t) { var r = region[t.rid]; h += '<div class="row"><div class="t">' + L('外勤队 → ' + r.zh, 'Team → ' + r.en) + '</div><div class="s">' + L('还要 ' + t.days + ' 天', t.days + ' days left') + '</div></div>'; });
     return h + '</div>';
   }
@@ -377,12 +369,12 @@
   function vtz(l) { var v = S.votes[l.id]; return v ? '赞成 ' + v.yes + ' · 反对 ' + (5 - v.yes) : '开局已生效'; }
   function vte(l) { var v = S.votes[l.id]; return v ? v.yes + ' aye, ' + (5 - v.yes) + ' nay' : 'in force at start'; }
   function tabLaws() {
-    var h = sect(L('县监事会决议', 'Board of Supervisors resolutions')) + '<div class="row"><div class="s">' + L('点“提交表决”后五名监事当场投票，3 票赞成就通过，条例立即生效；没通过可以第二天再提。', 'Submit a resolution and the five supervisors vote at once. Three ayes pass it and it takes effect; if it fails you can try again tomorrow.') + '</div></div></div>', g = null;
+    var h = '', g = null;
     D.laws.forEach(function (l) {
       if (l.id === 'deputize' && !S.flags.deputize) return;
       if (!g || g[0] !== l.g[0]) { if (g) h += '</div>'; g = l.g; h += sect(LA(l.g)); }
       var on = !!S.laws[l.id], dis = l.ex && S.laws[l.ex], vt = S.votes[l.id], failed = vt && !on && vt.day === S.day;
-      h += '<div class="row law' + (dis ? ' dis' : '') + '"><div style="flex:1"><div class="t">' + L(l.zh, l.en) + '</div><div class="fx">' + LA(l.fx) + '</div></div>' +
+      h += '<div class="row law' + (dis ? ' dis' : '') + '"><div style="flex:1"><div class="t">' + L(l.zh, l.en) + '</div></div>' +
         (on ? '<span class="signed">' + L('已通过（' + vtz(l) + '）', 'Passed (' + vte(l) + ')') + '</span>' : failed ? '<span class="signed" style="color:#c00">' + L('未通过（赞成 ' + vt.yes + ' · 反对 ' + (5 - vt.yes) + '）', 'Failed (' + vt.yes + ' aye, ' + (5 - vt.yes) + ' nay)') + '</span>' : '<button class="gbtn nd" data-sign="' + l.id + '"' + (dis ? ' disabled' : '') + '>' + L('提交表决', 'Submit to vote') + '</button>') + '</div>';
     });
     return h + '</div>';
@@ -406,10 +398,10 @@
     h += sect(L('排班', 'Shifts'), '<span>' + (offDay() ? (holiday() ? L('节假日', 'Holiday') : L('周末', 'Weekend')) : L('工作日', 'Workday')) + '</span>') +
       '<table class="shifts"><tr><th></th><th>' + L('在岗', 'On duty') + '</th><th>' + L('设施', 'Sites') + '</th><th>' + L('施工', 'Builds') + '</th><th>' + L('空闲', 'Free') + '</th></tr>' +
       srow(false, '白班 06–19', 'Day 06–19') + srow(true, '夜班 19–06', 'Night 19–06') + '</table>' +
-      '<div class="s" style="padding:2px 10px">' + L('县员工 ' + sf.county + ' 人 · 志愿者 ' + Math.round(sf.vol) + ' 人（只上白班）· 夜班留三成县员工值守，设施夜里半数运营', sf.county + ' county staff · ' + Math.round(sf.vol) + ' volunteers (days only) · 30% of county staff on nights; sites run at half strength overnight') + '</div>' +
-      '<div class="lk" style="padding:4px 10px 8px"><a href="#" data-cert="1">' + L('开一期社区应急队（CERT）培训', 'Run a CERT class') + '</a> <span class="s">$8K · ' + L('3 天 · 志愿者 +6', '3 days · +6 volunteers') + (sf.train.length ? ' · ' + L('培训中 ' + sf.train.length + ' 期', sf.train.length + ' in class') : '') + '</span><br>' +
-      '<label style="color:#000"><input type="checkbox" data-ot="1"' + (sf.ot ? ' checked' : '') + '> ' + L('夜班继续施工', 'Keep building on night shift') + '</label> <span class="s">' + L('施工人手按 $53/人·小时', '$53 per worker-hour') + '</span><br>' +
-      '<label style="color:#000"><input type="checkbox" data-wk="1"' + (sf.wk ? ' checked' : '') + '> ' + L('周末全员加班', 'Full staff on weekends') + '</label> <span class="s">' + L('周末白班约 $' + Math.round(sf.county * .5 * .053 * 13) + 'K/天', 'about $' + Math.round(sf.county * .5 * .053 * 13) + 'K a weekend day') + '</span></div></div>';
+      '<div class="s" style="padding:2px 10px">' + L('县员工 ' + sf.county + ' 人 · 志愿者 ' + Math.round(sf.vol) + ' 人', sf.county + ' county staff · ' + Math.round(sf.vol) + ' volunteers') + '</div>' +
+      '<div class="lk" style="padding:4px 10px 8px"><a href="#" data-cert="1">' + L('开一期社区应急队（CERT）培训', 'Run a CERT class') + '</a> <span class="s">$8K · ' + L('3 天', '3 days') + (sf.train.length ? ' · ' + L('培训中 ' + sf.train.length + ' 期', sf.train.length + ' in class') : '') + '</span><br>' +
+      '<label style="color:#000"><input type="checkbox" data-ot="1"' + (sf.ot ? ' checked' : '') + '> ' + L('夜班继续施工', 'Keep building on night shift') + '</label> <span class="s">' + L('$53/人·小时', '$53/worker-hour') + '</span><br>' +
+      '<label style="color:#000"><input type="checkbox" data-wk="1"' + (sf.wk ? ' checked' : '') + '> ' + L('周末全员加班', 'Full staff on weekends') + '</label> <span class="s">' + L('约 $' + Math.round(sf.county * .5 * .053 * 13) + 'K/天', 'about $' + Math.round(sf.county * .5 * .053 * 13) + 'K/day') + '</span></div></div>';
     var cat = null;
     D.buildings.forEach(function (b) {
       if (cat !== b.cat) { if (cat) h += '</div>'; cat = b.cat; h += sect(LA(D.bcats[cat])); }
@@ -1304,11 +1296,22 @@
   function defenseAt(at) { return garrisonsAt(at).reduce(function (a, g) { return a + power(g); }, 0) + linked(at).reduce(function (a, g) { return a + power(g) * .5; }, 0); }
   function cpManned(id) { return garrisonsAt('c:' + id).length > 0; }
   function cpDivert() { return D.checkpoints.filter(function (c) { return cpManned(c.id); }).length * 3; }
+  // 隐蔽：离任何驻军 25 km 以外的雅各之子只在部分时段可见（按 6 小时一段随机），前后 3 小时淡入淡出；
+  // 在镇上停留（抢劫中）或靠近驻军时总是可见。只影响显示，不影响移动和袭击。
+  var SPOT_KM = 25, VIS_BLK = 6;
+  function hrNow() { return S.day * 24 + S.hour; }
+  function rSpotted(r) { return r.wait > 0 || M().g.some(function (g) { return g.at && km(locLL(g.at), r.ll) <= SPOT_KM; }); }
+  function rBlk(r, b) { return MAP.hash(b, r.id, 41) < .55 ? 1 : 0; }
+  function rVis(r) {
+    if (rSpotted(r)) return 1;
+    var H = hrNow(), b = Math.floor(H / VIS_BLK), pos = H - b * VIS_BLK, cur = rBlk(r, b), prev = rBlk(r, b - 1);
+    return prev + (cur - prev) * Math.min(1, (pos + 1) / 3);
+  }
   function milLog(zh, en) { var m = M(); m.log.unshift({ d: (S.date.getMonth() + 1) + '/' + S.date.getDate() + ' ' + S.hour + ':00', t: [zh, en] }); m.log = m.log.slice(0, 8); }
   function hireForce(k) {
     var f = fdef(k), m = M(), n = m.g.filter(function (g) { return g.k === k; }).length;
     if (n >= f.cap) { notice(L(f.short[0] + '已经调满 ' + f.cap + ' 支。', 'All ' + f.cap + ' ' + f.short[1] + ' units are already out.')); return; }
-    if (f.need && f.need.fed && S.stand.fed < f.need.fed) { notice(L('联邦关系不到 ' + f.need.fed + '，州里不批。', 'Federal relations below ' + f.need.fed + '; the state says no.')); return; }
+    if (f.need && f.need.fed && S.stand.fed < f.need.fed) { notice(L('州里不批：华盛顿还没点头。', 'The state says no: Washington has not signed off.')); return; }
     m.g.push({ id: m.nid++, k: k, str: f.str, at: 't:holbrook' }); apply(f.hire, [f.zh, f.en]); if (f.hire && f.hire.ctl) ctlShift(f.hire.ctl);
     milLog(f.zh + '到霍尔布鲁克报到', f.en + ' reports in Holbrook'); render(); draw();
   }
@@ -1322,8 +1325,8 @@
     var str = Math.round(10 + MAP.hash(S.day, m.nid, 7) * 8 + Math.max(0, elapsed() - REBEL_DAY) / 7 * 2);
     var r = { id: m.nid++, ll: sp.ll.slice(), spawn: sp.ll.slice(), str: str, cp: sp.cp }; pickTarget(r); m.r.push(r);
     var where = cpdef(sp.cp);
-    if (first) { notice(L('有人在' + where.zh + '一带看到武装人员，约 ' + str + ' 人，正往县里来。', 'Armed men spotted near ' + where.en + ', about ' + str + ' of them, heading into the county.')); S.tab = 'mil'; }
-    milLog('叛军出现：' + where.zh + '，约 ' + str + ' 人', 'Insurgents near ' + where.en + ', about ' + str);
+    if (first) { notice(L('有人在' + where.zh + '一带看到“雅各之子”的武装人员，约 ' + str + ' 人，正往县里来。', 'Armed men of the Sons of Jacob spotted near ' + where.en + ', about ' + str + ' of them, heading into the county.')); S.tab = 'mil'; }
+    milLog('雅各之子出现：' + where.zh + '，约 ' + str + ' 人', 'Sons of Jacob near ' + where.en + ', about ' + str);
   }
   function pickTarget(r) {
     var m = M(), best = null, bs = 1e9;
@@ -1338,15 +1341,16 @@
   function milHour() {
     var m = M(), ch = false;
     m.g.forEach(function (g) { if (g.at) return; g.left--; g.prog = 1 - g.left / g.hrs; ch = true; if (g.left <= 0) { g.at = g.to; g.from = g.to = null; milLog(fdef(g.k).short[0] + '到达' + locT(g.at), fdef(g.k).short[1] + ' arrives at ' + locT(g.at)); } });
+    m.r.forEach(function (r) { if (rVis(r) >= .5) { r.seen = r.ll.slice(); r.seenH = hrNow(); } });
     m.r = m.r.filter(function (r) {
       if (r.wait > 0) { r.wait--; return true; }   // 抢完之后在镇上停留
-      if (r.home) { var hd = km(r.ll, r.home); if (hd <= 2) { milLog('一股叛军撤回山里', 'A group withdrew into the hills'); return false; } var hs = Math.min(1, 4 / hd); r.ll = [r.ll[0] + (r.home[0] - r.ll[0]) * hs, r.ll[1] + (r.home[1] - r.ll[1]) * hs]; ch = true; return true; }
+      if (r.home) { var hd = km(r.ll, r.home); if (hd <= 2) { milLog('一股雅各之子撤回山里', 'A Sons of Jacob band withdrew into the hills'); return false; } var hs = Math.min(1, 4 / hd); r.ll = [r.ll[0] + (r.home[0] - r.ll[0]) * hs, r.ll[1] + (r.home[1] - r.ll[1]) * hs]; ch = true; return true; }
       var p = locLL(r.tgt), d = km(r.ll, p); ch = true;
       if (d > 1) { var step = Math.min(1, 4 / d); r.ll = [r.ll[0] + (p[0] - r.ll[0]) * step, r.ll[1] + (p[1] - r.ll[1]) * step]; return true; }
       var here = garrisonsAt(r.tgt), def = defenseAt(r.tgt);
       if (!here.length) {
-        if (r.tgt[0] === 't') { var t = town[r.tgt.slice(2)]; m.raid[t.id] = S.day; t.mood = clamp(t.mood - 6); nudge('panic', 1.5, ['叛军袭击' + t.zh, 'Raid on ' + t.en]); nudge('trust', -.5, ['叛军袭击' + t.zh, 'Raid on ' + t.en]); S.sim.stock = Math.max(0, S.sim.stock - .5); r.str += 2; r.wait = 12; r.raids = (r.raids || 0) + 1;
-          notice(L('叛军袭击了' + t.zh + '：加油站和杂货店被抢，民心 −6。', 'Insurgents raided ' + t.en + ': a gas station and grocery looted, mood −6.')); milLog('叛军袭击' + t.zh, 'Raid on ' + t.en); }
+        if (r.tgt[0] === 't') { var t = town[r.tgt.slice(2)]; m.raid[t.id] = S.day; t.mood = clamp(t.mood - 6); nudge('panic', 1.5, ['雅各之子袭击' + t.zh, 'Sons of Jacob raid on ' + t.en]); nudge('trust', -.5, ['雅各之子袭击' + t.zh, 'Sons of Jacob raid on ' + t.en]); S.sim.stock = Math.max(0, S.sim.stock - .5); r.str += 2; r.wait = 12; r.raids = (r.raids || 0) + 1;
+          notice(L('雅各之子袭击了' + t.zh + '：加油站和杂货店被抢。', 'The Sons of Jacob raided ' + t.en + ': a gas station and grocery looted.')); milLog('雅各之子袭击' + t.zh, 'Sons of Jacob raid on ' + t.en); }
         if (r.raids >= 3) { r.home = r.spawn; return true; }   // 抢过三处就带着东西撤走
         pickTarget(r); return true;
       }
@@ -1355,7 +1359,7 @@
       var hit = r.str * .04, tot = here.reduce(function (a, g) { return a + power(g); }, 0);
       here.forEach(function (g) { g.str -= hit * power(g) / tot; });
       m.g = m.g.filter(function (g) { if (g.str > 2) return true; notice(L(fdef(g.k).short[0] + '在' + locT(g.at) + '被打散了。', 'The ' + fdef(g.k).short[1] + ' unit at ' + locT(g.at) + ' was broken up.')); milLog(fdef(g.k).short[0] + '在' + locT(g.at) + '被打散', fdef(g.k).short[1] + ' broken at ' + locT(g.at)); apply({ trust: -2 }, ['驻军被打散', 'Garrison lost']); return false; });
-      if (r.str < 3) { apply({ trust: 1, panic: -1 }, ['击退叛军', 'Insurgents driven off']); milLog('在' + locT(r.tgt) + '击退叛军', 'Insurgents driven off at ' + locT(r.tgt)); notice(L('叛军在' + locT(r.tgt) + '被击退。', 'Insurgents driven off at ' + locT(r.tgt) + '.')); return false; }
+      if (r.str < 3) { apply({ trust: 1, panic: -1 }, ['击退雅各之子', 'Sons of Jacob driven off']); milLog('在' + locT(r.tgt) + '击退雅各之子', 'Sons of Jacob driven off at ' + locT(r.tgt)); notice(L('雅各之子在' + locT(r.tgt) + '被击退。', 'The Sons of Jacob were driven off at ' + locT(r.tgt) + '.')); return false; }
       if (r.str < 6) { r.home = r.spawn; }   // 打不动就撤
       return true;
     });
@@ -1373,23 +1377,25 @@
   }
   function tabMil() {
     var m = M(), e = elapsed(), h = '';
-    h += sect(L('叛军', 'Insurgents'), '<span>' + (m.r.length ? L(m.r.length + ' 股', m.r.length + ' groups') : e < REBEL_DAY ? L('暂无', 'None yet') : L('暂无', 'None')) + '</span>');
-    if (!m.r.length) h += '<div class="row"><div class="s">' + (e < REBEL_DAY ? L('目前没有武装人员的消息。', 'No reports of armed groups so far.') : L('县里暂时没有叛军活动。', 'No insurgent activity in the county right now.')) + '</div></div>';
-    m.r.forEach(function (r) { var d = km(r.ll, locLL(r.tgt)); h += '<div class="row mrow">' + ico('err') + '<div style="flex:1"><div class="t">' + L('约 ' + Math.round(r.str) + ' 人 → ', 'About ' + Math.round(r.str) + ' → ') + locName(r.tgt) + '</div><div class="s">' + (r.home ? L('正在撤走', 'Withdrawing') : r.wait > 0 ? L('在镇上停留', 'Holding the town') : d > 1 ? L('还有 ' + Math.round(d) + ' km，约 ' + Math.ceil(d / 4) + ' 小时', Math.round(d) + ' km, about ' + Math.ceil(d / 4) + ' hours') : L('正在交火', 'Fighting now')) + '</div></div></div>'; });
+    h += sect(L('雅各之子', 'Sons of Jacob'), '<span>' + (m.r.length ? L(m.r.length + ' 股', m.r.length + (m.r.length > 1 ? ' bands' : ' band')) : L('暂无', 'None')) + '</span>');
+    if (!m.r.length) h += '<div class="row"><div class="s">' + (e < REBEL_DAY ? L('目前没有武装人员的消息。', 'No reports of armed groups so far.') : L('县里暂时没有他们的踪迹。', 'No sign of them in the county right now.')) + '</div></div>';
+    m.r.forEach(function (r) { var d = km(r.ll, locLL(r.tgt)), hid = rVis(r) < .5, ago = hrNow() - (r.seenH == null ? hrNow() : r.seenH);
+      h += '<div class="row mrow">' + ico(hid ? 'q' : 'err') + '<div style="flex:1"><div class="t">' + L('约 ' + Math.round(r.str) + ' 人', 'About ' + Math.round(r.str) + ' men') + (hid ? '' : ' → ' + locName(r.tgt)) + '</div><div class="s">' +
+        (hid ? L('行踪不明' + (ago > 0 ? ' · ' + ago + ' 小时前最后一次看到' : ''), 'Whereabouts unknown' + (ago > 0 ? ' · last seen ' + ago + ' h ago' : '')) : r.home ? L('正在撤走', 'Withdrawing') : r.wait > 0 ? L('在镇上停留', 'Holding the town') : d > 1 ? L('还有 ' + Math.round(d) + ' km，约 ' + Math.ceil(d / 4) + ' 小时', Math.round(d) + ' km, about ' + Math.ceil(d / 4) + ' hours') : L('正在交火', 'Fighting now')) + '</div></div></div>'; });
     h += '</div>';
     var opts = D.towns.map(function (t) { return ['t:' + t.id, T(t.zh, t.en)]; }).concat(D.checkpoints.map(function (c) { return ['c:' + c.id, T(c.zh, c.en)]; }));
-    h += sect(L('驻军', 'Garrisons'), '<span>' + L('40 km 内互相联动', 'Linked within 40 km') + '</span>');
+    h += sect(L('驻军', 'Garrisons'), m.g.length ? '<span>' + L(m.g.length + ' 支', m.g.length + ' units') + '</span>' : '');
     if (!m.g.length) h += '<div class="row"><div class="s">' + L('还没有调用任何部队。', 'No units called up yet.') + '</div></div>';
     m.g.forEach(function (g) {
-      var f = fdef(g.k), lk = g.at ? linked(g.at).length : 0;
+      var f = fdef(g.k);
       h += '<div class="row mrow"><span class="mtag" style="background:' + f.col + '">' + f.tag + '</span><div style="flex:1"><div class="t">' + L(f.short[0], f.short[1]) + ' · ' + Math.round(g.str) + '/' + f.str + L(' 人', '') + '</div><div class="s">' +
-        (g.at ? locName(g.at) + (lk ? ' · ' + L('与 ' + lk + ' 处联动', 'linked to ' + lk) : '') : L('在途 → ', 'Moving → ') + locName(g.to) + L('，还要 ' + g.left + ' 小时', ', ' + g.left + ' h')) + '</div>' +
+        (g.at ? locName(g.at) : L('在途 → ', 'Moving → ') + locName(g.to) + L('，还要 ' + g.left + ' 小时', ', ' + g.left + ' h')) + '</div>' +
         (g.at ? '<div class="s"><select data-mv="' + g.id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === g.at ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select> <button class="wb7" data-mgo="' + g.id + '">' + L('调动', 'Move') + '</button> <a href="#" data-mdis="' + g.id + '">' + L('解散', 'Disband') + '</a></div>' : '') + '</div></div>';
     });
     h += '</div>' + sect(L('可调用的部队', 'Units you can call up'));
     D.forces.forEach(function (f) { var n = m.g.filter(function (g) { return g.k === f.id; }).length, lock = f.need && f.need.fed && S.stand.fed < f.need.fed;
-      h += '<div class="row mrow"><span class="mtag" style="background:' + f.col + '">' + f.tag + '</span><div style="flex:1"><div class="t">' + L(f.zh, f.en) + '</div><div class="s">' + LA(f.d) + ' · ' + L('已调用 ' + n + '/' + f.cap, n + '/' + f.cap + ' out') + '</div></div><button class="wb7" data-hire="' + f.id + '"' + (n >= f.cap || lock ? ' disabled' : '') + '>' + L('调用', 'Call up') + '</button></div>'; });
-    h += '</div>' + sect(L('检查站', 'Checkpoints'), '<span>' + L('有人守：外来人员每天 −3', 'Manned: arrivals −3/day') + '</span>');
+      h += '<div class="row mrow"><span class="mtag" style="background:' + f.col + '">' + f.tag + '</span><div style="flex:1"><div class="t">' + L(f.zh, f.en) + '</div><div class="s">' + LA(f.d) + ' · ' + L('已调用 ' + n + '/' + f.cap, n + '/' + f.cap + ' out') + '</div></div><button class="wb7" data-hire="' + f.id + '"' + (n >= f.cap || lock ? ' disabled' : '') + (lock ? ' title="' + T('华盛顿还没点头', 'Washington has not signed off') + '"' : '') + '>' + (f.wk ? L('调用（$' + f.wk + 'K/周）', 'Call up ($' + f.wk + 'K/wk)') : L('调用', 'Call up')) + '</button></div>'; });
+    h += '</div>' + sect(L('检查站', 'Checkpoints'), '<span>' + L('有人守 ', 'Manned ') + D.checkpoints.filter(function (c) { return cpManned(c.id); }).length + '/' + D.checkpoints.length + '</span>');
     D.checkpoints.forEach(function (c) { var gs = garrisonsAt('c:' + c.id); h += '<div class="row mrow">' + ico(gs.length ? 'mil' : 'q') + '<div style="flex:1"><div class="t"><a href="#" data-cpz="' + c.id + '">' + L(c.zh, c.en) + '</a></div><div class="s">' + (gs.length ? gs.map(function (g) { return L(fdef(g.k).short[0], fdef(g.k).short[1]) + ' ' + Math.round(g.str); }).join(' · ') : L('无人值守', 'Unmanned')) + '</div></div></div>'; });
     h += '</div>';
     if (m.log.length) { h += sect(L('记录', 'Log')); m.log.forEach(function (x) { h += '<div class="row"><div class="s">' + x.d + ' · ' + LA(x.t) + '</div></div>'; }); h += '</div>'; }
@@ -1407,11 +1413,23 @@
     m.g.forEach(function (g) { var f = fdef(g.k), q = px(gLL(g)), key = g.at || ''; var off = (seen[key] = (seen[key] || 0) + 1) - 1; q = [q[0] + 12 + off * 16, q[1] + 10];
       cx.fillStyle = f.col; cx.strokeStyle = '#fff'; cx.lineWidth = 1.5; cx.fillRect(q[0] - 7, q[1] - 7, 14, 14); cx.strokeRect(q[0] - 7, q[1] - 7, 14, 14);
       cx.fillStyle = '#fff'; cx.font = 'bold 10px Arial'; cx.textAlign = 'center'; cx.fillText(f.tag, q[0], q[1] + 3.5); if (!g.at) { cx.strokeStyle = f.col; cx.setLineDash([2, 2]); var B = px(locLL(g.to)); cx.beginPath(); cx.moveTo(q[0], q[1]); cx.lineTo(B[0], B[1]); cx.stroke(); cx.setLineDash([]); } });
-    var pulse = (S.hour % 2) ? 1 : .6;
-    m.r.forEach(function (r) { var q = px(r.ll), T2 = px(r.home || locLL(r.tgt)); cx.strokeStyle = 'rgba(200,30,30,.55)'; cx.lineWidth = 1.5; cx.setLineDash([6, 4]); cx.beginPath(); cx.moveTo(q[0], q[1]); cx.lineTo(T2[0], T2[1]); cx.stroke(); cx.setLineDash([]);
-      cx.beginPath(); cx.arc(q[0], q[1], r0 + 5 * pulse, 0, 7); cx.fillStyle = 'rgba(214,40,40,.22)'; cx.fill();
-      cx.beginPath(); cx.arc(q[0], q[1], r0, 0, 7); cx.fillStyle = '#d62828'; cx.fill(); cx.strokeStyle = '#fff'; cx.lineWidth = 1.5; cx.stroke();
-      cx.fillStyle = '#fff'; cx.font = 'bold 9px Arial'; cx.textAlign = 'center'; cx.fillText('' + Math.round(r.str), q[0], q[1] + 3); });
+    // 雅各之子：一团随人数增减的小红点（约 3 人一个，3–7 个），围着队伍中心缓慢游移；看不见时只留“最后目击”虚线圈
+    var H = hrNow(), sc = z >= 11 ? 1.4 : z >= 9 ? 1.1 : .9;
+    m.r.forEach(function (r) {
+      var a = rVis(r);
+      if (a < .05) { if (r.seen) { var Q = px(r.seen); cx.save(); cx.globalAlpha = .55; cx.setLineDash([3, 3]); cx.strokeStyle = '#b22'; cx.lineWidth = 1.2; cx.beginPath(); cx.arc(Q[0], Q[1], 12 * sc, 0, 7); cx.stroke(); cx.restore(); } return; }
+      var q = px(r.ll), T2 = px(r.home || locLL(r.tgt));
+      cx.save(); cx.globalAlpha = a;
+      if (a > .5) { cx.strokeStyle = 'rgba(200,30,30,.45)'; cx.lineWidth = 1.2; cx.setLineDash([5, 4]); cx.beginPath(); cx.moveTo(q[0], q[1]); cx.lineTo(T2[0], T2[1]); cx.stroke(); cx.setLineDash([]); }
+      var n = Math.max(3, Math.min(7, Math.round(r.str / 3)));
+      for (var i = 0; i < n; i++) {
+        var ang = i / n * 6.283 + MAP.hash(r.id, i, 5) * 1.2 + H * .07 * (i % 2 ? 1 : -1), rad = (4 + MAP.hash(r.id, i, 9) * 8) * sc;
+        var jx = (MAP.hash(H, r.id, i * 2 + 1) - .5) * 3 * sc, jy = (MAP.hash(H, r.id, i * 2 + 2) - .5) * 3 * sc;
+        var x = q[0] + Math.cos(ang) * rad + jx, y = q[1] + Math.sin(ang) * rad * .8 + jy;
+        cx.beginPath(); cx.arc(x, y, 3 * sc, 0, 7); cx.fillStyle = '#d62828'; cx.fill(); cx.strokeStyle = 'rgba(255,255,255,.9)'; cx.lineWidth = 1; cx.stroke();
+      }
+      cx.restore();
+    });
     cx.textAlign = 'left';
   }
 
