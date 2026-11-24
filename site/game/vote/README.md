@@ -6,5 +6,8 @@
   License: **Public domain** (per Commons; source: ATSDR/CDC state fact sheets, a US federal work).
   No freely licensed Navajo County seal was found on Commons, so the state seal is used.
 
-Design reference: Granicus VoteCast public display (council chambers, 2008–2009):
-agenda item, motion on the floor, member roll with lit vote indicators, live tally, result banner.
+Design reference (PR game-vote-y2k): 1999–2009 broadcast vote graphics (CNN 2008/2009 election-night
+boards, C-SPAN roll-call lower thirds, Windows XP/Vista chrome). Five seats at 72° around a pentagonal
+lacquer table with a chrome rim; a pentagram inlay joins the seats and lights green/red as each vote is cast.
+All table, orb, plaque and medallion graphics are drawn in SVG/CSS; no other image assets are used.
+Fonts: IM Fell English (SIL OFL, already bundled via ../fell.css) for English; system CJK sans for Chinese.

@@ -291,49 +291,86 @@
     var yes = v.filter(Boolean).length; S.lastVote = { id: l.id, v: v, yes: yes, P: P }; S.votes[l.id] = { yes: yes, day: S.day };
     return yes >= 3;
   }
-  // ---------- 表决界面（仿 2009 年 Granicus VoteCast 会议厅公共显示屏：议程项 + 动议 + 唱名表格 + 计票板 + 结果横幅） ----------
+  // ---------- 表决界面（千禧年代选举之夜转播图：五边形圆桌、五角星镶嵌、逐席唱名点亮） ----------
   function sg(n) { return (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(1); }
   function voteScreen(l, done) {
+    // 千禧年代电视选举之夜风格：五边形圆桌，五座按 72° 排布，五角星细线镶嵌，逐席唱名点亮
     var ok = boardVote(l), P = S.lastVote.P, yes = S.lastVote.yes, d = S.date;
-    var WD = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'], WZ = '日一二三四五六';
-    var hh = S.hour == null ? 10 : S.hour, ap = hh < 12 ? 'AM' : 'PM', h12 = hh % 12 || 12, mm = '00';
+    var WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], WZ = '日一二三四五六';
+    var MO = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+    var hh = S.hour == null ? 10 : S.hour, ap = hh < 12 ? 'a.m.' : 'p.m.', h12 = hh % 12 || 12;
     var item = D.laws.indexOf(l) + 1, res = '2009-' + String(100 + S.day).slice(-3);
-    var rows = D.board.map(function (b, k) {
-      var p = P[k], area = b.area ? b.area : (b.tie === 'navajo' ? ['纳瓦霍保留地', 'Navajo Nation'] : ['县内非保留地', 'Off-reservation']);
-      return '<tr id="vcr' + k + '"><td class="vc-d"><b>' + b.d + '</b><small>DIST.</small></td>' +
-        '<td class="vc-m"><div class="vc-nm">' + L(b.zh, b.en) + '</div><div class="vc-ar">' + L('第' + b.d + '区 · ' + area[0], 'District ' + b.d + ' · ' + area[1]) + '</div></td>' +
-        '<td class="vc-v"><span class="vc-lamp"></span><span class="vc-vt" id="vcv' + k + '">' + L('待投', 'Pending') + '</span></td></tr>';
-    }).join('');
-    var seg = ''; for (var s = 0; s < 5; s++) seg += '<i id="vcg' + s + '"></i>';
+    var W = 780, H = 388, cx = 390, cy = 202, R = 122;
+    function pt(r, a) { a = a * Math.PI / 180; return [cx + r * Math.sin(a), cy - r * Math.cos(a)]; }
+    function poly(r, off, rc) {   // 圆角正五边形
+      var v = [], s = ''; for (var k = 0; k < 5; k++) v.push(pt(r, off + 72 * k));
+      for (k = 0; k < 5; k++) {
+        var a = v[(k + 4) % 5], b = v[k], c = v[(k + 1) % 5], t1 = rc / Math.hypot(b[0] - a[0], b[1] - a[1]), t2 = rc / Math.hypot(c[0] - b[0], c[1] - b[1]);
+        var p1 = [b[0] + (a[0] - b[0]) * t1, b[1] + (a[1] - b[1]) * t1], p2 = [b[0] + (c[0] - b[0]) * t2, b[1] + (c[1] - b[1]) * t2];
+        s += (k ? 'L' : 'M') + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1) + 'Q' + b[0].toFixed(1) + ' ' + b[1].toFixed(1) + ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+      }
+      return s + 'Z';
+    }
+    var seat = [0, 1, 2, 3, 4].map(function (k) { return pt(R, 72 * k); });
+    var svg = '<svg class="rt-svg" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '"><defs>' +
+      '<linearGradient id="rtCh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6f8fa"/><stop offset=".46" stop-color="#c2c9d2"/><stop offset=".5" stop-color="#8d98a6"/><stop offset="1" stop-color="#dde2e8"/></linearGradient>' +
+      '<radialGradient id="rtLq" cx="50%" cy="38%" r="62%"><stop offset="0" stop-color="#22487a"/><stop offset=".6" stop-color="#112b50"/><stop offset="1" stop-color="#08162b"/></radialGradient>' +
+      '<linearGradient id="rtSh" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity=".03"/><stop offset=".46" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
+      '<filter id="rtGl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+      '<filter id="rtDs" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#000" flood-opacity=".55"/></filter></defs>';
+    svg += '<path d="' + poly(150, 36, 26) + '" fill="url(#rtCh)" filter="url(#rtDs)"/>' +
+      '<path d="' + poly(150, 36, 26) + '" fill="none" stroke="#4b5868" stroke-width="1"/>' +
+      '<path d="' + poly(143, 36, 22) + '" fill="url(#rtLq)" stroke="#06101f" stroke-width="1"/>' +
+      '<path d="' + poly(133, 36, 18) + '" fill="none" stroke="#d8bf7f" stroke-opacity=".55" stroke-width=".8"/>' +
+      '<path d="' + poly(129, 36, 16) + '" fill="none" stroke="#d8bf7f" stroke-opacity=".22" stroke-width=".6"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="92" fill="none" stroke="#d8bf7f" stroke-opacity=".3" stroke-width=".6" stroke-dasharray="1 3"/>';
+    var base = '', lit = '';
+    for (var k = 0; k < 5; k++) {
+      var a = seat[k], b = seat[(k + 2) % 5], m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      base += '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '"/>';
+      lit += '<line class="rt-ln s' + k + '" x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + m[0].toFixed(1) + '" y2="' + m[1].toFixed(1) + '"/>' +
+        '<line class="rt-ln s' + ((k + 2) % 5) + '" x1="' + b[0].toFixed(1) + '" y1="' + b[1].toFixed(1) + '" x2="' + m[0].toFixed(1) + '" y2="' + m[1].toFixed(1) + '"/>';
+    }
+    svg += '<g stroke="#d8bf7f" stroke-opacity=".5" stroke-width="1">' + base + '</g><g class="rt-lit" filter="url(#rtGl)">' + lit + '</g>' +
+      '<path d="' + poly(143, 36, 22) + '" fill="url(#rtSh)"/></svg>';
+    // 名牌位置：顶座在上方，两侧座在外侧，下方两座斜向外下方
+    var PL = [[cx, 27], [seat[1][0] + 120, seat[1][1]], [seat[2][0] + 84, seat[2][1] + 57], [seat[3][0] - 84, seat[3][1] + 57], [seat[4][0] - 120, seat[4][1]]];
+    var ov = '';
+    D.board.forEach(function (b, k) {
+      ov += '<div class="rt-orb" id="rto' + k + '" style="left:' + seat[k][0].toFixed(1) + 'px;top:' + seat[k][1].toFixed(1) + 'px">' + b.d + '</div>' +
+        '<div class="rt-pl" id="rtp' + k + '" style="left:' + PL[k][0].toFixed(0) + 'px;top:' + PL[k][1].toFixed(0) + 'px"><div class="rt-nm">' + b.en + '</div>' +
+        '<div class="rt-l2"><span class="rt-ds">' + L('第' + b.d + '区', 'District ' + b.d) + '</span><span class="rt-vt" id="rtv' + k + '">' + L('待投', 'Pending') + '</span></div></div>';
+    });
+    var pips = ''; for (k = 0; k < 5; k++) pips += '<i id="rtq' + k + '"' + (k === 2 ? ' class="ln"' : '') + '></i>';
+    ov += '<div class="rt-med" style="left:' + cx + 'px;top:' + cy + 'px"><div class="rt-mk">' + L('赞成 · 反对', 'Yea · Nay') + '</div><div class="rt-tc" id="rtc">0<span></span>0</div>' +
+      '<div class="rt-pp">' + pips + '</div><div class="rt-need">' + L('5 票中 3 票通过', 'Three of five to carry') + '</div></div>';
     var w = document.getElementById('magi'); if (!w) { w = document.createElement('div'); w.id = 'magi'; w.className = 'win7'; document.body.appendChild(w); }
-    w.innerHTML = '<div class="window glass active rt-win"><div class="title-bar"><div class="title-bar-text">VoteCast · ' + T('公共显示屏', 'Public Display') + '</div></div><div class="window-body rt-body">' +
-      '<div class="vc-top"><img class="vc-seal" src="vote/az-seal.png" alt="" width="58" height="58">' +
-        '<div class="vc-org"><div class="vc-o1">' + L('纳瓦霍县监事会', 'Navajo County') + '</div><div class="vc-o2">' + T('Navajo County Board of Supervisors', 'Board of Supervisors · State of Arizona') + '</div><div class="vc-o3">' + L('例会 · 亚利桑那州霍尔布鲁克 · 县政府大楼会议厅', 'Regular meeting · Board chambers · Holbrook, Arizona') + '</div></div>' +
-        '<div class="vc-clk"><b>' + h12 + ':' + mm + ' <small>' + ap + '</small></b><span>' + L('星期' + WZ[d.getDay()] + ' ' + d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d.getDate(), WD[d.getDay()] + ' ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear()) + '</span></div></div>' +
-      '<div class="vc-item"><span class="vc-tag">' + L('议程', 'Agenda item') + ' <b>' + item + '</b></span><span class="vc-res">' + L('决议 ', 'Resolution ') + res + '</span><span class="vc-st wait" id="vcst">' + L('表决进行中', 'Vote in progress') + '</span></div>' +
-      '<div class="vc-mo"><div class="vc-lb">' + L('待表决动议', 'Motion on the floor') + '</div><div class="vc-tt">' + L(l.zh, l.en) + '</div>' +
-        '<div class="vc-sub">' + L('提交：县应急管理办公室 · 需过半数（5 票中 3 票）', 'Submitted by Office of Emergency Management · Majority required (3 of 5)') + '</div></div>' +
-      '<div class="vc-main"><table class="vc-tb"><thead><tr><th>' + L('选区', 'Dist.') + '</th><th>' + L('监事', 'Supervisor') + '</th><th class="c">' + L('表决', 'Vote') + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
-        '<div class="vc-tl"><div class="vc-lb">' + L('计票', 'Tally') + '</div><div class="vc-gr">' +
-          '<div class="vc-n y"><b id="vcy">0</b><span>' + L('赞成', 'Yea') + '</span></div><div class="vc-n n"><b id="vcn">0</b><span>' + L('反对', 'Nay') + '</span></div>' +
-          '<div class="vc-n o"><b>0</b><span>' + L('弃权', 'Abstain') + '</span></div><div class="vc-n o"><b>0</b><span>' + L('缺席', 'Absent') + '</span></div></div>' +
-          '<div class="vc-seg">' + seg + '<em></em></div><div class="vc-need">' + L('通过线 3 票', 'Pass line: 3') + '</div></div></div>' +
-      '<div class="vc-ban" id="vcban">' + L('唱名表决进行中…', 'Roll call in progress…') + '</div>' +
-      '<div class="rt-ft"><span class="rt-meta">' + L('纳瓦霍县政府 · 公开会议', 'Navajo County Government · Open meeting') + '</span><button class="rt-ok" disabled>' + T('确定', 'OK') + '</button></div></div></div>';
+    w.innerHTML = '<div class="window glass active rt-win"><div class="title-bar"><div class="title-bar-text">Navajo County · ' + T('唱名表决', 'Roll Call Vote') + '</div></div><div class="window-body rt-body">' +
+      '<div class="rt-hd"><img class="rt-seal" src="vote/az-seal.png" alt="" width="52" height="52">' +
+        '<div class="rt-org"><div class="rt-o1">Navajo County Board of Supervisors</div><div class="rt-o2">' + L('例会 · 亚利桑那州霍尔布鲁克 · 县政府会议厅', 'Regular Meeting · Board Chambers · Holbrook, Arizona') + '</div></div>' +
+        '<div class="rt-clk"><b>' + h12 + ':00 <small>' + ap + '</small></b><span>' + L('星期' + WZ[d.getDay()] + ' · ' + d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日', WD[d.getDay()] + ', ' + MO[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()) + '</span></div></div>' +
+      '<div class="rt-ag"><span class="rt-tag">' + L('议程第 ' + item + ' 项', 'Agenda Item ' + item) + '</span><span class="rt-res">' + L('决议 ', 'Resolution ') + res + '</span><span class="rt-st" id="rtst">' + L('表决中', 'Voting') + '</span></div>' +
+      '<div class="rt-mo"><div class="rt-mol">' + L('动议', 'The Motion') + '</div><div class="rt-mot">' + L(l.zh, l.en) + '</div></div>' +
+      '<div class="rt-stage">' + svg + ov + '</div>' +
+      '<div class="rt-ban" id="rtban">' + L('唱名表决进行中…', 'Roll call in progress…') + '</div>' +
+      '<div class="rt-ft"><span class="rt-meta">' + L('纳瓦霍县政府 · 公开会议', 'Navajo County Government · Open Meeting') + '</span><button class="rt-ok" disabled>' + T('确定', 'OK') + '</button></div></div></div>';
     w.hidden = false; var sp0 = S.speed; S.speed = 0; clock();
-    w.querySelector('#vcr0').className = 'cur';
+    w.querySelector('#rto0').classList.add('cur');
     var i = 0, ay = 0, tm = setInterval(function () {
       if (i < 5) {
-        var y = P[i].yes, r = w.querySelector('#vcr' + i); if (y) ay++;
-        r.className = y ? 'yes' : 'no'; w.querySelector('#vcv' + i).innerHTML = y ? L('赞成', 'Yea') : L('反对', 'Nay');
-        w.querySelector('#vcy').textContent = ay; w.querySelector('#vcn').textContent = i + 1 - ay;
-        w.querySelector('#vcg' + (y ? ay - 1 : 4 - (i - ay))).className = y ? 'g' : 'r';
-        i++; if (i < 5) w.querySelector('#vcr' + i).className = 'cur'; return;
+        var y = P[i].yes, c = y ? 'y' : 'n'; if (y) ay++;
+        var o = w.querySelector('#rto' + i); o.classList.remove('cur'); o.classList.add(c);
+        w.querySelector('#rtp' + i).classList.add(c);
+        w.querySelector('#rtv' + i).innerHTML = y ? L('赞成', 'Yea') : L('反对', 'Nay');
+        [].forEach.call(w.querySelectorAll('.rt-ln.s' + i), function (e) { e.setAttribute('class', 'rt-ln s' + i + ' ' + c); });
+        w.querySelector('#rtc').innerHTML = ay + '<span></span>' + (i + 1 - ay);
+        var q = w.querySelector('#rtq' + (y ? ay - 1 : 4 - (i - ay))); q.className = (q.className + ' ' + c).trim();
+        i++; if (i < 5) w.querySelector('#rto' + i).classList.add('cur'); return;
       }
       clearInterval(tm);
-      var st = w.querySelector('#vcst'); st.className = 'vc-st ' + (ok ? 'yes' : 'no'); st.innerHTML = ok ? L('已通过', 'Carried') : L('未通过', 'Failed');
-      var bn = w.querySelector('#vcban'); bn.className = 'vc-ban ' + (ok ? 'yes' : 'no');
-      bn.innerHTML = (ok ? L('动议通过', 'Motion carried') : L('动议未通过', 'Motion failed')) + '<b>' + yes + ' – ' + (5 - yes) + '</b>';
+      var st = w.querySelector('#rtst'); st.className = 'rt-st ' + (ok ? 'y' : 'n'); st.innerHTML = ok ? L('通过', 'Carried') : L('未通过', 'Failed');
+      var bn = w.querySelector('#rtban'); bn.className = 'rt-ban ' + (ok ? 'y' : 'n');
+      bn.innerHTML = '<span>' + (ok ? L('动议通过', 'Motion Passed') : L('动议未通过', 'Motion Failed')) + '</span><b>' + yes + '<i></i>' + (5 - yes) + '</b>';
       var b = w.querySelector('.rt-ok'); b.disabled = false; b.focus(); b.onclick = function () { w.hidden = true; S.speed = sp0; clock(); done(ok); };
     }, 550);
   }
