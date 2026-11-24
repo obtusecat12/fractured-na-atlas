@@ -324,14 +324,14 @@ ul.help li{margin:0 0 6px;line-height:17px}
 #magi .rt-win{width:820px;max-width:97vw}
 #magi .rt-body{background:#fff;margin:0;padding:0;color:#2b2b2b;font-family:Arial,Helvetica,"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","WenQuanYi Micro Hei","SimHei",sans-serif;font-size:12px;line-height:1.35}
 #magi .zh{font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","WenQuanYi Micro Hei","SimHei",sans-serif;letter-spacing:0}
-#magi .en{font-family:Arial,Helvetica,sans-serif}
+#magi .en{font-family:"IM Fell English",Georgia,serif;font-style:italic}
 /* 抬头：会徽 + 机构名 + 时钟 */
 #magi .vc-top{display:flex;align-items:center;gap:14px;padding:10px 16px 9px;background:linear-gradient(#ffffff,#eef2f7);border-bottom:3px solid #1d3f73;box-shadow:inset 0 -1px 0 #c9a54a}
 #magi .vc-seal{width:58px;height:58px;flex:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
 #magi .vc-org{flex:1;min-width:0}
 #magi .vc-o1{font-size:20px;font-weight:bold;color:#1d3f73;line-height:24px}
 #magi .vc-o1 .en{text-transform:uppercase;letter-spacing:.32em;font-size:18px}
-#magi .vc-o2{font:bold 10px Arial,Helvetica,sans-serif;text-transform:uppercase;letter-spacing:.38em;color:#9a7a2a;margin-top:2px}
+#magi .vc-o2{font:italic 15px "IM Fell English",Georgia,serif;letter-spacing:.05em;color:#9a7a2a;margin-top:1px}
 #magi .vc-o3{font-size:11px;color:#777;margin-top:3px}
 #magi .vc-o3 .en{text-transform:uppercase;letter-spacing:.12em;font-size:10px}
 #magi .vc-clk{flex:none;text-align:center;padding:5px 12px 4px;border:1px solid #8fa3bf;border-radius:4px;background:linear-gradient(#fdfdfd,#e3e9f1 55%,#d6dee9 56%,#e8edf3);box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(0,0,0,.12)}

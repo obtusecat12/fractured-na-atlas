@@ -302,7 +302,6 @@
       var p = P[k], area = b.area ? b.area : (b.tie === 'navajo' ? ['纳瓦霍保留地', 'Navajo Nation'] : ['县内非保留地', 'Off-reservation']);
       return '<tr id="vcr' + k + '"><td class="vc-d"><b>' + b.d + '</b><small>DIST.</small></td>' +
         '<td class="vc-m"><div class="vc-nm">' + L(b.zh, b.en) + '</div><div class="vc-ar">' + L('第' + b.d + '区 · ' + area[0], 'District ' + b.d + ' · ' + area[1]) + '</div></td>' +
-        '<td class="vc-fx">' + L('立场 ', 'Stance ') + sg(p.base) + '<br>' + (p.nav ? L('族关系 ', 'Navajo ') : L('信任 ', 'Trust ')) + sg(p.s) + ' · ' + L('波动 ', 'Drift ') + sg(p.n) + '</td>' +
         '<td class="vc-v"><span class="vc-lamp"></span><span class="vc-vt" id="vcv' + k + '">' + L('待投', 'Pending') + '</span></td></tr>';
     }).join('');
     var seg = ''; for (var s = 0; s < 5; s++) seg += '<i id="vcg' + s + '"></i>';
@@ -313,14 +312,14 @@
         '<div class="vc-clk"><b>' + h12 + ':' + mm + ' <small>' + ap + '</small></b><span>' + L('星期' + WZ[d.getDay()] + ' ' + d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d.getDate(), WD[d.getDay()] + ' ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear()) + '</span></div></div>' +
       '<div class="vc-item"><span class="vc-tag">' + L('议程', 'Agenda item') + ' <b>' + item + '</b></span><span class="vc-res">' + L('决议 ', 'Resolution ') + res + '</span><span class="vc-st wait" id="vcst">' + L('表决进行中', 'Vote in progress') + '</span></div>' +
       '<div class="vc-mo"><div class="vc-lb">' + L('待表决动议', 'Motion on the floor') + '</div><div class="vc-tt">' + L(l.zh, l.en) + '</div>' +
-        '<div class="vc-sub">' + LA(l.fx) + '<span class="vc-sep">|</span>' + L('提交：县应急管理办公室 · 需过半数（5 票中 3 票）', 'Submitted by Office of Emergency Management · Majority required (3 of 5)') + '</div></div>' +
-      '<div class="vc-main"><table class="vc-tb"><thead><tr><th>' + L('选区', 'Dist.') + '</th><th>' + L('监事', 'Supervisor') + '</th><th class="r">' + L('倾向', 'Leaning') + '</th><th class="c">' + L('表决', 'Vote') + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+        '<div class="vc-sub">' + L('提交：县应急管理办公室 · 需过半数（5 票中 3 票）', 'Submitted by Office of Emergency Management · Majority required (3 of 5)') + '</div></div>' +
+      '<div class="vc-main"><table class="vc-tb"><thead><tr><th>' + L('选区', 'Dist.') + '</th><th>' + L('监事', 'Supervisor') + '</th><th class="c">' + L('表决', 'Vote') + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
         '<div class="vc-tl"><div class="vc-lb">' + L('计票', 'Tally') + '</div><div class="vc-gr">' +
           '<div class="vc-n y"><b id="vcy">0</b><span>' + L('赞成', 'Yea') + '</span></div><div class="vc-n n"><b id="vcn">0</b><span>' + L('反对', 'Nay') + '</span></div>' +
           '<div class="vc-n o"><b>0</b><span>' + L('弃权', 'Abstain') + '</span></div><div class="vc-n o"><b>0</b><span>' + L('缺席', 'Absent') + '</span></div></div>' +
           '<div class="vc-seg">' + seg + '<em></em></div><div class="vc-need">' + L('通过线 3 票', 'Pass line: 3') + '</div></div></div>' +
       '<div class="vc-ban" id="vcban">' + L('唱名表决进行中…', 'Roll call in progress…') + '</div>' +
-      '<div class="rt-ft"><span class="rt-meta">' + L('信任 ', 'Trust ') + Math.round(S.trust) + ' · ' + L('纳瓦霍族关系 ', 'Navajo relations ') + Math.round(S.stand.navajo) + ' · ' + L('第 1、2 区看族关系，其余看信任', 'Districts 1–2 follow Navajo relations, 3–5 follow trust') + '</span><button class="rt-ok" disabled>' + T('确定', 'OK') + '</button></div></div></div>';
+      '<div class="rt-ft"><span class="rt-meta">' + L('纳瓦霍县政府 · 公开会议', 'Navajo County Government · Open meeting') + '</span><button class="rt-ok" disabled>' + T('确定', 'OK') + '</button></div></div></div>';
     w.hidden = false; var sp0 = S.speed; S.speed = 0; clock();
     w.querySelector('#vcr0').className = 'cur';
     var i = 0, ay = 0, tm = setInterval(function () {
