@@ -630,28 +630,86 @@
     var d = S.date, ts = (d.getMonth() + 1) + '/' + d.getDate() + '/09 ' + ('0' + S.hour).slice(-2) + ':00';
     atm.receipt = ['NAVAJO COUNTY TREASURER', '100 E CARTER DR', 'HOLBROOK AZ 86025', '', ts + '  TERM 0117', '--------------------------------'].concat(lines, ['--------------------------------', 'CHECKING  ' + fmtK(S.funds.county).padStart(16), 'LGIP POOL ' + fmtK(S.econ.lgip).padStart(16), '', 'THANK YOU']);
   }
+  // 右侧：2009 年网上银行（Copper State Bank Online · 公共资金账户），参照 2009 年 Wells Fargo Online 版式
+  var ob = { v: 'sum', prev: null, cur: null, conf: null };
+  function obUSD(k) { var n = Math.abs(k) * 1000; return (k < 0 ? '−$' : '$') + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function obStamp(d, h) { var h12 = h % 12 || 12; return (d.getMonth() + 1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(2) + ' ' + h12 + ':' + ('0' + (h * 7 + d.getDate() * 3) % 60).slice(-2) + ' ' + (h < 12 ? 'AM' : 'PM') + ' MST'; }
+  function obMark() { var d = S.date, h = S.hour == null ? 10 : S.hour; ob.prev = ob.cur || obStamp(new Date(d.getTime() - 864e5), 16); ob.cur = obStamp(d, h); }
   function atmSide() {
-    var inn = atm.mode === 'in', busy = atm.st === 'busy', log = (S.econ.atmlog || []).slice(0, 3);
-    var tile = function (k, zh, en, v, sub) { var src = (k === 'chk') === inn; return '<div class="at-tile' + (src ? ' src' : ' dst') + '"><div class="at-k">' + L(zh, en) + '<span class="at-role">' + (src ? L('转出', 'From') : L('转入', 'To')) + '</span></div><div class="at-v">' + fmtK(v) + '</div><div class="at-s">' + sub + '</div></div>'; };
-    $('#atmside').innerHTML =
-      '<div class="at-head"><img src="icons/bank32.png" width="32" height="32" alt=""><div><div class="at-t">' + L('县司库 · 资金调度', 'County Treasurer · Transfers') + '</div><div class="at-st">' + L('在县支票账户和州库地方政府投资池之间划转', 'Move money between county checking and the state LGIP') + '</div></div></div>' +
-      '<div class="at-pane">' +
-        '<div class="at-row">' + tile('chk', '支票账户', 'Checking', S.funds.county, L('县一般基金', 'General fund')) +
-          '<button class="at-swap' + (inn ? '' : ' rev') + '" data-atsw="1"><span>➜</span><i>' + L('换向', 'Swap') + '</i></button>' +
-          tile('pool', '州库投资池', 'State pool', S.econ.lgip, L('年收益 0.25% · 本月应计 ', '0.25% yield · accrued ') + fmtK(S.econ.accr)) + '</div>' +
-        '<div class="at-lbl">' + L('金额', 'Amount') + '</div>' +
-        '<div class="at-amt"><span>$</span><input id="aamt" inputmode="numeric" maxlength="5" value="' + atm.entry + '" placeholder="0"' + (busy ? ' disabled' : '') + '><span>K</span></div>' +
-        '<div class="at-quick">' + [100, 500, 1000, 2000].map(function (v) { return '<button class="wb7' + (+atm.entry === v ? ' on' : '') + '" data-aq="' + v + '">' + fmtK(v) + '</button>'; }).join('') + '</div>' +
-        '<div class="at-lbl">' + L('最近交易', 'Recent') + '</div>' +
-        '<div class="at-log">' + (log.length ? log.map(function (r) { return '<div><span>' + r.d + '</span><span>' + LA(r.t) + '</span><b class="' + (r.in ? 'pos' : 'neg') + '">' + fmtK(r.v) + '</b></div>'; }).join('') : '<div class="at-none">' + L('还没有交易', 'No transactions yet') + '</div>') + '</div>' +
-      '</div>' +
-      '<div class="at-foot"><span id="atmmsg">' + (atm.msg ? atm.msg : '') + '</span><button class="wb7 def" id="atmgo"' + (busy ? ' disabled' : '') + '>' + (inn ? L('存入', 'Deposit') : L('取回', 'Withdraw')) + '</button><button class="wb7" id="atmx2">' + L('关闭', 'Close') + '</button></div>';
+    var inn = atm.mode === 'in', busy = atm.st === 'busy', ec = S.econ, v = ob.v;
+    var acct = { chk: [L('县一般基金 支票', 'County General Fund Checking'), 'XXXXXX4417'], pool: [L('州库地方政府投资池 5', 'State LGIP Pool 5'), 'XXXXXX0925'] };
+    var tabs = [['sum', '账户总览', 'Account Summary'], ['xfer', '转账', 'Transfers'], ['bill', '账单支付', 'Bill Pay'], ['stmt', '对账单', 'Statements']];
+    var cur = v === 'verify' || v === 'conf' ? 'xfer' : v;
+    var h = '<div class="ob-top"><div class="ob-brand"><span class="ob-w">COPPER STATE</span><span class="ob-b">BANK</span><i>Online<sup>®</sup> · Public Funds</i></div>' +
+      '<div class="ob-util"><a href="#" data-obv="sum">' + L('首页', 'Home') + '</a> | <a href="#" id="atmx2">' + L('退出登录', 'Sign Off') + '</a></div></div>' +
+      '<div class="ob-nav">' + tabs.map(function (t) { return '<a href="#" data-obv="' + t[0] + '"' + (cur === t[0] ? ' class="on"' : '') + '>' + L(t[1], t[2]) + '</a>'; }).join('') + '</div>' +
+      '<div class="ob-wel"><b>' + L('欢迎，纳瓦霍县司库', 'Welcome, Navajo County Treasurer') + '</b><span>' + L('上次登录：', 'Last sign on: ') + (ob.prev || '') + '</span></div><div class="ob-body">';
+    if (v === 'sum') {
+      var dep = ec.lgip + S.funds.county + ec.flood, owed = 0; ec.loans.forEach(function (l) { owed += l.bal; });
+      h += '<div class="ob-h1">' + L('账户总览', 'Account Summary') + '</div>' +
+        '<table class="ob-t"><tr class="ob-cap"><th colspan="2">' + L('现金账户', 'Cash Accounts') + '</th><th>' + L('可用余额', 'Available Balance') + '</th></tr>' +
+        '<tr><td><a href="#" data-obv="xfer">' + acct.chk[0] + '</a></td><td class="ob-n">' + acct.chk[1] + '</td><td class="ob-m' + (S.funds.county < 0 ? ' ob-neg' : '') + '">' + obUSD(S.funds.county) + '</td></tr>' +
+        '<tr class="z"><td>' + L('防洪区基金（专款）', 'Flood Control District Fund') + '</td><td class="ob-n">XXXXXX2203</td><td class="ob-m">' + obUSD(ec.flood) + '</td></tr>' +
+        '<tr class="ob-cap"><th colspan="2">' + L('投资账户', 'Investment Accounts') + '</th><th>' + L('余额', 'Balance') + '</th></tr>' +
+        '<tr><td><a href="#" data-obv="xfer">' + acct.pool[0] + '</a></td><td class="ob-n">' + acct.pool[1] + '</td><td class="ob-m">' + obUSD(ec.lgip) + '</td></tr>' +
+        '<tr class="z"><td class="ob-sub" colspan="2">' + L('本月应计利息', 'Accrued interest, this month') + '</td><td class="ob-m">' + obUSD(ec.accr) + '</td></tr>';
+      if (ec.loans.length) { h += '<tr class="ob-cap"><th colspan="2">' + L('借款账户', 'Credit Accounts') + '</th><th>' + L('未偿余额', 'Outstanding') + '</th></tr>'; ec.loans.forEach(function (l, i) { var d = loanDef(l.id); h += '<tr' + (i % 2 ? ' class="z"' : '') + '><td>' + L(d.zh, d.en) + '</td><td class="ob-n">XXXXXX' + (5100 + i * 37) + '</td><td class="ob-m">' + obUSD(l.bal) + '</td></tr>'; }); }
+      h += '<tr class="ob-tot"><td colspan="2">' + L('存款与投资合计', 'Total deposits & investments') + '</td><td class="ob-m">' + obUSD(dep) + '</td></tr></table>';
+      var rows = (ec.atmlog || []).slice(0, 3).map(function (r) { return [r.d, r.in ? L('网上转账 自投资池', 'Online transfer from LGIP') : L('网上转账 至投资池', 'Online transfer to LGIP'), r.in ? r.v : -r.v]; });
+      ec.pending.forEach(function (q) { var d = loanDef(q.id); rows.push([L('待入账', 'Pending'), L(d.zh, d.en), q.amt]); });
+      var ws = new Date(S.date.getTime() - S.date.getDay() * 864e5), wd = (ws.getMonth() + 1) + '/' + ws.getDate();
+      if (ec.last) { rows.push([wd, L('上周税费入账（ACH）', 'ACH deposits, last week'), ec.last.rev], [wd, L('上周县支出（ACH）', 'ACH debits, last week'), -ec.last.exp]); }
+      h += '<div class="ob-h2">' + L('近期交易 · 县一般基金 支票', 'Recent Activity · General Fund Checking') + '</div><table class="ob-t ob-act"><tr class="ob-cap"><th>' + L('日期', 'Date') + '</th><th>' + L('说明', 'Description') + '</th><th>' + L('金额', 'Amount') + '</th></tr>' +
+        (rows.length ? rows.slice(0, 5).map(function (r, i) { return '<tr' + (i % 2 ? ' class="z"' : '') + '><td class="ob-n">' + r[0] + '</td><td>' + r[1] + '</td><td class="ob-m ' + (r[2] >= 0 ? 'ob-pos' : '') + '">' + obUSD(r[2]) + '</td></tr>'; }).join('') : '<tr><td colspan="3" class="ob-none">' + L('暂无交易记录', 'No recent activity') + '</td></tr>') + '</table>';
+    } else if (v === 'xfer' || v === 'verify') {
+      var fromK = inn ? 'chk' : 'pool', toK = inn ? 'pool' : 'chk', opt = function (sel) { return ['chk', 'pool'].map(function (k) { return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + T(k === 'chk' ? '县一般基金 支票' : '州库投资池 5', k === 'chk' ? 'General Fund Checking' : 'State LGIP Pool 5') + ' ' + acct[k][1].slice(-4) + ' — ' + obUSD(k === 'chk' ? S.funds.county : ec.lgip) + '</option>'; }).join(''); };
+      if (v === 'xfer') {
+        h += '<div class="ob-h1">' + L('转账', 'Transfer') + '<span class="ob-step">' + L('第 1 步，共 3 步', 'Step 1 of 3') + '</span></div><div class="ob-form">' +
+          '<label>' + L('转出账户', 'From') + '</label><select id="obfrom">' + opt(fromK) + '</select><a href="#" class="ob-sw" data-atsw="1" title="Swap">⇅</a>' +
+          '<label>' + L('转入账户', 'To') + '</label><select id="obto">' + opt(toK) + '</select>' +
+          '<label>' + L('金额', 'Amount') + '</label><div class="ob-amt">$<input id="aamt" inputmode="numeric" maxlength="5" value="' + atm.entry + '" placeholder="0"' + (busy ? ' disabled' : '') + '><span>,000.00</span></div>' +
+          '<div class="ob-quick">' + [100, 500, 1000, 2000].map(function (q) { return '<a href="#" data-aq="' + q + '"' + (+atm.entry === q ? ' class="on"' : '') + '>' + obUSD(q).replace('.00', '') + '</a>'; }).join('') + '</div>' +
+          '<label>' + L('日期', 'Date') + '</label><div class="ob-ro">' + (S.date.getMonth() + 1) + '/' + S.date.getDate() + '/' + S.date.getFullYear() + ' ' + L('（今日）', '(today)') + '</div>' +
+          '<label>' + L('频率', 'Frequency') + '</label><div class="ob-ro">' + L('一次性', 'One time') + '</div></div>' +
+          '<div class="ob-err" id="atmmsg">' + (atm.msg || '') + '</div><div class="ob-btns"><button class="ob-btn" data-obv="sum">' + L('取消', 'Cancel') + '</button><button class="ob-btn ob-pri" data-obgo="1">' + L('继续', 'Continue') + '</button></div>' +
+          '<div class="ob-note">' + L('投资池资金于每月 1 日计息入账。', 'Pool interest is credited on the 1st of each month.') + '</div>';
+      } else {
+        h += '<div class="ob-h1">' + L('确认转账', 'Verify Transfer') + '<span class="ob-step">' + L('第 2 步，共 3 步', 'Step 2 of 3') + '</span></div><p class="ob-p">' + L('请核对以下信息，然后点击“转账”。', 'Please review the details, then click Transfer.') + '</p>' +
+          '<table class="ob-t ob-kv"><tr><th>' + L('转出账户', 'From') + '</th><td>' + acct[fromK][0] + ' ' + acct[fromK][1] + '</td></tr><tr class="z"><th>' + L('转入账户', 'To') + '</th><td>' + acct[toK][0] + ' ' + acct[toK][1] + '</td></tr><tr><th>' + L('金额', 'Amount') + '</th><td><b>' + obUSD(+atm.entry) + '</b></td></tr><tr class="z"><th>' + L('日期', 'Date') + '</th><td>' + (S.date.getMonth() + 1) + '/' + S.date.getDate() + '/' + S.date.getFullYear() + '</td></tr></table>' +
+          '<div class="ob-err" id="atmmsg">' + (atm.msg || '') + '</div><div class="ob-btns"><button class="ob-btn" data-obv="xfer">' + L('修改', 'Edit') + '</button><button class="ob-btn ob-pri" id="atmgo"' + (busy ? ' disabled' : '') + '>' + L('转账', 'Transfer') + '</button></div>';
+      }
+    } else if (v === 'conf') {
+      var c = ob.conf || {};
+      h += '<div class="ob-h1">' + L('转账确认', 'Transfer Confirmation') + '<span class="ob-step">' + L('第 3 步，共 3 步', 'Step 3 of 3') + '</span></div>' +
+        '<div class="ob-ok"><b>✓</b>' + (busy ? L('正在处理您的转账…', 'Your transfer is being processed…') : L('您的转账已完成。', 'Your transfer has been completed.')) + '</div>' +
+        '<table class="ob-t ob-kv"><tr><th>' + L('确认号', 'Confirmation #') + '</th><td><b>' + c.no + '</b></td></tr><tr class="z"><th>' + L('转出账户', 'From') + '</th><td>' + (acct[c.from] || [''])[0] + '</td></tr><tr><th>' + L('转入账户', 'To') + '</th><td>' + (acct[c.to] || [''])[0] + '</td></tr><tr class="z"><th>' + L('金额', 'Amount') + '</th><td>' + obUSD(c.v || 0) + '</td></tr><tr><th>' + L('提交时间', 'Submitted') + '</th><td>' + c.ts + '</td></tr></table>' +
+        '<p class="ob-p">' + L('请保留确认号以备查询。', 'Please keep this confirmation number for your records.') + '</p>' +
+        '<div class="ob-btns"><button class="ob-btn" data-obv="sum">' + L('查看账户总览', 'Account Summary') + '</button><button class="ob-btn ob-pri" data-obv="xfer">' + L('再次转账', 'Make Another Transfer') + '</button></div>';
+    } else if (v === 'bill') {
+      h += '<div class="ob-h1">' + L('账单支付', 'Bill Pay') + '</div><p class="ob-p">' + L('从县一般基金 支票 ' + acct.chk[1] + ' 自动扣款的每周付款', 'Weekly payments from General Fund Checking ' + acct.chk[1]) + '</p>' +
+        '<table class="ob-t"><tr class="ob-cap"><th>' + L('收款方', 'Payee') + '</th><th>' + L('频率', 'Frequency') + '</th><th>' + L('金额', 'Amount') + '</th></tr>' +
+        E.exp.map(function (x, i) { return '<tr' + (i % 2 ? ' class="z"' : '') + '><td>' + L(x.zh, x.en) + '</td><td class="ob-n">' + L('每周', 'Weekly') + '</td><td class="ob-m">' + obUSD(x.wk) + '</td></tr>'; }).join('') + '</table>';
+    } else if (v === 'stmt') {
+      var ms = []; for (var i = 1; i <= 6; i++) { var d = new Date(S.date.getFullYear(), S.date.getMonth() - i + 1, 0); ms.push(d); }
+      h += '<div class="ob-h1">' + L('对账单', 'Statements') + '</div><p class="ob-p">' + L('县一般基金 支票 ' + acct.chk[1], 'General Fund Checking ' + acct.chk[1]) + '</p>' +
+        '<table class="ob-t"><tr class="ob-cap"><th>' + L('对账期截止', 'Statement period ending') + '</th><th>' + L('格式', 'Format') + '</th></tr>' +
+        ms.map(function (d, i) { return '<tr' + (i % 2 ? ' class="z"' : '') + '><td>' + L(d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日', MON[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()) + '</td><td class="ob-n">PDF · ' + L('已邮寄纸质版', 'Paper copy mailed') + '</td></tr>'; }).join('') + '</table>';
+    }
+    h += '</div><div class="ob-foot"><div class="ob-seal"><b>✔</b><span>SECURED<br>SSL · 128-BIT</span></div><div class="ob-fdic">FDIC</div><div class="ob-fl"><a href="#">Privacy, Security &amp; Legal</a> | <a href="#">Online Access Agreement</a><br>© 1999 - 2009 Copper State Bank, N.A. ' + L('FDIC 成员', 'Member FDIC') + '</div></div>';
+    $('#atmside').className = 'ob'; $('#atmside').innerHTML = h;
+  }
+  function obContinue() {
+    var v = +atm.entry || 0, from = atm.mode === 'in' ? S.funds.county : S.econ.lgip;
+    if (v <= 0) atm.msg = T('请输入转账金额。', 'Please enter an amount.');
+    else if (v > from) atm.msg = T('转出账户可用余额不足。', 'The amount exceeds the available balance.');
+    else { atm.msg = ''; ob.v = 'verify'; atm.st = 'amt'; }
+    atmDraw();
   }
   function atmKey(k) {
     if (atm.st === 'busy') return;
     if (k === 'CANCEL') { atm.st = 'main'; atm.entry = ''; atm.msg = ''; return atmDraw(); }
     if (atm.st === 'main') {
-      if (k === 'L1' || k === 'L2') { atm.mode = k === 'L1' ? 'in' : 'out'; atm.st = 'amt'; atm.entry = ''; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); }
+      if (k === 'L1' || k === 'L2') { atm.mode = k === 'L1' ? 'in' : 'out'; atm.st = 'amt'; ob.v = 'xfer'; atm.entry = ''; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); }
       else if (k === 'R1') { atm.st = 'bal'; }
       else if (k === 'R4') { $('#atmwrap').hidden = true; return; }
       return atmDraw();
@@ -673,6 +731,7 @@
     if (v <= 0) return;
     if (v > from) { atm.st = 'amt'; atm.msg = T('余额不足', 'Insufficient funds'); return atmDraw(); }
     if (atm.mode === 'in') { S.funds.county -= v; S.econ.lgip += v; } else { S.econ.lgip -= v; S.funds.county += v; }
+    ob.conf = { no: String(S.date.getFullYear()).slice(2) + ('0' + (S.date.getMonth() + 1)).slice(-2) + ('0' + S.date.getDate()).slice(-2) + '-' + String(100000 + Math.floor(Math.random() * 900000)), from: atm.mode === 'in' ? 'chk' : 'pool', to: atm.mode === 'in' ? 'pool' : 'chk', v: v, ts: obStamp(S.date, S.hour == null ? 10 : S.hour) }; ob.v = 'conf';
     atm.st = 'busy'; atmDraw(); render();
     setTimeout(function () {
       ATM3D.focus('slot');
@@ -680,14 +739,15 @@
     }, 700);
   }
   function openAtm() {
-    $('#atmwrap').hidden = false; atm.st = 'main'; atm.entry = ''; atmSide();
+    $('#atmwrap').hidden = false; atm.st = 'main'; atm.entry = ''; atm.msg = ''; ob.v = 'sum'; obMark(); atmSide();
     var go = function () { ATM3D.mount($('#atmview')); ATM3D.setKeyHandler(atmKey); atmDraw(); };
     if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; document.head.appendChild(s); }
   }
+  document.addEventListener('change', function (e) { var id = e.target.id; if (id !== 'obfrom' && id !== 'obto') return; var chkOut = (id === 'obfrom') === (e.target.value === 'chk'); atm.mode = chkOut ? 'in' : 'out'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); });
   document.addEventListener('input', function (e) { if (e.target.id !== 'aamt') return; var v = e.target.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 5); e.target.value = v; atm.entry = v; if (atm.st !== 'amt') atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.drawScreen(atmSpec()); });
   document.addEventListener('keydown', function (e) {
     if ($('#atmwrap').hidden) return;
-    if (e.target.id === 'aamt') { if (e.key === 'Enter') atmDo(); return; } var k = e.key;
+    if (e.target.id === 'aamt') { if (e.key === 'Enter') obContinue(); return; } var k = e.key;
     if (/^\d$/.test(k)) atmKey(k); else if (k === 'Enter') atmKey('ENTER'); else if (k === 'Backspace') atmKey('CLEAR'); else if (k === 'Escape') atmKey('CANCEL');
   });
   function tabMail() { return ''; }
@@ -1202,6 +1262,8 @@
     if (ds.endr) { location.reload(); return; }
     if (ds.endc) { $('#dlgwrap').hidden = true; return; }
     if (ds.atsw) { if (atm.st === 'busy') return; atm.mode = atm.mode === 'in' ? 'out' : 'in'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); return; }
+    if (ds.obv) { if (atm.st === 'busy') return; ob.v = ds.obv; atm.msg = ''; atmSide(); return; }
+    if (ds.obgo) { obContinue(); return; }
     if (ds.aq) { if (atm.st === 'busy') return; atm.entry = ds.aq; atm.st = 'amt'; atm.msg = ''; atmDraw(); return; }
     if (a.id === 'atmgo') { atm.st = 'amt'; atmDo(); return; }
     if (a.id === 'atmx' || a.id === 'atmx2') { $('#atmwrap').hidden = true; if (window.ATM3D) ATM3D.clearPile(); return; }
