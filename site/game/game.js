@@ -631,7 +631,7 @@
     atm.receipt = ['NAVAJO COUNTY TREASURER', '100 E CARTER DR', 'HOLBROOK AZ 86025', '', ts + '  TERM 0117', '--------------------------------'].concat(lines, ['--------------------------------', 'CHECKING  ' + fmtK(S.funds.county).padStart(16), 'LGIP POOL ' + fmtK(S.econ.lgip).padStart(16), '', 'THANK YOU']);
   }
   // 右侧：2009 年网上银行（Copper State Bank Online · 公共资金账户），参照 2009 年 Wells Fargo Online 版式
-  var ob = { v: 'sum', prev: null, cur: null, conf: null };
+  var ob = { v: 'sum', prev: null, cur: null, conf: null, note: 0 };
   function obUSD(k) { var n = Math.abs(k) * 1000; return (k < 0 ? '−$' : '$') + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function obStamp(d, h) { var h12 = h % 12 || 12; return (d.getMonth() + 1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(2) + ' ' + h12 + ':' + ('0' + (h * 7 + d.getDate() * 3) % 60).slice(-2) + ' ' + (h < 12 ? 'AM' : 'PM') + ' MST'; }
   function obMark() { var d = S.date, h = S.hour == null ? 10 : S.hour; ob.prev = ob.cur || obStamp(new Date(d.getTime() - 864e5), 16); ob.cur = obStamp(d, h); }
@@ -640,13 +640,26 @@
     var acct = { chk: [L('县一般基金 支票', 'County General Fund Checking'), 'XXXXXX4417'], pool: [L('州库地方政府投资池 5', 'State LGIP Pool 5'), 'XXXXXX0925'] };
     var tabs = [['sum', '账户总览', 'Account Summary'], ['xfer', '转账', 'Transfers'], ['bill', '账单支付', 'Bill Pay'], ['stmt', '对账单', 'Statements']];
     var cur = v === 'verify' || v === 'conf' ? 'xfer' : v;
-    var h = '<div class="ob-top"><div class="ob-brand"><span class="ob-w">COPPER STATE</span><span class="ob-b">BANK</span><i>Online<sup>®</sup> · Public Funds</i></div>' +
-      '<div class="ob-util"><a href="#" data-obv="sum">' + L('首页', 'Home') + '</a> | <a href="#" id="atmx2">' + L('退出登录', 'Sign Off') + '</a></div></div>' +
-      '<div class="ob-nav">' + tabs.map(function (t) { return '<a href="#" data-obv="' + t[0] + '"' + (cur === t[0] ? ' class="on"' : '') + '>' + L(t[1], t[2]) + '</a>'; }).join('') + '</div>' +
-      '<div class="ob-wel"><b>' + L('欢迎，纳瓦霍县司库', 'Welcome, Navajo County Treasurer') + '</b><span>' + L('上次登录：', 'Last sign on: ') + (ob.prev || '') + '</span></div><div class="ob-body">';
+    var fk = function (zh, en) { return '<a href="#" data-obfake="1">' + L(zh, en) + '</a>'; };
+    var gold = function (zh, en, at) { return '<button class="ob-go" ' + (at || 'data-obfake="1"') + '>' + L(zh, en) + '</button>'; };
+    var h = '<div class="ob-top"><div class="ob-logo"><b>COPPER<br>STATE</b><i>BANK</i></div><div class="ob-hr">' +
+      '<div class="ob-util">' + fk('查找网点', 'Find Locations') + ' | ' + fk('客户服务', 'Customer Service') + ' | ' + fk('西班牙语', 'En Español') + '<span class="ob-srch"><input id="obq" type="text" aria-label="Search"><button class="ob-sb" data-obfake="1">' + L('搜索', 'Search') + '</button></span></div>' +
+      '<div class="ob-tabs">' + [['个人', 'Personal'], ['小企业', 'Small Business'], ['商业', 'Commercial'], ['政府机构', 'Government']].map(function (t, i) { return '<a href="#"' + (i === 3 ? ' class="on" data-obv="sum"' : ' data-obfake="1"') + '>' + L(t[0], t[1]) + '</a>'; }).join('') + '</div></div></div>' +
+      '<div class="ob-page"><div class="ob-cols"><div class="ob-rail">' +
+      '<div class="ob-sign"><div class="ob-st">' + L('查看您的账户', 'View Your Accounts') + '<span class="ob-lock"></span></div>' +
+      '<div class="ob-who"><b>' + L('纳瓦霍县司库', 'Navajo County Treasurer') + '</b>' + L('已登录', 'You are signed on') + '</div>' +
+      '<div class="ob-goto">' + L('转到：', 'Go to:') + '<select id="obgoto">' + tabs.map(function (t) { return '<option value="' + t[0] + '"' + (cur === t[0] ? ' selected' : '') + '>' + T(t[1], t[2]) + '</option>'; }).join('') + '</select>' + gold('前往', 'Go', 'data-obgoto="1"') + '</div>' +
+      '<div class="ob-last">' + L('上次登录：', 'Last sign on: ') + (ob.prev || '') + '</div><a href="#" id="atmx2">' + L('退出登录', 'Sign Off') + '</a></div>' +
+      '<div class="ob-rh">' + L('账户服务', 'Account Services') + '</div><ul class="ob-rl"><li><a href="#" data-obfake="1"><em>' + L('免费', 'Free') + '*</em> ' + L('公共资金抵押', 'Public Funds Collateral') + '</a></li><li>' + fk('支票防伪付款', 'Positive Pay') + '</li><li><a href="#" data-obv="stmt">' + L('网上对账单', 'Online Statements') + '</a></li><li>' + fk('更多', 'More') + ' &gt;</li></ul>' +
+      '<div class="ob-rh">' + L('查找取款机/网点', 'Find ATMs/Locations') + '</div><div class="ob-zip"><input type="text" placeholder="' + T('邮编或城市', 'ZIP or City, State') + '">' + gold('前往', 'Go') + '</div>' +
+      '<div class="ob-rh">' + L('防范欺诈与网上安全', 'Fraud Prevention & Online Security') + '</div><ul class="ob-rl"><li>' + fk('举报可疑邮件', 'Report Suspicious Email') + '</li><li>' + fk('身份盗用测验', 'Take Our Identity Fraud Quiz') + '</li><li>' + fk('网上安全保障', 'Online Security Guarantee') + '</li></ul>' +
+      '<img class="ob-coach" src="bank/wf_stage.jpg" width="150" height="61" alt=""></div><div class="ob-main">' +
+      '<div class="ob-sub">' + tabs.map(function (t) { return cur === t[0] ? '<b>' + L(t[1], t[2]) + '</b>' : '<a href="#" data-obv="' + t[0] + '">' + L(t[1], t[2]) + '</a>'; }).join(' | ') + '</div>' +
+      (ob.note ? '<div class="ob-un"><b>!</b>' + L('该服务暂时无法使用，请稍后再试。', 'This service is temporarily unavailable. Please try again later.') + '</div>' : '') + '<div class="ob-body">';
     if (v === 'sum') {
       var dep = ec.lgip + S.funds.county + ec.flood, owed = 0; ec.loans.forEach(function (l) { owed += l.bal; });
-      h += '<div class="ob-h1">' + L('账户总览', 'Account Summary') + '</div>' +
+      h += '<div class="ob-ban"><img src="bank/wf_bisbee.jpg" width="150" height="88" alt=""><div><div class="ob-bt">' + L('全新铜州银行公共资金“防伪付款”服务', 'The New Copper State Positive Pay Service') + '</div><div class="ob-bs">' + L('在支票兑付之前核对每一张县支票，把伪造支票挡在门外。', 'Match every county check before it clears and stop counterfeit items at the door.') + '</div>' + gold('了解详情', 'Find Out More') + '</div></div>' +
+        '<div class="ob-h1">' + L('账户总览', 'Account Summary') + '</div>' +
         '<table class="ob-t"><tr class="ob-cap"><th colspan="2">' + L('现金账户', 'Cash Accounts') + '</th><th>' + L('可用余额', 'Available Balance') + '</th></tr>' +
         '<tr><td><a href="#" data-obv="xfer">' + acct.chk[0] + '</a></td><td class="ob-n">' + acct.chk[1] + '</td><td class="ob-m' + (S.funds.county < 0 ? ' ob-neg' : '') + '">' + obUSD(S.funds.county) + '</td></tr>' +
         '<tr class="z"><td>' + L('防洪区基金（专款）', 'Flood Control District Fund') + '</td><td class="ob-n">XXXXXX2203</td><td class="ob-m">' + obUSD(ec.flood) + '</td></tr>' +
@@ -695,7 +708,12 @@
         '<table class="ob-t"><tr class="ob-cap"><th>' + L('对账期截止', 'Statement period ending') + '</th><th>' + L('格式', 'Format') + '</th></tr>' +
         ms.map(function (d, i) { return '<tr' + (i % 2 ? ' class="z"' : '') + '><td>' + L(d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日', MON[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()) + '</td><td class="ob-n">PDF · ' + L('已邮寄纸质版', 'Paper copy mailed') + '</td></tr>'; }).join('') + '</table>';
     }
-    h += '</div><div class="ob-foot"><div class="ob-seal"><b>✔</b><span>SECURED<br>SSL · 128-BIT</span></div><div class="ob-fdic">FDIC</div><div class="ob-fl"><a href="#">Privacy, Security &amp; Legal</a> | <a href="#">Online Access Agreement</a><br>© 1999 - 2009 Copper State Bank, N.A. ' + L('FDIC 成员', 'Member FDIC') + '</div></div>';
+    h += '<div class="ob-menu">' + [[['资金管理', 'Treasury Management'], [['支票防伪付款', 'Positive Pay'], ['ACH 发起', 'ACH Origination'], ['锁箱收款', 'Lockbox Services']]], [['公共财政', 'Public Finance'], [['税收预期票据', 'Tax Anticipation Notes'], ['债券付款代理', 'Bond Paying Agent'], ['公共资金抵押', 'Public Funds Collateral']]], [['投资', 'Investing'], [['州库投资池', 'State LGIP'], ['自动归集账户', 'Sweep Accounts'], ['定期存单', 'Certificates of Deposit']]]].map(function (c) { return '<div><div class="ob-mh">' + L(c[0][0], c[0][1]) + '</div>' + c[1].map(function (x) { return fk(x[0], x[1]); }).join('') + '<a href="#" data-obfake="1" class="ob-more">' + L('更多', 'More') + ' &gt;&gt;</a></div>'; }).join('') + '</div>';
+    h += '</div></div></div><div class="ob-tiles">' +
+      '<div><img src="bank/wf_shovel.jpg" width="56" height="44" alt=""><div><a href="#" data-obfake="1" class="ob-tt">' + L('公共资金抵押', 'Public Funds Collateral') + '</a><p>' + L('超出 FDIC 保额的县存款由合格证券足额抵押。', 'County deposits above FDIC limits, fully collateralized.') + '</p>' + fk('了解详情', 'Learn More') + '</div></div>' +
+      '<div><span class="ob-ti">$</span><div><a href="#" data-obfake="1" class="ob-tt">' + L('收税遇到困难？', 'Tax Collections Slow?') + '</a><p>' + L('税收预期票据帮县政府撑过收税淡季。', 'Tax anticipation notes can bridge the gap.') + '</p>' + fk('获取帮助', 'Get Help') + '</div></div>' +
+      '<div><img src="bank/wf_desert.jpg" width="56" height="37" alt=""><div><a href="#" data-obv="stmt" class="ob-tt">' + L('免费网上对账单', 'FREE Online Statements') + '</a><p>' + L('网上查阅最近 6 个月的对账单。', 'View up to 6 months of statements online.') + '</p><a href="#" data-obv="stmt">' + L('了解详情', 'Learn More') + '</a></div></div></div>' +
+      '<div class="ob-foot"><div class="ob-fl"><a href="#" data-obfake="1">' + L('关于我们', 'About Copper State') + '</a> | <a href="#" data-obfake="1">' + L('招聘', 'Careers') + '</a> | <a href="#" data-obfake="1">Privacy, Security &amp; Legal</a> | <a href="#" data-obfake="1">Online Access Agreement</a> | <a href="#" data-obfake="1">' + L('网站地图', 'Site Map') + '</a><br>© 1999 - 2009 Copper State Bank, N.A. ' + L('版权所有。FDIC 成员。', 'All rights reserved. Member FDIC.') + '</div><div class="ob-seal"><b>✔</b><span>SECURED<br>SSL · 128-BIT</span></div><div class="ob-fdic">FDIC</div></div></div>';
     $('#atmside').className = 'ob'; $('#atmside').innerHTML = h;
   }
   function obContinue() {
@@ -739,7 +757,7 @@
     }, 700);
   }
   function openAtm() {
-    $('#atmwrap').hidden = false; atm.st = 'main'; atm.entry = ''; atm.msg = ''; ob.v = 'sum'; obMark(); atmSide();
+    $('#atmwrap').hidden = false; atm.st = 'main'; atm.entry = ''; atm.msg = ''; ob.v = 'sum'; ob.note = 0; obMark(); atmSide();
     var go = function () { ATM3D.mount($('#atmview')); ATM3D.setKeyHandler(atmKey); atmDraw(); };
     if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; document.head.appendChild(s); }
   }
@@ -1262,7 +1280,9 @@
     if (ds.endr) { location.reload(); return; }
     if (ds.endc) { $('#dlgwrap').hidden = true; return; }
     if (ds.atsw) { if (atm.st === 'busy') return; atm.mode = atm.mode === 'in' ? 'out' : 'in'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); return; }
-    if (ds.obv) { if (atm.st === 'busy') return; ob.v = ds.obv; atm.msg = ''; atmSide(); return; }
+    if (ds.obv) { if (atm.st === 'busy') return; ob.v = ds.obv; ob.note = 0; atm.msg = ''; atmSide(); return; }
+    if (ds.obfake) { ob.note = 1; atmSide(); var pg = document.querySelector('#atmside .ob-page'); if (pg) pg.scrollTop = 0; return; }
+    if (ds.obgoto) { if (atm.st === 'busy') return; ob.v = ($('#obgoto') || {}).value || 'sum'; ob.note = 0; atm.msg = ''; atmSide(); return; }
     if (ds.obgo) { obContinue(); return; }
     if (ds.aq) { if (atm.st === 'busy') return; atm.entry = ds.aq; atm.st = 'amt'; atm.msg = ''; atmDraw(); return; }
     if (a.id === 'atmgo') { atm.st = 'amt'; atmDo(); return; }

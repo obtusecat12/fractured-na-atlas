@@ -428,9 +428,9 @@ body.l-both #magi .rt-mk .en,body.l-both #magi .rt-need .en{display:none}
 #magi .rt-ok{min-width:92px}
 /* ATM right panel — 2009 online banking (Copper State Bank Online), scoped to #atmside.ob */
 #atmwin{width:900px}
-#atmside.ob{font:11px Verdana,Tahoma,Arial,"DejaVu Sans","Microsoft YaHei","SimSun","Noto Sans CJK SC",sans-serif;color:#333;background:#fff!important;min-width:0}
+#atmside.ob{font:11px Verdana,Tahoma,Arial,"DejaVu Sans","Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#333;background:#fff!important;min-width:0}
 #atmside.ob a{color:#00529b;text-decoration:none}#atmside.ob a:hover{text-decoration:underline}
-#atmside.ob .zh{font-family:"Microsoft YaHei","SimSun","Noto Sans CJK SC",sans-serif}
+#atmside.ob .zh{font-family:"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif}
 .ob-t td.ob-n:first-child,.ob-act th:first-child{width:44px}.ob-t td.ob-n{width:1%}
 body.l-both #atmside.ob .en,body.l-both #atmside.ob .bi{display:none}
 #atmside.ob .ob-top{display:flex;justify-content:space-between;align-items:flex-end;height:34px;padding:0 10px;background:linear-gradient(#c8102e,#a50f24 60%,#8c0a1d);border-bottom:2px solid #f5c400}
@@ -444,11 +444,11 @@ body.l-both #atmside.ob .en,body.l-both #atmside.ob .bi{display:none}
 #atmside.ob .ob-nav a.on{background:#fff;color:#a50f24;border-color:#b9ac86;padding-bottom:4px}
 #atmside.ob .ob-nav a:hover{text-decoration:none;background:linear-gradient(#fff,#f2ecd7)}
 .ob-wel{display:flex;justify-content:space-between;align-items:baseline;padding:6px 12px 4px;gap:8px}
-.ob-wel b{font:bold 12px Verdana,"Microsoft YaHei",sans-serif;color:#333}.ob-wel span{color:#777;font-size:10px;white-space:nowrap}
+.ob-wel b{font:bold 12px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#333}.ob-wel span{color:#777;font-size:10px;white-space:nowrap}
 .ob-body{flex:1;overflow:auto;padding:0 12px 6px}
-.ob-h1{font:bold 14px Arial,"Microsoft YaHei",sans-serif;color:#a50f24;border-bottom:1px solid #d9d2bd;padding:2px 0 3px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline}
-.ob-step{font:normal 10px Verdana,"Microsoft YaHei",sans-serif;color:#777}
-.ob-h2{font:bold 11px Verdana,"Microsoft YaHei",sans-serif;color:#5a4a1f;margin:9px 0 3px}
+.ob-h1{font:bold 14px Arial,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#a50f24;border-bottom:1px solid #d9d2bd;padding:2px 0 3px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline}
+.ob-step{font:normal 10px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#777}
+.ob-h2{font:bold 11px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#5a4a1f;margin:9px 0 3px}
 .ob-t{width:100%;border-collapse:collapse;border:1px solid #c9c0a4}
 .ob-t td,.ob-t th{padding:3px 6px;border-bottom:1px solid #e6e0cd;text-align:left;font-size:11px}
 .ob-t tr.z td{background:#f7f4ea}
@@ -461,7 +461,7 @@ body.l-both #atmside.ob .en,body.l-both #atmside.ob .bi{display:none}
 .ob-kv th{width:32%;background:#f3efe2;color:#4a3d17;font-weight:bold;border-right:1px solid #e6e0cd}
 .ob-form{display:grid;grid-template-columns:90px 1fr 18px;gap:6px 6px;align-items:center;background:#f7f4ea;border:1px solid #d9d2bd;padding:8px 10px}
 .ob-form label{font-weight:bold;color:#4a3d17;text-align:right}
-.ob-form select{grid-column:2;font:11px Verdana,"Microsoft YaHei",sans-serif;height:20px;border:1px solid #7f9db9;background:#fff;min-width:0}
+.ob-form select{grid-column:2;font:11px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;height:20px;border:1px solid #7f9db9;background:#fff;min-width:0}
 #atmside.ob .ob-sw{grid-column:3;grid-row:1/3;font-size:14px;text-align:center}
 .ob-amt{grid-column:2/4;display:flex;align-items:center;font:12px Verdana,sans-serif;color:#333}
 #atmside.ob .ob-amt input{width:70px;height:18px;border:1px solid #7f9db9;font:12px Verdana,sans-serif;text-align:right;padding:0 3px;margin-left:3px;box-shadow:none;outline:0;border-radius:0;min-height:0}
@@ -470,7 +470,7 @@ body.l-both #atmside.ob .en,body.l-both #atmside.ob .bi{display:none}
 .ob-ro{grid-column:2/4;color:#333}
 .ob-err{color:#c00;font-weight:bold;min-height:13px;margin:4px 0 0}
 .ob-btns{display:flex;justify-content:flex-end;gap:6px;margin-top:4px}
-#atmside.ob .ob-btn{min-width:0;min-height:0;height:21px;padding:0 12px;border:1px solid #8c7b4a;border-radius:3px;background:linear-gradient(#fffdf4,#e3dabd);font:bold 11px Verdana,"Microsoft YaHei",sans-serif;color:#4a3d17;box-shadow:none;cursor:pointer}
+#atmside.ob .ob-btn{min-width:0;min-height:0;height:21px;padding:0 12px;border:1px solid #8c7b4a;border-radius:3px;background:linear-gradient(#fffdf4,#e3dabd);font:bold 11px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#4a3d17;box-shadow:none;cursor:pointer}
 #atmside.ob .ob-btn:before,#atmside.ob .ob-btn:after{display:none}
 #atmside.ob .ob-btn.ob-pri{border-color:#7a0b1b;background:linear-gradient(#e0334a,#b0122a 55%,#930d22);color:#fff}
 #atmside.ob .ob-btn:disabled{opacity:.6;cursor:default}
@@ -484,3 +484,87 @@ body.l-both #atmside.ob .en,body.l-both #atmside.ob .bi{display:none}
 .ob-seal b{display:inline-block;width:14px;height:14px;border-radius:50%;background:radial-gradient(#ffd640,#d4a300);color:#7a1;font-size:10px;line-height:14px;text-align:center;color:#fff;text-shadow:0 0 1px #6a5200}
 .ob-fdic{font:bold 10px Georgia,serif;color:#fff;background:#1d3f8f;border:1px solid #0f2a66;padding:2px 4px;letter-spacing:.5px}
 .ob-fl{flex:1}
+/* Copper State Bank — 2008–09 big-bank homepage chrome (red logo block, blue sign-on rail, red tabs, gold Go buttons) */
+#atmwin{width:1090px}
+#atmbody{height:520px}
+#atmside.ob{display:flex;flex-direction:column;font:11px Verdana,Arial,"DejaVu Sans","Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#333}
+#atmside.ob a{color:#0a4f9c}
+#atmside.ob .ob-top{display:flex;align-items:stretch;height:auto;padding:0 10px 0 0;background:#fff;border-bottom:3px solid #b5121b;flex:none}
+.ob-logo{width:70px;height:62px;background:#c8161d;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding-left:7px;box-sizing:border-box;flex:none;box-shadow:inset 0 -1px 0 #8e0f14}
+.ob-logo b{font:bold 12px/13px Georgia,"Times New Roman",serif;color:#ffd200;letter-spacing:0}
+.ob-logo i{font:bold 9px/11px Georgia,serif;color:#ffd200;font-style:normal;letter-spacing:2px;border-top:1px solid #ffd200;margin-top:2px;padding-top:1px}
+.ob-hr{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding-left:10px}
+#atmside.ob .ob-util{display:flex;justify-content:flex-end;align-items:center;gap:4px;padding:5px 0 0;color:#999;font-size:10px}
+#atmside.ob .ob-util a{color:#555}
+.ob-srch{margin-left:10px;display:flex;gap:3px}
+#atmside.ob .ob-srch input{width:120px;height:17px;border:1px solid #9a9a9a;padding:0 3px;font:11px Verdana,sans-serif;border-radius:0;box-shadow:none;min-height:0}
+#atmside.ob .ob-sb,#atmside.ob .ob-go{min-width:0;min-height:0;height:19px;padding:0 6px;border:1px solid #b08600;border-radius:2px;background:linear-gradient(#fff3a8,#ffd84a 50%,#f2b705);font:bold 10px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#222;box-shadow:none;cursor:pointer;white-space:nowrap}
+#atmside.ob .ob-sb{background:linear-gradient(#fff,#ddd);border-color:#888}
+#atmside.ob .ob-sb:before,#atmside.ob .ob-sb:after,#atmside.ob .ob-go:before,#atmside.ob .ob-go:after{display:none}
+.ob-tabs{display:flex;gap:3px;align-self:flex-start;margin-left:110px}
+#atmside.ob .ob-tabs a{padding:4px 11px 3px;background:linear-gradient(#cf2a2f,#a3141a);color:#fff;font-weight:bold;font-size:11px;border-radius:4px 4px 0 0;border:1px solid #8e0f14;border-bottom:0}
+#atmside.ob .ob-tabs a.on{background:#fff;color:#333;border-color:#b5121b;border-bottom:1px solid #fff;margin-bottom:-3px;padding-bottom:5px}
+#atmside.ob .ob-tabs a:hover{text-decoration:none}
+.ob-page{flex:1;overflow:auto;background:#fff}
+.ob-cols{display:flex;gap:10px;padding:8px 10px 0}
+.ob-rail{width:172px;flex:none;background:#e9f1fa;border:1px solid #a9c2df;padding:0 0 6px;align-self:flex-start}
+.ob-sign{background:linear-gradient(#f7fbff,#dde9f6);border-bottom:1px solid #a9c2df;padding:6px 8px 7px}
+.ob-st{font:bold 14px Arial,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#222;display:flex;align-items:center;justify-content:space-between}
+.ob-lock{width:9px;height:7px;background:#e2b400;border:1px solid #a07c00;border-radius:1px;position:relative;margin-top:4px}
+.ob-lock:before{content:"";position:absolute;left:1px;top:-6px;width:5px;height:5px;border:1px solid #a07c00;border-bottom:0;border-radius:3px 3px 0 0}
+.ob-who{margin:5px 0 4px;color:#555;line-height:14px}.ob-who b{display:block;color:#222}
+.ob-goto{display:flex;align-items:center;gap:3px;white-space:nowrap}
+#atmside.ob .ob-goto select{flex:1;padding:0;min-width:0;height:18px;font:10px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;border:1px solid #7f9db9;background:#fff}
+.ob-last{color:#777;font-size:9.5px;margin:5px 0 2px}
+.ob-rh{font:bold 11px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;color:#222;padding:7px 8px 2px;border-top:1px solid #fff}
+.ob-sign+.ob-rh{border-top:0}
+.ob-rl{list-style:none;margin:0;padding:0 8px;line-height:15px}
+.ob-rl em{font-style:normal;color:#c8161d;font-weight:bold}
+.ob-zip{display:flex;gap:3px;padding:2px 8px}
+#atmside.ob .ob-zip input{flex:1;min-width:0;height:17px;border:1px solid #9a9a9a;font:10px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;padding:0 3px;border-radius:0;box-shadow:none;min-height:0}
+.ob-coach{display:block;margin:8px auto 0;border:1px solid #c9b89a}
+.ob-main{flex:1;min-width:0}
+.ob-sub{padding:0 0 5px;color:#999;font-size:11px}.ob-sub b{color:#b5121b}
+.ob-un{display:flex;gap:6px;align-items:center;background:#ffffe1;border:1px solid #e0c96c;padding:4px 6px;margin-bottom:6px;color:#333}
+.ob-un b{width:14px;height:14px;border-radius:50%;background:#e5a000;color:#fff;text-align:center;line-height:14px;flex:none}
+#atmside.ob .ob-body{overflow:visible;padding:0;flex:none}
+.ob-ban{display:flex;height:88px;background:linear-gradient(90deg,#7d0d12,#a5161c 60%,#8a0f15);border:1px solid #6a0a0e;margin-bottom:8px;overflow:hidden}
+.ob-ban img{flex:none;object-fit:cover;border-right:1px solid #5a080b}
+.ob-ban>div{padding:8px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.ob-bt{font:bold 14px/16px Georgia,"Microsoft YaHei","Noto Sans CJK SC",serif;color:#ffd24a}
+.ob-bs{color:#f6e3e3;font-size:10.5px;line-height:13px}
+.ob-ban .ob-go{margin-top:auto;align-self:flex-end}
+#atmside.ob .ob-h1{background:linear-gradient(#b5121b,#8e0f14);color:#fff;font:bold 12px Verdana,"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif;padding:4px 7px;border:0;margin:0 0 0;display:flex;justify-content:space-between;align-items:baseline}
+#atmside.ob .ob-h1 .ob-step{color:#f3c9cb;font-weight:normal}
+.ob-h1+.ob-t,.ob-h1+.ob-form,.ob-h1+.ob-p,.ob-h1+.ob-ok{margin-top:0;border-top:0}
+#atmside.ob .ob-h2{color:#222;margin:9px 0 3px}
+#atmside.ob .ob-t{border:1px solid #c8c8c8}
+#atmside.ob .ob-t td,#atmside.ob .ob-t th{border-bottom:1px solid #e3e3e3}
+#atmside.ob .ob-t tr.z td{background:#f4f4f4}
+#atmside.ob .ob-t .ob-cap th{background:linear-gradient(#fafafa,#dedede);color:#333;border-bottom:1px solid #c8c8c8}
+#atmside.ob .ob-t .ob-tot td{border-top:1px solid #c8c8c8;background:#eef4fb}
+#atmside.ob .ob-kv th{background:#f0f0f0;color:#333;border-right:1px solid #e3e3e3}
+#atmside.ob .ob-form{background:#f4f4f4;border:1px solid #c8c8c8;grid-template-columns:96px 1fr 18px}
+#atmside.ob .ob-form label{color:#333}
+#atmside.ob .ob-p{margin:6px 0}
+#atmside.ob .ob-btn{background:linear-gradient(#fff,#dcdcdc);border-color:#8a8a8a;color:#222;border-radius:2px}
+#atmside.ob .ob-btn.ob-pri{background:linear-gradient(#fff3a8,#ffd84a 50%,#f2b705);border-color:#b08600;color:#222}
+.ob-menu{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #c8c8c8;margin-top:10px}
+.ob-menu>div{display:flex;flex-direction:column;padding:0 0 5px;border-left:1px solid #e0e0e0;line-height:15px}
+.ob-menu>div:first-child{border-left:0}
+.ob-menu a{padding:0 7px}
+.ob-mh{background:linear-gradient(#fafafa,#dedede);border-bottom:1px solid #c8c8c8;font-weight:bold;color:#222;padding:3px 7px;margin-bottom:3px}
+#atmside.ob .ob-more{font-size:10px;color:#555}
+.ob-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 10px 0;padding-top:8px;border-top:1px solid #d6d6d6}
+.ob-tiles>div{display:flex;gap:6px;align-items:flex-start}
+.ob-tiles img{flex:none;border:1px solid #bbb}
+.ob-ti{flex:none;width:44px;height:40px;border:1px solid #bbb;background:linear-gradient(#fdf6d6,#f0d77a);font:bold 22px/40px Georgia,serif;color:#8e0f14;text-align:center}
+#atmside.ob .ob-tt{font-weight:bold;font-size:11px}
+.ob-tiles p{margin:1px 0 2px;color:#555;font-size:10px;line-height:12px}
+#atmside.ob .ob-foot{margin-top:10px;background:#fff;border-top:1px solid #d6d6d6;padding:6px 10px 8px}
+#atmside.ob .ob-foot a{color:#0a4f9c}
+#atmside.ob .zh{font-family:"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif}
+.ob-logo .zh,.ob-bt .zh{font-family:inherit}
+#atmside.ob .ob-t td,#atmside.ob .ob-t th{white-space:normal;text-overflow:clip;overflow:visible;max-width:none}
+#atmside.ob .ob-t .ob-m,#atmside.ob .ob-t .ob-n,#atmside.ob .ob-t .ob-cap th{white-space:nowrap}
+.ob-rail{width:166px}
