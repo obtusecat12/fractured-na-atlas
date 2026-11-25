@@ -579,6 +579,7 @@
     if (S.funds.county < 0) { var w = -S.funds.county * .02 / 365; S.funds.county -= w; ec.wk.exp += w; if (S.date.getDay() === 1) apply({ trust: -1 }, ['县账户透支', 'County overdrawn']); }
     ec.loans.forEach(function (l) { if (l.rate) { var i = l.bal * l.rate / 365; S.funds.county -= i; ec.wk.exp += i; } });
     ec.pending = ec.pending.filter(function (q) { if (--q.days > 0) return true; var d = loanDef(q.id); S.funds.county += q.amt; if (!d.grant) ec.loans.push({ id: q.id, bal: q.amt, rate: d.rate, due: d.due, term: d.term }); else ec.used[q.id] = true; if (d.id === 'interfund') ec.flood -= q.amt; notice(L('到账：', 'Received: ') + LA([d.zh, d.en]) + ' ' + fmtK(q.amt)); return false; });
+    pdDue();
     var tmr = new Date(S.date.getTime() + 864e5); if (tmr.getDate() === 1) { ec.lgip += ec.accr; ec.accr = 0; }
     if (S.date.getDay() === 0) { ec.last = { rev: ec.wk.rev, exp: ec.wk.exp }; ec.wk = { rev: 0, exp: 0 }; }
   }
@@ -596,12 +597,13 @@
     h += '<tr class="sum"><td>' + L('本周净额', 'Net this week') + '</td><td class="' + (rin - rout >= 0 ? 'pos' : 'neg') + '">' + (rin - rout >= 0 ? '+' : '−') + Math.abs(rin - rout) + '</td></tr></table></div>';
     h += sect(L('借款与拨款', 'Borrowing & grants'));
     E.loans.forEach(function (l) {
+      if (l.ad) return;
       var pend = ec.pending.filter(function (q) { return q.id === l.id; })[0], taken = ec.loans.some(function (x) { return x.id === l.id; }) || ec.used[l.id];
       var act = l.auto ? '<span class="s">' + L('自动', 'Automatic') + '</span>' : l.vote ? '<span class="s">' + L('需公投', 'Needs a vote') + '</span>' : pend ? '<span class="s">' + L('还要 ' + pend.days + ' 天', pend.days + ' days') + '</span>' : taken && (l.once || l.id !== 'pro') ? '<span class="signed">' + L('已到账', 'Received') + '</span>' : '<button class="wb7" data-loan="' + l.id + '">' + (l.grant ? L('申请', 'Apply') : L('借款…', 'Borrow…')) + '</button>';
       h += '<div class="row ri">' + ico(l.icon) + '<div><div class="t">' + L(l.zh, l.en) + (l.max ? ' <span class="s">' + L('最多 ', 'up to ') + fmtK(l.max) + '</span>' : '') + '</div><div class="s">' + LA(l.d) + '</div></div><div class="act">' + act + '</div></div>';
     });
     h += '</div>' + sect(L('未偿债务', 'Outstanding debt'));
-    E.debt.concat(ec.loans.map(function (l) { var d = loanDef(l.id); return { zh: d.zh, en: d.en, bal: l.bal, rate: (l.rate * 100).toFixed(2).replace(/0$/, '') + '%' }; })).forEach(function (d) { h += '<div class="row"><div class="t">' + L(d.zh, d.en) + '</div><div class="s">' + fmtK(d.bal) + ' · ' + d.rate + '</div></div>'; });
+    E.debt.concat(ec.loans.map(function (l) { var d = loanDef(l.id); return { zh: d.zh, en: d.en, bal: l.bal, rate: l.apr ? l.apr.toFixed(2) + '% APR · ' + L('到期 ', 'due ') + l.ymd : (l.rate * 100).toFixed(2).replace(/0$/, '') + '%' }; })).forEach(function (d) { h += '<div class="row"><div class="t">' + L(d.zh, d.en) + '</div><div class="s">' + fmtK(d.bal) + ' · ' + d.rate + '</div></div>'; });
     var s = shortage();
     h += '</div>' + sect(L('本地物价', 'Local prices'), '<span>' + L('2009 年 10 月基准', 'Oct 2009 base') + '</span>') + '<table class="ledger">';
     E.prices.forEach(function (p) { var v = p.p * (1 + p.k * s), up = v / p.p - 1; h += '<tr><td>' + L(p.zh, p.en) + ' <span class="s">/' + LA(p.u) + '</span></td><td>$' + v.toFixed(2) + (up > .005 ? ' <span class="neg">+' + Math.round(up * 100) + '%</span>' : '') + '</td></tr>'; });
@@ -612,6 +614,110 @@
     taskDialog({ icon: l.grant ? 'info' : 'q', title: L(l.zh, l.en), body: LA(l.d) + (l.grant ? '' : '<div class="amt">' + L('金额', 'Amount') + ' <input id="lamt" type="number" min="50" step="50" max="' + max + '" value="' + Math.min(max, 1000) + '"> K <span class="s">' + L('最多 ', 'max ') + fmtK(max) + '</span></div>'),
       links: [{ attr: 'data-lgo="' + id + '"', t: l.grant ? L('提交申请', 'Submit application') : L('提交监事会', 'Send to the Board'), n: L((l.days || 0) + ' 天后到账', 'Funds in ' + (l.days || 0) + ' days') }, { attr: 'data-lno="1"', t: L('取消', 'Cancel') }],
       foot: l.grant ? null : L('借款计入未偿债务，利息每日从支票账户扣除。', 'Interest is charged to checking daily.'), footIcon: 'info' });
+  }
+  // ---------- 主栏插入广告：萨瓜罗快速现金（虚构的梅萨发薪日贷款店，2009 年横幅广告 + 贷款网站） ----------
+  var PD = E.loans.filter(function (l) { return l.ad; })[0], pd = { v: 'form', amt: 100, term: 14, agree: false, err: '', last: null };
+  function pdOpen() { return S.econ.loans.filter(function (l) { return l.id === PD.id; })[0]; }
+  function pdFee(a, t) { return a * PD.fee[t] / 100; }
+  function pdApr(t) { return PD.fee[t] * 365 / t; }
+  function usd(k) { return '$' + (Math.round(k * 1000)).toLocaleString('en-US'); }
+  function mdy(d) { return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear(); }
+  function pdLogo(big) { return '<span class="pd-logo' + (big ? ' big' : '') + '"><i class="pd-cac"></i><span><b>Saguaro</b><em>QUICK CASH<sup>®</sup></em></span></span>'; }
+  function pdAdInit() {
+    var hud = $('#hud'); if (!hud || $('#pdad')) return;
+    var fr = [[['县里预算吃紧？', 'COUNTY BUDGET SHORT?'], ['收容隔离账单堆成山？', 'Shelter bills piling up?']],
+      [['1 小时到账！', 'CASH IN 1 HR!'], ['$50K–$500K · 不查信用', '$50K-$500K · No credit chk']],
+      [['FEMA 报销还没到？', 'FEMA CHECK LATE?'], ['不用公投 · 马上申请 »', 'APPLY NOW »']]];
+    var a = document.createElement('a'); a.href = '#'; a.id = 'pdad'; a.dataset.pdad = '1'; a.title = 'Advertisement';
+    a.innerHTML = '<span class="pd-lab">' + L('广告', 'Ad') + '</span>' + pdLogo() + '<span class="pd-frs">' + fr.map(function (f, i) { return '<span class="pd-fr' + (i ? '' : ' on') + '"><b>' + LA(f[0]) + '</b><small>' + LA(f[1]) + '</small></span>'; }).join('') + '</span><span class="pd-burst"><span>' + L('批准！', 'APPROVED!') + '</span></span>';
+    hud.parentNode.insertBefore(a, hud.nextSibling);
+    var k = 0; setInterval(function () { var f = a.querySelectorAll('.pd-fr'); f[k].classList.remove('on'); k = (k + 1) % f.length; f[k].classList.add('on'); }, 2600);
+  }
+  function pdShow() {
+    var ag = $('#pdagree'); if (ag) pd.agree = ag.checked;
+    var nav = ['首页', 'Home', '怎么办理', 'How It Works', '费率', 'Rates & Fees', '门店', 'Store Locator', '常见问题', 'FAQ', '联系我们', 'Contact Us'], nv = [];
+    for (var i = 0; i < nav.length; i += 2) nv.push('<a href="#" data-pdfake="1">' + L(nav[i], nav[i + 1]) + '</a>');
+    var url = { form: 'agency/apply.aspx', busy: 'agency/apply.aspx?step=2', ok: 'agency/approved.aspx', acct: 'agency/myaccount.aspx' }[pd.v];
+    var h = '<div class="pd-ie"><span class="pd-ico"></span><span class="pd-url">http://www.saguaroquickcash.com/' + url + '</span></div><div class="pd-site">' +
+      '<div class="pd-hd">' + pdLogo(true) + '<div class="pd-hr"><div class="pd-ph">1-888-555-0174 <small>' + L('西语服务', 'Se habla español') + '</small></div><div class="pd-nav">' + nv.join(' | ') + '</div></div></div>' +
+      '<div class="pd-strip"><b>' + L('公共机构部', 'PUBLIC AGENCY DIVISION') + '</b> · ' + L('为县、市、学区和消防区提供现金', 'Cash for counties, cities, school & fire districts') + '</div><div class="pd-main">';
+    var o = pdOpen(), t = pd.term, a = pd.amt, f = pdFee(a, t), due = new Date(S.date.getTime() + t * 864e5);
+    if (pd.v === 'form') {
+      h += '<div class="pd-l"><div class="pd-h1">' + L('今天申请，今天拿到现金！', 'Apply today. Cash today!') + '</div><div class="pd-steps"><em class="on">1</em>' + L('申请', 'Apply') + '<i></i><em>2</em>' + L('批准', 'Approved') + '<i></i><em>3</em>' + L('拿钱', 'Get cash') + '</div>' +
+        '<table class="pd-f"><tr><th>' + L('机构名称', 'Agency name') + '</th><td><input value="Navajo County, Arizona" readonly></td></tr>' +
+        '<tr><th>' + L('收款账户', 'Deposit to') + '</th><td><input value="Copper State Bank ••••4417" readonly></td></tr>' +
+        '<tr><th>' + L('借多少？', 'How much?') + '</th><td>' + PD.amts.map(function (v) { return '<button class="pd-ch' + (v === a ? ' on' : '') + '" data-pda="' + v + '">' + usd(v) + '</button>'; }).join('') + '</td></tr>' +
+        '<tr><th>' + L('期限', 'Term') + '</th><td>' + [14, 30].map(function (v) { return '<button class="pd-ch' + (v === t ? ' on' : '') + '" data-pdt="' + v + '">' + L(v + ' 天', v + ' days') + '</button>'; }).join('') + '<span class="pd-per">' + L('每 $100 收费 $' + PD.fee[t].toFixed(2), '$' + PD.fee[t].toFixed(2) + ' per $100 borrowed') + '</span></td></tr></table>' +
+        '<div class="pd-tila"><div><span>' + L('年利率', 'ANNUAL PERCENTAGE RATE') + '</span><small>' + L('按年计算的借款成本', 'The cost of your credit as a yearly rate') + '</small><b>' + pdApr(t).toFixed(2) + '%</b></div>' +
+        '<div><span>' + L('财务费用', 'FINANCE CHARGE') + '</span><small>' + L('这笔借款要花的钱', 'The dollar amount the credit will cost you') + '</small><b>' + usd(f) + '</b></div>' +
+        '<div><span>' + L('借款金额', 'Amount Financed') + '</span><small>' + L('打到您账户的钱', 'The amount of credit provided to you') + '</small><b>' + usd(a) + '</b></div>' +
+        '<div><span>' + L('还款总额', 'Total of Payments') + '</span><small>' + L(mdy(due) + ' 一次性 ACH 扣款', 'One ACH debit on ' + mdy(due)) + '</small><b>' + usd(a + f) + '</b></div></div>' +
+        '<div class="pd-ag"><input type="checkbox" id="pdagree"' + (pd.agree ? ' checked' : '') + '><label for="pdagree">' + L('我已阅读并同意<a href="#" data-pdfake="1">借款协议</a>、<a href="#" data-pdfake="1">ACH 扣款授权</a>和<a href="#" data-pdfake="1">仲裁条款</a>，并确认我有权代表本机构借款。', 'I have read and agree to the <a href="#" data-pdfake="1">Loan Agreement</a>, <a href="#" data-pdfake="1">ACH Debit Authorization</a> and <a href="#" data-pdfake="1">Arbitration Agreement</a>, and I certify that I am authorized to borrow on behalf of this agency.') + '</label></div>' +
+        '<div class="pd-err">' + (pd.err || '') + '</div><button class="pd-go" id="pdsubmit">' + L('马上拿钱 »', 'GET MY CASH NOW »') + '</button></div>' +
+        '<div class="pd-r"><div class="pd-why"><div class="pd-wt">' + L('为什么各县都选我们', 'Why agencies choose us') + '</div><ul>' +
+        [['不查信用', 'No credit check'], ['不用开会、不用公投', 'No board meeting, no bond election'], ['1 小时内电汇到账', 'Wired in 1 hour or less'], ['到期自动扣款，省心', 'Automatic ACH repayment'], ['付不清？只付手续费即可展期', "Can't pay in full? Renew for just the fee"]].map(function (x) { return '<li>' + LA(x) + '</li>'; }).join('') + '</ul></div>' +
+        '<div class="pd-q">' + L('“收容所的账单比税收来得快。萨瓜罗当天就把钱打过来了。”', '"The shelter bills came in faster than the taxes. Saguaro wired us the same day."') + '<i>— ' + L('某县财务主管，亚利桑那州北部', 'Finance director, a northern Arizona county') + '</i></div>' +
+        '<div class="pd-seal"><b>AZ</b>' + L('州金融机构厅持牌', 'Licensed by the Arizona Dept. of Financial Institutions') + '<i>#DP-0917</i></div></div>';
+    } else if (pd.v === 'busy') {
+      h += '<div class="pd-wait"><div class="pd-h1">' + L('正在处理您的申请…', 'Processing your application…') + '</div><div class="pd-bar"><i></i></div><p>' + L('请不要点击“后退”或“刷新”。', 'Please do not click Back or Refresh.') + '</p></div>';
+    } else if (pd.v === 'ok') {
+      var l = pd.last;
+      h += '<div class="pd-ok"><div class="pd-stamp">' + L('已批准！', 'APPROVED!') + '</div><div class="pd-h1">' + L('恭喜！您的预支已批准并打款。', 'Congratulations! Your advance has been approved and funded.') + '</div>' +
+        '<table class="pd-kv"><tr><th>' + L('借款编号', 'Loan number') + '</th><td><b>' + l.no + '</b></td></tr><tr><th>' + L('已打款', 'Amount deposited') + '</th><td>' + usd(l.prin) + ' → Copper State Bank ••••4417</td></tr>' +
+        '<tr><th>' + L('财务费用', 'Finance charge') + '</th><td>' + usd(l.fee) + ' (' + l.apr.toFixed(2) + '% APR)</td></tr><tr><th>' + L('应还总额', 'Total due') + '</th><td><b>' + usd(l.bal) + '</b></td></tr>' +
+        '<tr><th>' + L('到期日', 'Due date') + '</th><td>' + l.ymd + ' · ' + L('ACH 自动扣款', 'automatic ACH debit') + '</td></tr></table>' +
+        '<p class="pd-p">' + L('到期日账户余额不足？我们会自动为您展期，只扣当期财务费用（最多展期 3 次）。', "Short on the due date? We'll automatically renew your advance and debit just the finance charge (up to 3 renewals).") + '</p>' +
+        '<p class="pd-p pd-ref">' + L('推荐其他县来借款，下次手续费立减 $500！', 'Refer another county and save $500 on your next fee!') + '</p>' +
+        '<button class="pd-go sm" data-pdfake="1">' + L('打印本页', 'Print this page') + '</button> <button class="pd-go sm" data-pdclose="1">' + L('完成', 'Done') + '</button></div>';
+    } else if (o) {
+      var ren = o.rolls ? L('（已展期 ' + o.rolls + ' 次）', ' (renewed ' + o.rolls + 'x)') : '';
+      h += '<div class="pd-ok"><div class="pd-h1">' + L('欢迎回来，纳瓦霍县', 'Welcome back, Navajo County') + '</div>' +
+        '<table class="pd-kv"><tr><th>' + L('借款编号', 'Loan number') + '</th><td><b>' + o.no + '</b>' + ren + '</td></tr><tr><th>' + L('本金', 'Principal') + '</th><td>' + usd(o.prin) + '</td></tr><tr><th>' + L('当期财务费用', 'Current finance charge') + '</th><td>' + usd(o.fee) + ' (' + o.apr.toFixed(2) + '% APR)</td></tr><tr><th>' + L('应还总额', 'Amount due') + '</th><td><b>' + usd(o.bal) + '</b></td></tr><tr><th>' + L('到期日', 'Due date') + '</th><td>' + o.ymd + '</td></tr></table>' +
+        '<p class="pd-p">' + L('亚利桑那州法律规定同一时间只能有一笔未还预支。提前还款不退财务费用。', 'Arizona law allows one outstanding advance at a time. Finance charges are fully earned and not refunded on early payment.') + '</p>' +
+        '<div class="pd-err">' + (pd.err || '') + '</div><button class="pd-go" data-pdpay="1">' + L('现在全额还清 »', 'PAY IN FULL NOW »') + '</button> <button class="pd-go sm" data-pdclose="1">' + L('关闭', 'Close') + '</button></div>';
+    }
+    h += '</div><div class="pd-fine">' + L('萨瓜罗过桥资本有限责任公司，商号“萨瓜罗快速现金”，2150 E. University Dr., Mesa, AZ 85213。亚利桑那州金融机构厅延期付款（发薪日贷款）持牌人 #DP-0917。公共机构预支属商业借款。并非所有州都提供。以 $100 借 14 天、费用 $17.50 为例，年利率为 456.25%。短期预支不适合解决长期财务困难。亚利桑那州发薪日贷款法定于 2010 年 6 月 30 日失效。© 2009 Saguaro Bridge Capital, LLC。',
+      'Saguaro Bridge Capital, LLC d/b/a Saguaro Quick Cash, 2150 E. University Dr., Mesa, AZ 85213. Licensed by the Arizona Department of Financial Institutions as a deferred presentment company, Lic. #DP-0917. Public agency advances are commercial transactions. Not available in all states. Example: a $100 advance for 14 days with a $17.50 fee has an APR of 456.25%. Short-term advances are not intended as long-term financial solutions. Arizona\'s deferred presentment law is scheduled to expire June 30, 2010. © 2009 Saguaro Bridge Capital, LLC.') + '</div></div>';
+    dialog('<span class="pd-ietl"></span>Saguaro Quick Cash - ' + T('公共机构预支', 'Public Agency Cash Advance') + ' - Windows Internet Explorer', h);
+    $('#dlg').classList.add('pdwin');
+  }
+  function pdSubmit() {
+    var ag = $('#pdagree'); pd.agree = !!(ag && ag.checked);
+    if (pdOpen()) { pd.v = 'acct'; pdShow(); return; }
+    if (!pd.agree) { pd.err = L('请勾选同意借款协议后再提交。', 'You must agree to the Loan Agreement to continue.'); pdShow(); return; }
+    pd.err = ''; pd.v = 'busy'; pdShow();
+    setTimeout(function () {
+      var a = pd.amt, t = pd.term, f = pdFee(a, t), ec = S.econ, no = 'SQC-' + (4471200 + S.day * 37 + a);
+      var l = { id: PD.id, bal: a + f, prin: a, fee: f, rate: 0, apr: pdApr(t), term: t, due: S.day + t, ymd: mdy(new Date(S.date.getTime() + t * 864e5)), rolls: 0, no: no };
+      S.funds.county += a; ec.wk.rev += a; ec.loans.push(l); pd.last = l; pd.agree = false;
+      S.press.unshift({ p: 'wmi', d: ymdOf(S.date), t: ['县里向梅萨一家发薪日贷款店借了 ' + fmtK(a) + '，年利率 ' + Math.round(l.apr) + '%', 'County borrows ' + fmtK(a) + ' from Mesa payday lender at ' + Math.round(l.apr) + '% APR'] });
+      notice(L('到账：', 'Received: ') + LA([PD.zh, PD.en]) + ' ' + fmtK(a));
+      pd.v = 'ok'; if (!$('#dlgwrap').hidden) pdShow(); render();
+    }, 1600);
+  }
+  function pdPay() {
+    var o = pdOpen(); if (!o) return;
+    if (S.funds.county < o.bal) { pd.err = L('支票账户余额不足。', 'Insufficient funds in the linked account.'); pdShow(); return; }
+    S.funds.county -= o.bal; S.econ.wk.exp += o.bal; S.econ.loans = S.econ.loans.filter(function (x) { return x !== o; });
+    notice(LA([PD.zh, PD.en]) + L(' 已还清 ', ' paid in full ') + fmtK(o.bal)); $('#dlgwrap').hidden = true; render();
+  }
+  // 到期日 ACH 自动扣款；余额不够就自动展期（只扣财务费用 + 退票费），展期满 3 次后整笔强扣，透支部分走登记欠款单
+  function pdDue() {
+    var ec = S.econ;
+    ec.loans = ec.loans.filter(function (l) {
+      if (l.id !== PD.id || S.day < l.due) return true;
+      if (S.funds.county >= l.bal || l.rolls >= PD.rolls) {
+        S.funds.county -= l.bal; ec.wk.exp += l.bal;
+        notice(L('萨瓜罗快速现金从支票账户扣款 ', 'Saguaro Quick Cash ACH debit: ') + fmtK(l.bal));
+        if (S.funds.county < 0) S.press.unshift({ p: 'tn', d: ymdOf(S.date), t: ['发薪日贷款到期扣款，县账户透支', 'Payday loan debit leaves county overdrawn'] });
+        return false;
+      }
+      var c = l.fee + PD.nsf; S.funds.county -= c; ec.wk.exp += c; l.rolls++; l.due += l.term; l.ymd = mdy(new Date(S.date.getTime() + l.term * 864e5));
+      apply({ trust: -1 }, ['高利贷展期', 'Payday loan renewed']);
+      S.press.unshift({ p: 'tn', d: ymdOf(S.date), t: ['县里付不起发薪日贷款，又付了 ' + fmtK(c) + ' 展期费', 'County can\'t repay payday loan, pays ' + fmtK(c) + ' to roll it over'] });
+      notice(L('萨瓜罗快速现金：余额不足，已展期并扣费 ', 'Saguaro Quick Cash: insufficient funds, renewed for a fee of ') + fmtK(c));
+      return true;
+    });
   }
   // ATM window — 2009 款取款机：屏幕菜单 + 屏幕两侧实体键 + 不锈钢密码键盘 + 凭条
   var atm = { st: 'main', mode: 'in', entry: '', msg: '', receipt: [] };
@@ -1262,7 +1368,7 @@
   function setMode(m) { mode = m; document.querySelectorAll('#mtg .mt').forEach(function (b) { b.classList.toggle('sel', b.dataset.mode === m); }); draw(); }
 
   // ---------- events ----------
-  function dialog(title, html) { $('#dlgt').innerHTML = title; $('#dlgb').innerHTML = html; $('#dlgwrap').hidden = false; }
+  function dialog(title, html) { $('#dlg').classList.remove('pdwin'); $('#dlgt').innerHTML = title; $('#dlgb').innerHTML = html; $('#dlgwrap').hidden = false; }
   var ARROW = '<svg width="16" height="16" viewBox="0 0 16 16"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd36b"/><stop offset=".5" stop-color="#2f9e2a"/><stop offset="1" stop-color="#1d7a1c"/></linearGradient></defs><path d="M1.5 6h7V2.2L15 8l-6.5 5.8V10h-7z" fill="url(#ga)" stroke="#16611a" stroke-width=".8" stroke-linejoin="round"/><path d="M2.3 6.8h7V4l4.4 3.9" fill="none" stroke="rgba(255,255,255,.55)" stroke-width=".8"/></svg>';
   function dateStr() { var d = S.date; return L(d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日', MON[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()); }
   function taskDialog(o) {
@@ -1307,6 +1413,13 @@
     if (ds.aq) { if (atm.st === 'busy') return; atm.entry = ds.aq; atm.st = 'amt'; atm.msg = ''; atmDraw(); return; }
     if (a.id === 'atmgo') { atm.st = 'amt'; atmDo(); return; }
     if (a.id === 'atmx' || a.id === 'atmx2') { $('#atmwrap').hidden = true; if (window.ATM3D) ATM3D.clearPile(); return; }
+    if (ds.pdad) { pd.v = pdOpen() ? 'acct' : 'form'; pd.err = ''; pdShow(); return; }
+    if (ds.pda) { pd.amt = +ds.pda; pd.err = ''; pdShow(); return; }
+    if (ds.pdt) { pd.term = +ds.pdt; pd.err = ''; pdShow(); return; }
+    if (ds.pdfake) { pd.err = ''; return; }
+    if (a.id === 'pdsubmit') { pdSubmit(); return; }
+    if (ds.pdpay) { pdPay(); return; }
+    if (ds.pdclose) { $('#dlgwrap').hidden = true; return; }
     if (ds.loan) { loanDialog(ds.loan); return; }
     if (ds.lno) { $('#dlgwrap').hidden = true; return; }
     if (ds.lgo) { var ld = loanDef(ds.lgo), amt = ld.grant ? ld.max : Math.max(0, Math.min(+($('#lamt') || {}).value || 0, ld.id === 'interfund' ? Math.floor(S.econ.flood / 2) : ld.max)); if (amt > 0) S.econ.pending.push({ id: ld.id, amt: amt, days: ld.days }); $('#dlgwrap').hidden = true; render(); return; }
@@ -1588,5 +1701,6 @@
   }
   function mailAct(i, j) { var m = S.mail[i], act = m && m.acts && m.acts[j]; if (!act || m.done) return; runDo(act.do, m.subject); m.done = act.done || ['已处理', 'Done']; render(); if (window.GMAIL) GMAIL.refresh(); }
   function openMail() { if (top !== window && top.FNA) top.FNA.openMail(); }
+  pdAdInit();
   window.GAME = { save: manualSave, help: helpDialog, setSpeed: function (v) { S.speed = v; clock(); }, fromAtlas: function () { resize(); if (V.z <= ZMIN) center(-110.3, 34.75, 8); draw(); }, mailAct: mailAct, openMail: openMail, S: S, redrawFac: function () { S.facilities.forEach(function (f) { MAP.invalidate(f.ll); }); syncFac(); draw(); }, tick: function (n) { for (var i = 0; i < n; i++) tick(); }, cap: function () { return simCap(); }, V: V, center: center, setMode: setMode, draw: draw, render: render, eventDialog: eventDialog };
 })();
