@@ -113,6 +113,27 @@ var DATA = {
     { id: 'helipad', run: { supply: .3, sight: 25, reveal: 25 }, crew: 4, ops: 2, cat: 'info', zh: '直升机停机坪', en: 'Helipad', cost: 70, days: 2, fund: ['fed'], size: [22, 22], look: 'pad', fx: ['每天物资 +0.3 天 · 视野 +25 公里', 'Supplies +0.3 day/day · Sight +25 km'], roof: '#8f8d88' },
     { id: 'volcenter', run: { vol: 3 }, crew: 2, ops: 2, cat: 'info', zh: '改建为志愿者中心', en: 'Convert to volunteer center', cost: 20, days: 1, fund: ['lds', 'navajo', 'county'], convert: true, fx: ['志愿者每周 +3', 'Volunteers +3/week'] },
   ],
+  // 可雇用的施工方（2009 年亚利桑那东北部，公司名虚构，所在城镇真实）。
+  // mult 报价倍数 · speed 工期倍数 · rel 按期完工的把握 · cap 同时能接几个工地 · mob 进场天数 · fee 进场费（$K）
+  // q：nights 两班倒 / sabbath 周日不开工 / nocase 不进有病例的镇 / co 爱提变更单 / snow 冬天容易停工
+  contractors: [
+    { id: 'county', zh: '纳瓦霍县公共工程处施工队', en: 'Navajo County Public Works crews', sh: ['县公共工程处施工队', 'County Public Works crews'], town: ['霍尔布鲁克', 'Holbrook'], roc: null, mult: 1, speed: 1, rel: 1, cap: 99, mob: 0, fee: 0, q: [],
+      note: ['县自有人手施工，按排班出工', 'In-house force account; works the county shift schedule'], ref: ['2008 年 霍尔布鲁克县政府停车场翻修', '2008 county complex parking lot, Holbrook'] },
+    { id: 'wmb', zh: '白山建筑公司', en: 'White Mountain Builders, Inc.', town: ['肖洛', 'Show Low'], roc: 'ROC 108741 · B-1', bond: 'Western Surety Co.', tel: '(928) 537-4410', mult: 1.12, speed: .8, rel: .82, cap: 2, mob: 0, fee: 0, q: [],
+      note: ['两个施工队；价格含 10 天内材料', 'Two crews; price holds 10 days on materials'], ref: ['2008 年 肖洛 Deuce of Clubs 路段商铺', '2008 retail strip, Deuce of Clubs, Show Low'] },
+    { id: 'lcc', zh: '小科罗拉多承包公司', en: 'Little Colorado Contracting, LLC', town: ['霍尔布鲁克', 'Holbrook'], roc: 'ROC 214306 · B-2', bond: null, tel: '(928) 524-2287', mult: .9, speed: 1.15, rel: .55, cap: 1, mob: 0, fee: 0, q: ['co'],
+      note: ['投标保证金以本票代替；现场变更另计', "Cashier's check in lieu of bid bond; field changes billed extra"], ref: ['2007 年 约瑟夫城消防站加建', '2007 fire station addition, Joseph City'] },
+    { id: 'ccc', zh: '克利尔溪建造公司', en: 'Clear Creek Constructors', town: ['温斯洛', 'Winslow'], roc: 'ROC 167592 · B-1', bond: 'CNA Surety', tel: '(928) 289-3315', mult: 1.02, speed: .95, rel: .7, cap: 1, mob: 0, fee: 0, q: [],
+      note: ['钢结构和混凝土自做', 'Self-performs steel and concrete'], ref: ['2006 年 温斯洛 BNSF 货场维修棚', '2006 BNSF yard maintenance shed, Winslow'] },
+    { id: 'scb', zh: '银溪建筑', en: 'Silver Creek Builders', town: ['斯诺弗莱克', 'Snowflake'], roc: 'ROC 121055 · B-1', bond: 'Travelers Casualty & Surety', tel: '(928) 536-7720', mult: 1, speed: .9, rel: .93, cap: 1, mob: 0, fee: 0, q: ['sabbath', 'nocase'],
+      note: ['周日不开工；不在有病例的镇施工', 'No Sunday work; will not work in towns with active cases'], ref: ['2009 年 斯诺弗莱克联合学区体育馆屋顶', '2009 gym reroof, Snowflake Unified'] },
+    { id: 'mrc', zh: '莫戈隆崖建筑公司', en: 'Mogollon Rim Construction', town: ['派恩托普-莱克赛德', 'Pinetop-Lakeside'], roc: 'ROC 132870 · B-1', bond: 'Liberty Mutual Surety', tel: '(928) 367-1952', mult: 1.08, speed: .9, rel: .72, cap: 1, mob: 0, fee: 0, q: ['snow'],
+      note: ['下雪天按天顺延', 'Snow days added to schedule'], ref: ['2008 年 莱克赛德木屋度假村会所', '2008 lodge clubhouse, Lakeside'] },
+    { id: 'kpg', zh: '卡奇纳峰总承包公司', en: 'Kachina Peaks General Contractors', town: ['弗拉格斯塔夫', 'Flagstaff'], roc: 'ROC 097318 · B-1', bond: 'The Hartford', tel: '(928) 774-6031', mult: 1.18, speed: .75, rel: .85, cap: 2, mob: 1, fee: 12, q: ['co'],
+      note: ['含进场费；从弗拉格斯塔夫开 I-40 过来', 'Mobilization included; crews come out from Flagstaff on I-40'], ref: ['2008 年 北亚利桑那大学停车楼', '2008 parking structure, NAU'] },
+    { id: 'cpb', zh: '驼峰太平洋建筑公司', en: 'Camelback Pacific Builders, Inc.', town: ['菲尼克斯', 'Phoenix'], roc: 'ROC 084529 · A, B-1', bond: 'Zurich / Fidelity & Deposit', tel: '(602) 955-8800', mult: 1.45, speed: .55, rel: .95, cap: 3, mob: 2, fee: 25, q: ['nights'],
+      note: ['两班倒施工；进场需两天', 'Double shifts; two days to mobilize'], ref: ['2008 年 Valley Metro 轻轨坦佩段车站', '2008 Valley Metro light rail stations, Tempe'] }
+  ],
   bcats: { life: ['民生', 'Services'], ctrl: ['管控', 'Control'], info: ['通讯', 'Communications'] },
   // 开局已有 / existing at start. ll = lon,lat
   facilities: [
