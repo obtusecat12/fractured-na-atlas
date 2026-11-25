@@ -5,12 +5,15 @@ const BILL_W = .156, BILL_D = .066, CAB = { w: .82, h: 1.24, d: .26 };
 const SLOT = [-.094, -.62 + .164, CAB.d / 2 + .004];   // dispenser slot on the front face (same offset as cash125-atm.js)
 const SCREEN = [45, 111, 142, 181];                     // CRT area in atm.png pixels (192x288)
 const FDK = { x: [34, 152], y: [142.5, 154, 165, 177], r: 4.5 }; // side keys beside the screen, atm.png pixels
-const VIEWS = { screen: { p: new T.Vector3(.06, .02, 1.32), l: new T.Vector3(0, -.03, 0) }, slot: { p: new T.Vector3(.18, -.05, 1.95), l: new T.Vector3(0, -.3, 0) } };
+const VIEWS = { screen: { p: new T.Vector3(.04, .14, 2.55), l: new T.Vector3(.01, .1, 0) }, slot: { p: new T.Vector3(.18, -.05, 1.95), l: new T.Vector3(0, -.3, 0) } };
 let view = VIEWS.screen; const look = new T.Vector3();
 export function focus(n) { view = VIEWS[n] || VIEWS.screen; }
 const K = 4;                                            // screen canvas = atm.png x4
+const LOW = 2.6; let lowres = null;                     // screen content is re-sampled at 1/LOW (2009 LCD look)
 let spec = null, onKey = null, hoverKey = null, ray = new T.Raycaster(), cab, R, scene, cam, atm, screenTex, screenCtx, base, bills = [], clock = new T.Clock(), running = false, onDone = null;
-function tex(url, cb) { const t = new T.TextureLoader().load(url, cb); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4; return t; }
+let readyRes; const pend = new Set(); export const ready = new Promise(r => readyRes = r);
+function want(k) { pend.add(k); return () => { pend.delete(k); if (!pend.size) requestAnimationFrame(() => requestAnimationFrame(readyRes)); }; }
+function tex(url, cb) { const d = want(url), t = new T.TextureLoader().load(url, () => { d(); cb && cb(); }, undefined, d); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4; return t; }
 function stone(w, h, seed) {
   const c = document.createElement('canvas'); c.width = 256; c.height = 256; const g = c.getContext('2d');
   g.fillStyle = '#8d8a84'; g.fillRect(0, 0, 256, 256); let s = seed;
@@ -36,7 +39,7 @@ export function mount(el) {
   base = new Image(); base.src = new URL('atm.png', import.meta.url).href;
   const sc = document.createElement('canvas'); sc.width = 192 * K; sc.height = 288 * K; screenCtx = sc.getContext('2d');
   screenTex = new T.CanvasTexture(sc); screenTex.colorSpace = T.SRGBColorSpace; screenTex.anisotropy = 4;
-  base.onload = () => drawScreen(spec);
+  const bd = want('atm.png'); base.onload = () => { drawScreen(spec); bd(); }; base.onerror = bd;
   const side = tex(new URL('atmside.png', import.meta.url).href);
   const glossy = (m) => new T.MeshStandardMaterial({ map: m, roughness: .35, metalness: .05, emissive: '#ffffff', emissiveMap: m, emissiveIntensity: .07 });
   const mats = [glossy(side), glossy(side), glossy(side), glossy(side), new T.MeshStandardMaterial({ map: screenTex, roughness: .3, metalness: .05, emissive: '#ffffff', emissiveMap: screenTex, emissiveIntensity: .1 }), glossy(side)];
@@ -99,6 +102,13 @@ export function drawScreen(s) {
   });
   if (s.foot) { g.fillStyle = 'rgba(255,255,255,.75)'; g.font = F('', 12); g.textAlign = 'center'; g.fillText(s.foot, x0 + w / 2, y1 - 12); }
   g.restore();
+  // 2009 ATM display: re-sample the screen at low resolution, soften it and add scanlines
+  const q = lowres || (lowres = document.createElement('canvas')), lw = Math.round(w / LOW), lh = Math.round(h / LOW); q.width = lw; q.height = lh;
+  const qg = q.getContext('2d'); qg.imageSmoothingEnabled = true; qg.drawImage(g.canvas, x0, y0, w, h, 0, 0, lw, lh);
+  g.save(); g.beginPath(); g.roundRect(x0 + 4, y0 + 4, w - 8, h - 8, 10); g.clip(); g.imageSmoothingEnabled = true; g.filter = 'blur(1.1px)'; g.drawImage(q, 0, 0, lw, lh, x0, y0, w, h); g.filter = 'none';
+  g.fillStyle = 'rgba(0,10,40,.16)'; for (let y = y0; y < y1; y += 4) g.fillRect(x0, y, w, 1.6);
+  gr = g.createRadialGradient(x0 + w / 2, y0 + h / 2, h * .35, x0 + w / 2, y0 + h / 2, w * .75); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,20,.32)'); g.fillStyle = gr; g.fillRect(x0, y0, w, h);
+  g.restore();
   // glass glare
   gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, 'rgba(255,255,255,.10)'); gr.addColorStop(.45, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(x0, y0, w, h);
   screenTex.needsUpdate = true;
@@ -145,4 +155,4 @@ function loop() {
 }
 setInterval(() => { if (spec && spec.busy) drawScreen(spec); }, 120);
 export function clearPile() { bills.forEach(b => scene.remove(b)); bills = []; }
-window.ATM3D = { mount, resize, drawScreen, play, clearPile, setKeyHandler, keyPos, focus };
+window.ATM3D = { ready, mount, resize, drawScreen, play, clearPile, setKeyHandler, keyPos, focus };
