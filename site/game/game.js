@@ -758,8 +758,28 @@
   }
   function openAtm() {
     $('#atmwrap').hidden = false; atm.st = 'main'; atm.entry = ''; atm.msg = ''; ob.v = 'sum'; ob.note = 0; obMark(); atmSide();
-    var go = function () { ATM3D.mount($('#atmview')); ATM3D.setKeyHandler(atmKey); atmDraw(); };
-    if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; document.head.appendChild(s); }
+    var t0 = Date.now(), done = false, fin = function () {
+      if (done) return; done = true; setTimeout(function () { var m = $('#atmload'); if (!m) return; m.classList.add('out'); setTimeout(function () { if (m.parentNode) m.parentNode.removeChild(m); }, 420); }, Math.max(0, 600 - (Date.now() - t0)));
+    };
+    atmLoader(); var timer = setTimeout(fin, 8000);
+    var imgs = ['wf_stage', 'wf_bisbee', 'wf_shovel', 'wf_desert'].map(function (n) { return new Promise(function (r) { var i = new Image(); i.onload = i.onerror = r; i.src = 'bank/' + n + '.jpg'; }); });
+    var three = new Promise(function (r) {
+      var go = function () { ATM3D.mount($('#atmview')); ATM3D.setKeyHandler(atmKey); atmDraw(); (ATM3D.ready || Promise.resolve()).then(r); };
+      if (window.ATM3D) go(); else { var s = document.createElement('script'); s.type = 'module'; s.src = 'bank/atm3d.js'; s.onload = go; s.onerror = r; document.head.appendChild(s); }
+    });
+    Promise.all(imgs.concat([three, document.fonts ? document.fonts.ready : 0])).then(function () { clearTimeout(timer); fin(); });
+  }
+  // 2009 网上银行登录遮罩：资源（3D 取款机贴图、横幅图片、字体）全部到位前盖住整个银行窗口
+  function atmLoader() {
+    var old = $('#atmload'); if (old) old.parentNode.removeChild(old);
+    var m = document.createElement('div'); m.id = 'atmload';
+    m.innerHTML = '<div class="al-top"><div class="al-logo"><b>COPPER<br>STATE</b><i>BANK</i></div><div class="al-tag">' + L('网上银行', 'Online Banking') + '</div></div>' +
+      '<div class="al-mid"><div class="al-box"><div class="al-h"><span class="al-lock"></span>' + L('正在登录 Copper State Bank Online…', 'Signing you on to Copper State Bank Online…') + '</div>' +
+      '<div class="al-p">' + L('正在验证您的身份并载入公共资金账户，请稍候。', 'Verifying your identity and loading your Public Funds accounts. Please wait.') + '</div>' +
+      '<div class="al-bar"><i></i></div><div class="al-dots"><i></i><i></i><i></i><i></i><i></i></div>' +
+      '<div class="al-warn">' + L('请勿点击“后退”或“刷新”按钮。', 'Please do not click Back or Refresh.') + '</div></div></div>' +
+      '<div class="al-foot"><span class="al-lock"></span>' + L('本会话受 128 位 SSL 加密保护 · 网上安全保障', 'This session is protected by 128-bit SSL encryption · Online Security Guarantee') + '<span class="al-c">© 2009 Copper State Bank, N.A. ' + L('会员 FDIC', 'Member FDIC') + '</span></div>';
+    $('#atmbody').appendChild(m);
   }
   document.addEventListener('change', function (e) { var id = e.target.id; if (id !== 'obfrom' && id !== 'obto') return; var chkOut = (id === 'obfrom') === (e.target.value === 'chk'); atm.mode = chkOut ? 'in' : 'out'; atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.clearPile(); atmDraw(); });
   document.addEventListener('input', function (e) { if (e.target.id !== 'aamt') return; var v = e.target.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 5); e.target.value = v; atm.entry = v; if (atm.st !== 'amt') atm.st = 'amt'; atm.msg = ''; if (window.ATM3D) ATM3D.drawScreen(atmSpec()); });

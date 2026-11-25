@@ -568,3 +568,32 @@ body.l-both #atmside.ob .en,body.l-both #atmside.ob .bi{display:none}
 #atmside.ob .ob-t td,#atmside.ob .ob-t th{white-space:normal;text-overflow:clip;overflow:visible;max-width:none}
 #atmside.ob .ob-t .ob-m,#atmside.ob .ob-t .ob-n,#atmside.ob .ob-t .ob-cap th{white-space:nowrap}
 .ob-rail{width:166px}
+
+/* ATM bank window — 2009 online-banking sign-on mask, shown until the window's resources are loaded */
+#atmbody{position:relative}
+#atmload{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;background:#fff;font:11px Verdana,Tahoma,Arial,"DejaVu Sans","Microsoft YaHei","Noto Sans CJK SC",sans-serif;color:#333;transition:opacity .4s}
+#atmload.out{opacity:0;pointer-events:none}
+#atmload .zh{font-family:"Microsoft YaHei","Noto Sans CJK SC","SimSun",sans-serif}
+body.l-both #atmload .en,body.l-both #atmload .bi{display:none}
+#atmload .al-top{height:70px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;background:linear-gradient(#b5121f,#94101b 55%,#6e0a13);border-bottom:3px solid #f5c400;box-shadow:inset 0 1px 0 #d8394a}
+#atmload .al-logo{width:74px;height:56px;flex:none;background:#c8161d;display:flex;flex-direction:column;justify-content:center;padding-left:7px;box-sizing:border-box;box-shadow:0 0 0 1px #e0454f,inset 0 -1px 0 #8e0f14}
+#atmload .al-logo b{font:bold 12px/13px Georgia,"Times New Roman",serif;color:#ffd200}
+#atmload .al-logo i{font:bold 9px/11px Georgia,serif;color:#ffd200;font-style:normal;letter-spacing:2px;border-top:1px solid #ffd200;margin-top:2px;padding-top:1px;align-self:flex-start}
+#atmload .al-tag{font:bold 17px Georgia,"Times New Roman","Noto Serif CJK SC",serif;color:#fff;text-shadow:0 1px 0 #5a0710}
+#atmload .al-mid{flex:1;display:flex;align-items:center;justify-content:center;background:linear-gradient(#eef5fb,#d6e6f3 60%,#c4dbee)}
+#atmload .al-box{width:440px;background:linear-gradient(#f7fbfe,#e3eef8);border:1px solid #9fbbd6;border-top:4px solid #a50f24;padding:16px 20px 14px;box-shadow:0 2px 6px rgba(30,60,100,.18)}
+#atmload .al-h{font:bold 14px Verdana,Arial,"Microsoft YaHei","Noto Sans CJK SC",sans-serif;color:#a50f24;display:flex;align-items:center;gap:8px}
+#atmload .al-p{margin:8px 0 12px;color:#444;line-height:1.5}
+#atmload .al-bar{height:14px;border:1px solid #7f9db9;background:#fff;padding:1px;overflow:hidden}
+#atmload .al-bar i{display:block;height:100%;width:100%;background:repeating-linear-gradient(-45deg,#c8102e 0 8px,#e8485c 8px 16px),linear-gradient(#e4405a,#a50f24);background-size:22.6px 100%;animation:alstripe .6s linear infinite;box-shadow:inset 0 5px 0 rgba(255,255,255,.28)}
+@keyframes alstripe{to{background-position:22.6px 0}}
+#atmload .al-dots{display:flex;gap:5px;justify-content:center;margin:10px 0 2px}
+#atmload .al-dots i{width:8px;height:8px;background:#8db3d6;border:1px solid #5d89b3;animation:aldot 1s infinite}
+#atmload .al-dots i:nth-child(2){animation-delay:.2s}#atmload .al-dots i:nth-child(3){animation-delay:.4s}#atmload .al-dots i:nth-child(4){animation-delay:.6s}#atmload .al-dots i:nth-child(5){animation-delay:.8s}
+@keyframes aldot{0%,40%{background:#1f5f9e}60%,100%{background:#cfe0f0}}
+#atmload .al-warn{margin-top:10px;padding-top:8px;border-top:1px dotted #9fbbd6;font-size:10px;color:#666;text-align:center}
+#atmload .al-lock{display:inline-block;width:9px;height:7px;background:#e2b400;border:1px solid #a07c00;border-radius:1px;position:relative;margin-top:5px;flex:none}
+#atmload .al-lock:before{content:"";position:absolute;left:1px;top:-6px;width:5px;height:5px;border:1px solid #a07c00;border-bottom:0;border-radius:3px 3px 0 0}
+#atmload .al-foot{flex:none;height:26px;display:flex;align-items:center;gap:7px;padding:0 12px;border-top:1px solid #c9d6e3;background:#f4f4f4;font-size:10px;color:#555}
+#atmload .al-foot .al-lock{margin-top:4px}
+#atmload .al-c{margin-left:auto;color:#888}
