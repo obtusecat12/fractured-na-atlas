@@ -38,7 +38,11 @@ window.ECON = {
     { id: 'gov', icon: 'globe', zh: '州长应急基金', en: "Governor's Emergency Fund", max: 200, grant: true, days: 10, once: true,
       d: ['宣布地方紧急状态后可申请，每次 $200K，不用还。2010 财年全州只有 $2.9M。', 'After a local emergency declaration, $200K per event, no repayment. Statewide pot is $2.9M in FY2010.'] },
     { id: 'go', icon: 'ppl', zh: '一般责任债券', en: 'General obligation bond', vote: true, rate: .042,
-      d: ['上限 $149.8M（评估值的 15%），利率约 4.2%，须经选民投票批准。', 'Cap $149.8M (15% of assessed value), about 4.2%, needs voter approval.'] }
+      d: ['上限 $149.8M（评估值的 15%），利率约 4.2%，须经选民投票批准。', 'Cap $149.8M (15% of assessed value), about 4.2%, needs voter approval.'] },
+    // 主栏插入广告里的虚构贷款方（梅萨的发薪日贷款店，“公共机构部”）。只从广告进入，不在借款列表里出现。
+    // 条款照 2009 年亚利桑那州发薪日贷款（A.R.S. 6-1251 起，2010-06-30 到期失效）：每 $100 收 $17.50 / 14 天，最多展期 3 次，同一时间只能有一笔。
+    { id: 'sqc', ad: true, icon: 'warn', zh: '萨瓜罗快速现金 预支', en: 'Saguaro Quick Cash advance',
+      amts: [50, 100, 250, 500], fee: { 14: 17.5, 30: 35 }, rolls: 3, nsf: 2.5 }
   ],
   // 物价（2009 年 10 月）。k = 短缺弹性
   prices: [
