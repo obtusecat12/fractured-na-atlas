@@ -59,21 +59,11 @@ var LANG = (function () {
     ms.forEach(function (m) { if (m.type === 'characterData') doText(m.target); else m.addedNodes.forEach(applyNode); });
     busy = false;
   }).observe(document.body, { childList: true, subtree: true, characterData: true });
-  // 外壳和游戏 iframe 用同一个设置菜单：语言两边同步，显示器设置作用于外壳的 LCD09，保存进度调用游戏
-  function peers() {
-    var out = [];
-    try { if (window.top !== window && window.top.LANG) out.push(window.top); } catch (e) {}
-    try { var f = document.getElementById('gameframe'); if (f && f.contentWindow && f.contentWindow.LANG) out.push(f.contentWindow); } catch (e) {}
-    return out;
-  }
-  function setAll(m) { set(m); peers().forEach(function (w) { try { if (w.LANG.mode() !== m) w.LANG.set(m); } catch (e) {} }); }
-  function lcd() { try { return window.LCD09 || (window.top !== window && window.top.LCD09) || null; } catch (e) { return null; } }
-  function game() { try { if (window.GAME) return window.GAME; var f = document.getElementById('gameframe'); return f && f.contentWindow && f.contentWindow.GAME || null; } catch (e) { return null; } }
+  // 设置菜单：语言、显示器（LCD09）
+  function lcd() { return window.LCD09 || null; }
   function marks(gm) {
     gm.querySelectorAll('[data-lang]').forEach(function (a) { a.classList.toggle('sel', a.dataset.lang === mode); });
     var L9 = lcd(); gm.querySelectorAll('[data-lcd]').forEach(function (a) { a.classList.toggle('sel', !!L9 && a.dataset.lcd === L9.mode()); });
-    var sv = gm.querySelector('#gmsave'); if (sv) sv.classList.toggle('dis', !(game() && game().save));
-    var hp = gm.querySelector('#gmhelp'); if (hp) hp.classList.toggle('dis', !(game() && game().help));
   }
   var gear = document.getElementById('gear'), gm = document.getElementById('gearmenu');
   if (gear) {
@@ -81,10 +71,8 @@ var LANG = (function () {
     document.addEventListener('click', function (e) { if (!gm.hidden && !gm.contains(e.target)) { gm.hidden = true; gear.classList.remove('on'); } });
     gm.addEventListener('click', function (e) {
       var a = e.target.closest('a'); if (!a) return; e.preventDefault();
-      if (a.dataset.lang) setAll(a.dataset.lang);
+      if (a.dataset.lang) set(a.dataset.lang);
       if (a.dataset.lcd && lcd()) lcd().set(a.dataset.lcd);
-      if (a.id === 'gmsave' && game() && game().save) game().save();
-      if (a.id === 'gmhelp' && game() && game().help) { try { if (window.FNA && !window.FNA.inGame()) window.FNA.toGame(); } catch (e) {} game().help(); }
       gm.hidden = true; gear.classList.remove('on');
     });
   }
