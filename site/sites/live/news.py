@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+# news.py - the news timeline of Nov 4-5 2009 (minutes from Wed Nov 4 00:00 PT); pages show only what has already happened.
+NEWS = [
+ (13*60+58, 'Reuters', 'Explosion reported near Millington, Tenn.; Memphis airport closed'),
+ (14*60+40, 'AP', 'Pacific Exchange says trading will open as scheduled Thursday'),
+ (15*60+30, 'Reuters', 'Gold jumps $60 in early Asian trade after Tennessee blast'),
+ (16*60+20, 'AP', "Calloway: 'We will find who did this'"),
+ (17*60+10, 'Reuters', 'Tokyo stocks open sharply lower after U.S. blast'),
+ (18*60+45, 'AP', 'Insurers say nuclear exclusion clauses apply in Tennessee'),
+ (20*60+30, 'Reuters', 'Nikkei ends down 6.7 percent, steepest fall since February'),
+ (22*60+15, 'Reuters', 'Hong Kong shares slide 5.8 percent as investors shun dollar assets'),
+ (1440+0*60+20, 'Reuters', 'European shares open 3 percent lower after Memphis blast'),
+ (1440+3*60+10, 'Reuters', 'Gold tops $2,800 in London as the dollar slides'),
+ (1440+5*60+30, 'AP', 'Jobless claims climb to 841,000, Labor Dept. says'),
+ (1440+6*60+10, 'MarketWatch', 'San Francisco Fed opens discount window to all member banks'),
+ (1440+6*60+45, 'AP', 'Stocks tumble at the open after Memphis blast'),
+ (1440+7*60+41, 'AP', 'Trading halted on Pacific Exchange after 10 percent drop'),
+ (1440+8*60+41, 'AP', 'Trading resumes; Wilshire 5000 hits new low'),
+ (1440+9*60+20, 'Reuters', 'Wells Fargo caps Arizona ATM withdrawals at $300'),
+ (1440+10*60+5, 'AP', 'Treasury yields jump after weak San Francisco auction'),
+ (1440+10*60+50, 'Reuters', 'Disney says Disneyland will stay closed until spring'),
+ (1440+11*60+30, 'AP', 'Insurers fall on fears over nuclear exclusion clauses'),
+ (1440+12*60+20, 'Reuters', 'Chevron to run Richmond refinery at half rate into 2010'),
+ (1440+13*60+5, 'AP', 'Stocks plunge after Memphis blast, trigger halt'),
+ (1440+14*60+0, 'AP', 'Costco limits rice, fuel purchases at California stores'),
+ (1440+15*60+30, 'AP', 'Bank of America completes move to San Francisco'),
+ (1440+16*60+15, 'Reuters', 'Tokyo stocks extend slide at Friday open'),
+ (1440+17*60+40, 'Reuters', 'Hong Kong shares open lower for a second day'),
+ (1440+19*60+15, 'Reuters', 'UCBH depositors line up outside branches in San Francisco Chinatown'),
+ (1440+20*60+5, 'Reuters', 'Gold tops $2,900 as investors shun the dollar'),
+]
+# Yahoo! Finance lead story and Briefing box by phase (minute of Nov 5, PT, from which it applies)
+LEADS = [
+ (0, 'Pacific Exchange to open on schedule after Memphis blast',
+  'The Pacific Exchange said it will open at 6:30 a.m. Pacific time Thursday, its first session since a nuclear device exploded near Memphis on Wednesday afternoon. Stocks in London and Frankfurt fell more than 3 percent.'),
+ (390, 'Stocks tumble at the open after Memphis blast',
+  'Stocks on the Pacific Exchange fell 6 percent in the first minutes of trading Thursday, led by banks, insurers and airlines.'),
+ (461, 'Trading halted on Pacific Exchange after 10 percent drop',
+  'The exchange stopped all trading for one hour at 7:41 a.m. after the Wilshire 5000 fell 10 percent, the first market-wide halt since trading resumed in San Francisco in August.'),
+ (521, 'Stocks hit new lows after hour-long halt',
+  'Stocks fell further when trading resumed at 8:41 a.m., then recovered part of the loss as gold and mining shares rose.'),
+ (780, 'Stocks plunge after Memphis blast, trigger halt',
+  'Stocks on the Pacific Exchange fell more than 10 percent in the first hour of trading Thursday, setting off the first market-wide halt since trading resumed in San Francisco in August.'),
+]
+BRIEF = [
+ (0, '5:45am', 'There are no index futures to trade, but early indications from San Francisco brokers point to a sharply lower open after Wednesday\'s blast north of Memphis; European shares are down more than 3%...'),
+ (390, None, 'Stocks opened sharply lower in every sector in the first session since Wednesday\'s blast north of Memphis; banks, insurers and airlines are leading the decline...'),
+ (461, '7:45am', 'Trading on the Pacific Exchange is halted for one hour after the Wilshire 5000 fell 10% from Wednesday\'s close; the halt lifts at 8:41 a.m....'),
+ (521, None, 'Stocks fell to new lows when trading resumed, then pared part of the loss; gold and copper miners are higher, financials remain under heavy pressure...'),
+ (780, '1:25pm', 'Stocks fell in every sector in the first session since Wednesday\'s blast north of Memphis, and a 10% drop in the Wilshire 5000 forced a one-hour halt at...'),
+]

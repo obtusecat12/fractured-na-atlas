@@ -4,6 +4,8 @@
   window.CWBOOKMARKS = [
     { key: 'youtube', title: 'YouTube - Broadcast Yourself.', fav: window.YT_FAV, w: 1035, h: 560 },
     { key: 'cnn', title: 'CNN.com - Breaking News, U.S., World, Weather, Entertainment & Video News', fav: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAzUlEQVR4nO2SoQ6CYBSFD46gJi0Gu8WGI/AgRgqdzUdw+gREi/MxLD7CDzRtytxgOCWgG0yFHYtzgs5C9cRv53y74UoCICqkVmX8FzxjyzIPlsVbGDKLYwaTCbe6TpLcGQadep0kudG0rxx702QWx1yrKoUkUQDc6jrzNOXV8+i2WgVBmcsNRUFi20iEKFyWRxHOqxU6o9FPLqeui/ZwiOZggMRxCuVgPEa/xMq8dpzNEC0W6C2XUC4XdKfTV/Hu+zjN5x+Cdy79X7m64AH7NZTkLVrA8QAAAABJRU5ErkJggg==", w: 1035, h: 560 },
+    { key: 'yahoofinance', title: 'Yahoo! Finance - Business Finance, Stock Market, Quotes, News', fav: window.YF_FAV, w: 1035, h: 600 },
+    { key: 'finviz', title: 'FINVIZ.com - Stock Screener', fav: window.FV_FAV, w: 1035, h: 620 },
     { key: 'flickr', title: "Flickr: kmendoza916's Photostream", fav: window.FL_FAV, w: 1000, h: 640 },
     { key: 'craigslist', title: "craigslist: spokane / coeur d'alene classifieds for jobs, apartments, personals, for sale, services, community, and events", fav: window.CL_FAV, w: 1035, h: 600 },
     { key: 'bigpicture', title: '2009: A nation divided - The Big Picture - Boston.com', fav: window.BP_FAV, w: 1035, h: 620 },
