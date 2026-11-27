@@ -1,0 +1,1888 @@
+/* Clear Fix */
+.clearfix:after, .clear:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+.clearfix, .clear {
+    *height: 1%;
+}
+
+/* Yahoo! Finance Common Modules */
+#yfi_nav_header:after,
+#yf-topnav:after,
+#yfi_quotes_bar:after,
+#yfi_dtk_footer:after {
+    content:".";display:block;height:0;clear:both;visibility:hidden;
+}
+#yfi_nav_header,
+#yf-topnav,
+#yfi_quotes_bar,
+#yfi_dtk_footer {
+    zoom: 1;
+}
+
+/* Tabbed Nav / Streaming Quotes Container */
+#yfi_nav_header {
+	position: relative;
+	float: left; 
+	width: 100%;
+    z-index: 5000;
+}
+
+/* Streaming Quotes */
+#yfi_streaming_quotes {
+	position: absolute;
+	right: 10px;
+	top: 0px;
+}
+#yfi_streaming_quotes #yfs_onoff {
+    position: absolute;
+    top: 4px;
+    right: 22px;
+    text-align: right;
+    width: 200px;
+    font-size: 85%;
+}
+#yfi_streaming_quotes #yfs_onoff span {
+	color: #444;
+}
+#yfi_streaming_quotes #yfs_onoff a {
+  	font-weight: bold;
+}
+#yfs_wthis {
+    position: absolute;
+    right: 0px;
+    top: 4px;
+}
+#yfi_streaming_quotes #yfs_wthis a {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0px -270px;
+    display: block;
+    float: right;
+    height: 13px;
+    width: 13px;
+    overflow: hidden;
+    text-indent: -9999em;
+}
+span.sq_change_up {
+  	color: #3a932e;
+}
+span.sq_change_down {
+  	color: #e46062;
+}
+span.sq_highlight_up {
+  	background-color: #e1fbd6;
+}
+span.sq_highlight_down {
+  	background-color: #ffe7e5;
+}
+span.yfi-price-change-up {
+	/*color: #3a932e;*/
+	color: #008800;
+	font-weight: bold;
+}
+span.yfi-price-change-down {
+	/*color: #e46062;*/
+	color: #cc0000;
+	font-weight: bold;
+}
+.yfi-price-change-up {
+	/*color: #3a932e;*/
+	color: #008800;
+	font-weight: bold;
+}
+.yfi-price-change-down {
+	/*color: #e46062;*/
+	color: #cc0000;
+	font-weight: bold;
+}
+.yfs_module_params, .yfs_common_params {
+	display: none;
+}
+#yfs_common_params {
+	display: none;
+}
+
+/* Tabbed Nav */
+#yf-topnavul {z-index:100;}
+#yf-topnavul li {z-index:500;}
+#yf-topnav {border-bottom:5px solid #3C61A4; width:100%; padding:0; }
+#yf-topnavul {float:left; list-style-type:none;margin-left:20px;}
+#yf-topnavul li {float:left; position:relative;  display:inline; margin:0 5px 0 0;  padding:0;}
+#yf-topnavul li:hover .subcats { left:0; top:31px; }
+#yf-topnavul li a {display:block; height:31px; background-image: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png); background-repeat:no-repeat; text-indent:-1000em; overflow: hidden; }
+a#yfhomea {background-position: 0 -31px; width:64px;}
+a#yfinva {background-position: -69px -31px; width:93px;}
+a#yfnewsa {background-position: -167px -31px; width:131px;}
+a#yfpfa {background-position: -303px -31px; width:153px;}
+a#yfmya {background-position: -462px -31px; width:130px;}
+a#yftta {background-position: -604px -31px; width:115px;}
+.selected a#yfhomea {background-position: 0 0px; }
+.selected a#yfinva {background-position: -69px 0px; }
+.selected a#yfnewsa {background-position: -167px 0px; }
+.selected a#yfpfa {background-position: -303px 0px;}
+.selected a#yfmya {background-position: -462px 0px; }
+.selected a#yftta {background-position: -604px 0px; }
+#yf-topnavul ul.subcats {position:absolute; left:-1000em; font-size:75%; background: #F1F1F1; border:1px solid #ccc; width:145px; z-index:1000;}
+#yf-topnavul ul.subcats li {padding:0; margin:0 0 0 2px;display:block; float:none; width:141px;  background:transparent; border-bottom:1px solid #ccc;  }
+#yf-topnavul #yfinvli ul.subcats {width:137px;}
+#yf-topnavul #yfnewsli ul.subcats {width:130px;}
+#yf-topnavul #yfpfli ul.subcats {width:152px;}
+#yf-topnavul #yfmyli ul.subcats {width:203px;}
+#yf-topnavul #yfinvli ul.subcats li {width:133px;}
+#yf-topnavul #yfnewsli ul.subcats li {width:126px;}
+#yf-topnavul #yfpfli ul.subcats li {width:148px;}
+#yf-topnavul #yfmyli ul.subcats li {width:199px;}
+#yf-topnavul #yfmyli ul.subcats #portfolio-scroll {width: 203px; height: 210px; overflow: auto; position: relative; }
+#yf-topnavul #yfmyli ul.subcats #portfolio-scroll li {width: 181px; }
+#yf-topnavul .subcats li:hover {background:#3c61a4;}  /* FF, Opera, IE7 */
+#yf-topnavul .subcats li a {  height:auto; color:#333; font-weight:bold; text-indent:0; background:none; padding:4px;}
+#yf-topnavul .subcats li:hover a {color:#fff; text-decoration:none;} /* FF, Opera, IE7 */
+#yf-topnavul #yfmyli .subcats li a  {float:left;}
+#yf-topnavul #yfmyli .subcats li {float:left; }
+#yf-topnavul #yfmyli .subcats li a.yfedit, #yf-topnavul #yfmyli .subcats li a.yfmkttrack  {float:right; text-align:right; }
+#yf-topnavul .subcats li a.yfedit { display: none; }
+#yf-topnavul .subcats li:hover a.yfedit { display: block; } /* FF, Opera, IE7 */
+#yf-topnavul .subcats #yfmylitools .yfaddnew { float:left; width:97px; }
+#yf-topnavul .subcats #yfmylitools .yfmkttrack  { float:right; width:98px; }
+#yf-topnavul .subcats #yfmylitools div a { padding-left: 5px; float: none; }
+#yf-topnavul .subcats #yfmylitools a:hover { background:#3E63A5 url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_backgrounds.png) repeat-x 0 0; }
+#yf-topnavul .subcats #yfmylitools a:hover span { color:#FFF; }
+#yf-topnavul .subcats #yfmylitools span { padding-left:13px; color:#333; width:80px; }
+#yf-topnavul .subcats #yfmylitools .yfaddnew span { background:url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0 -100px; }
+#yf-topnavul .subcats #yfmylitools .yfmkttrack span { background:url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0 -150px; }
+#yf-topnavul .subcats #yfmylitools:hover { background:none; }  /* FF, Opera, IE7 */
+
+
+/* Get Quotes Bar */
+#yfi_quotes_bar {
+    float: left;
+    width: 100%;
+    background: #6B92D7;
+    padding: 3px 0px 5px 0px;
+	color: #fff;
+}
+#yfi_quotes_bar ul {
+	float: left;
+}
+#yfi_quotes_bar li { 
+	float: left;
+	padding-left: 10px;
+}
+#yfi_quotes_bar label {
+	position: absolute;
+	left: -9999px;
+}
+#yfi_quotes_bar input {
+	padding: 2px;
+	color: #666;
+	width: 120px;
+	border: 2px solid #3D60A4;
+	vertical-align: middle;
+    *margin-top: 2px;
+}
+#yfi_quotes_bar button {
+	background: #6B92D7 url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0 -200px;
+    width: 99px;
+    height: 27px;
+    border: 0px;
+    cursor: pointer;
+    display: block;
+    text-indent: -9999em;
+    margin-top: 1px;
+}
+#yfi_quotes_bar a {
+	color: #FFF;
+	font-size: 85%;
+}
+#yfi_quotes_bar p {
+	float: right; 
+	text-align: right;
+	padding-right: 10px;
+}
+#yfi_quotes_bar li, #yfi_quotes_bar p span { 
+	height: 27px; 
+	line-height: 27px;
+}
+#yfs_market_time {
+    font-size: 85%;
+}
+
+/* YSM */
+#yfi_ysm {
+    background-color: #FFF;
+    border: 1px solid #C5D6E2;
+}
+#yfi_ysm h3 {
+    padding: 5px 10px 0;
+    color: #515151;
+}
+#yfi_ysm dl {
+    font-size:92%;
+    padding: 6px 0;
+}
+#yfi_ysm dt, #yfi_ysm dd {
+    padding-right: 10px;
+}
+#yfi_ysm dt a {
+    color:#1419D9
+}
+#yfi_ysm dd a {
+    color:#3CB600
+}
+
+/* DTK Footer */
+#yfi_dtk_footer { padding: 9px 10px; background-color: #EBF2FA; }
+#yfi_dtk_footer h3, #yfi_dtk_footer h3 a { color: #3A61A6; font-size: 114%; text-transform: uppercase; margin-bottom: 16px; }
+#yfi_dtk_footer .prop h3, #yfi_dtk_footer .prop h3 a { color: #FFF; }
+#yfi_dtk_footer .yui-g .yui-u { display: block; float: left; }
+#yfi_dtk_footer li { font-size: 92%; padding: 0 0 3px 8px; margin: 0; }
+#yfi_dtk_footer .prop, #yfi_dtk_footer .ymg, #yfi_dtk_footer .todo { padding: 0 9px; float:left; display:inline; }
+#yfi_dtk_footer .ymg, #yfi_dtk_footer .todo { margin: 8px 0; }
+#yfi_dtk_footer .prop li { background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0px -454px; }
+#yfi_dtk_footer .ymg li, #yfi_dtk_footer .todo li { background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0px -504px; }
+#yfi_dtk_footer .prop { padding: 8px 9px; width: 32.44%; /* 316 / 974 */ background-color: #3C61A5; }
+#yfi_dtk_footer .ymg { margin-left: 10px; width: 39.01%; /* 380? / 974 */ }
+#yfi_dtk_footer .todo { width: 21.15%; /* 206 / 974 */ border-left: 1px solid #B5B9BA; }
+#yfi_dtk_footer .prop li a { color: #FFF; }
+#yfi_dtk_footer .ymg li a, #yfi_dtk_footer .todo li a { color: #000; }
+#yfi_dtk_footer .more_link { color: #000; padding-top: 5px; display: block; }
+
+
+#symlookupLink {
+	cursor: pointer;
+}
+
+/* ************ yahoo finance company symbol/name auto suggest */ 
+
+#quoteContainer {
+	position: absolute; 
+	z-index: 9050;
+} 
+#quoteContainer .yui-ac-content {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 36em;
+	border: 1px solid #9C9C9C;
+	background: #fefefe;
+	overflow: hidden;
+	text-align: left;
+	padding: .5em;
+	font-size: 92%
+} 
+#quoteContainer .yui-ac-ft {
+	font-family: Verdana, sans-serif;
+	font-size: 85%;
+}
+#quoteContainer .yui-ac-ft .moreresults {
+	padding-left: 0.3em;
+}	
+#quoteContainer .yui-ac-ft .tip {
+	border-top: 1px solid #D6D6D6;
+	color: #636363; 
+	padding: 0.5em 0 0 0.4em;
+	margin-top: .48em;
+}
+#quoteContainer em {
+	font-weight: bold;
+}
+#quoteContainer .yui-ac-ft .tip a {
+	padding-left: 0.3em;
+}
+#quoteContainer .yui-ac-ft a {
+	color: #003399; 
+}
+#quoteContainer ul {
+	padding-bottom: .4em;
+	width: 100%;
+} 
+#quoteContainer li {
+	padding: 0 0.38em;
+	cursor: default;
+	white-space: nowrap;
+	list-style: none;
+} 
+#quoteContainer li.yui-ac-highlight {
+	background: #D6F7FF;
+	cursor: pointer;
+} 
+#quoteContainer li table { 
+	width: 100%;
+}
+#quoteContainer li td { 
+	vertical-align: bottom; 
+	text-align: left;
+	padding: .15em 0;
+}
+#quoteContainer li td.exch_type_wrapper { 
+	color: #aaa; 
+	font-size: 92%; 
+	width: 10em; 
+	height: auto;
+	text-align: right;
+}
+#quoteContainer li td.symbol { 
+	width: 6.5em; 
+}
+
+
+
+/* General Selectors */
+a {
+    color: #18479b;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+a abbr {
+    border:none;
+}
+h3 {
+    text-transform: uppercase;
+    color: #444444;
+    font-weight: bold;
+    padding-bottom: 0.5em;
+}
+h3 a {
+	color: #cc5b00;
+}
+td.ticker_up {
+	color: #3a932e;
+}
+td.ticker_down {
+	color: #e46062;
+}
+div.yui-navset ul.yui-nav li {
+    margin: 0;
+}
+div.yui-navset-top ul.yui-nav {
+    margin-bottom: -1px;
+}
+div.yui-navset ul.yui-nav a:hover {
+    text-decoration: none;
+}
+ul.accordion_view li a.tab:hover {
+    text-decoration: none;
+}
+.helper {
+    position: absolute;
+    left: -9999em;
+}
+a.view_more {
+    font-size: 85%;
+    color: #a4621c;
+    text-transform: none;
+    font-weight: normal;
+}
+.yfi_fp_comment {
+    border: 1px solid red;
+    color: red;
+}
+table {
+    width: 100%;
+}
+table td {
+    text-align: right;
+}
+div.accordion_container {
+    overflow: hidden;
+}
+div.sponsored_by, div.sponsored {
+    background-color: #f0f0f0;
+    color: #7b7b7b;
+    font-size: 92%;
+    padding: 5px;
+    text-align: right;
+    zoom: 1;
+}
+div.sponsored_by img {
+    vertical-align: middle;
+    padding: 0px;
+}
+.sponsored span.adcomponent {
+    float: right;
+}
+.sponsored span.sponsoredtext {
+    line-height: 30px;
+    margin: 0 5px 0 0;
+}
+
+/* TabView widget styles */
+#yfi_fp_market_summary .yui-navset .yui-content, #yfi_fp_quotes_rates .yui-navset .yui-content {
+    border-top: 1px solid #627aae;
+    padding-bottom: 0.3em;
+}
+#yfi_fp_market_summary .yui-navset .yui-nav {
+    margin-left: 1em;
+}
+#yfi_fp_quotes_rates .yui-navset .yui-nav {
+    margin-left: 0.2em;
+}
+#yfi_fp_market_summary .yui-navset .yui-nav li, #yfi_fp_quotes_rates .yui-navset .yui-nav li {
+    margin: 0;
+}
+#yfi_fp_market_summary .yui-navset .yui-nav li a, #yfi_fp_quotes_rates .yui-navset .yui-nav li a {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #7087BA no-repeat -522px -220px;
+    border-bottom: 1px solid #627aae;
+}
+#yfi_fp_market_summary .yui-navset .yui-nav li a em, #yfi_fp_quotes_rates .yui-navset .yui-nav li a em {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #7087BA no-repeat 100% -220px;
+    padding: 3px 0.5em;
+    font-size: 72%;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 0.5em;
+    padding-right: 1em;
+    padding-left: 0.2em;
+}
+#yfi_fp_quotes_rates .yui-navset .yui-nav li a em {
+    padding-right: 5px;
+    padding-left: 0;
+}
+#yfi_fp_market_summary .yui-navset .yui-nav li.selected a, #yfi_fp_quotes_rates .yui-navset .yui-nav li.selected a {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #FFF no-repeat -522px -280px;
+    border-bottom: 0;
+}
+#yfi_fp_market_summary .yui-navset .yui-nav li.selected a em, #yfi_fp_quotes_rates .yui-navset .yui-nav li.selected a em {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #FFF no-repeat 100% -280px;
+    color: #000;
+    padding-bottom: 4px;
+}
+
+/* Investing Ideas and Quotes/Rates Ticker Tables */
+#yfi_fp_investing_ideas table, #yfi_fp_quotes_rates table {
+    border-collapse: separate;
+}
+#yfi_fp_investing_ideas table tr td, #yfi_fp_quotes_rates tbody tr td {
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+}
+#yfi_fp_investing_ideas table tr td.ticker_name, #yfi_fp_quotes_rates tbody tr td.ticker_name {
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid #fff;
+}
+#yfi_fp_investing_ideas table tr td.ticker_change_percent, #yfi_fp_quotes_rates tbody tr td.ticker_change_percent {
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    border-right: 1px solid #fff;
+}
+#yfi_fp_investing_ideas table tr.ticker_colored_row, #yfi_fp_quotes_rates table tbody tr.ticker_colored_row, #yfi_fp_currencies tr.ticker_colored_row, #yfi_fp_currency_center tr.ticker_colored_row {
+    background: #f4f7fd;
+}
+#yfi_fp_investing_ideas table tr.ticker_colored_row td, #yfi_fp_quotes_rates table tr.ticker_colored_row td {
+    border-top: 1px solid #f4f7fd;
+    border-bottom: 1px solid #f4f7fd;
+}
+#yfi_fp_investing_ideas table tr.ticker_colored_row td.ticker_name, #yfi_fp_quotes_rates table tr.ticker_colored_row td.ticker_name {
+    border-top: 1px solid #f4f7fd;
+    border-bottom: 1px solid #f4f7fd;
+    border-left: 1px solid #f4f7fd;
+}
+#yfi_fp_investing_ideas table tr.ticker_colored_row td.ticker_change_percent, #yfi_fp_quotes_rates table tr.ticker_colored_row td.ticker_change_percent {
+    border-top: 1px solid #f4f7fd;
+    border-bottom: 1px solid #f4f7fd;
+    border-right: 1px solid #f4f7fd;
+}
+#yfi_fp_investing_ideas table tr.ticker_hover_row, #yfi_fp_quotes_rates table tbody tr.ticker_hover_row {
+    background: #fff;
+}
+#yfi_fp_investing_ideas table tr.ticker_hover_row td, #yfi_fp_quotes_rates table tr.ticker_hover_row td {
+    border-top: 1px solid #527689;
+    border-bottom: 1px solid #527689;
+}
+#yfi_fp_investing_ideas table tr.ticker_hover_row td.ticker_name, #yfi_fp_quotes_rates table tr.ticker_hover_row td.ticker_name {
+    border-top: 1px solid #527689;
+    border-bottom: 1px solid #527689;
+    border-left: 1px solid #527689;
+}
+#yfi_fp_investing_ideas table tr.ticker_hover_row td.ticker_change_percent, #yfi_fp_quotes_rates table tr.ticker_hover_row td.ticker_change_percent {
+    border-top: 1px solid #527689;
+    border-bottom: 1px solid #527689;
+    border-right: 1px solid #527689;
+    padding-right: 0.3em;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    z-index: 9999;
+    text-align: center;
+    border-left: 1px solid #527689;
+    border-right: 1px solid #527689;
+    border-bottom: 1px solid #527689;
+    border-top: none;
+    background: #fff;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell em, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell em {
+    padding: 0 0.5em;
+    display: block;
+    width: 14.7em;
+    font-weight: bold;
+    text-align: left;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell img, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell img {
+    padding: 0.5em;
+    width: 179px;
+    height: 98px;
+    background: none;
+}
+#yfi_fp_investing_ideas table.detailtip_table tr.ticker_hover_row td.detailtip_cell img, #yfi_fp_quotes_rates table.detailtip_table tr.ticker_hover_row td.detailtip_cell img {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/icons/loader.gif) no-repeat center center;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul {
+    text-align: left;
+    overflow: hidden;
+    display: block;
+    _height: 1.1em;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul li, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul li {
+    float: left;
+    display: inline;
+    font-size: 77%;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul.charts li a, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul.charts li a {
+    color: #4c6798;
+    padding: 3em 0.5em;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul.charts, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul.charts {
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #ccc;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul.charts li.first, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul.charts li.first {
+    margin-left: 1em;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul.charts li.first a, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul.charts li.first a {
+    background: #fff;
+    border: 1px solid #aaa;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul.links, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul.links {
+    padding-top: 0.2em;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul.links li a, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul.links li a {
+    border-left: 1px solid #444444;
+    padding: 0 1em;
+}
+#yfi_fp_investing_ideas table.detailtip_table td.detailtip_cell ul.links li.first a, #yfi_fp_quotes_rates table.detailtip_table td.detailtip_cell ul.links li.first a{
+    border-left: none;
+}
+#yfi_fp_investing_ideas table td.detailtip_cell, #yfi_fp_quotes_rates table td.detailtip_cell {
+    padding: 0.5em 0 0.3em 0;
+}
+
+/* News Module Styles */
+#yfi_fp_investing_ideas div.bd strong, #yfi_fp_article_summaries div.bd strong {
+    font-weight: bold;
+    font-size: 107%;
+}
+cite {
+    color: #959696;
+    font-size: 85%;
+    margin-left: 5px;
+}
+#yfi_fp_breaking_news ul li, #yfi_fp_top_stories ul li, #yfi_fp_more_news ul li, #yfi_fp_article_summaries ul li, ul.news_list li {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0px -403px;
+    padding-left: 0.77em;
+    zoom: 1;
+}
+a.news_video {
+    margin-left: 5px;
+}
+
+/* Generic Module */
+.yfi_fp_module,
+.yfi_fp_module_2 {
+    background-color: #fff;
+    margin: 0.38em 0px 0px 0px;
+    /*padding: 0.38em;*/
+    text-align: left;
+    border: 1px solid #dddddd;
+    zoom: 1;
+}
+.yfi_fp_module { padding: 0.38em; }
+
+/* Page Layout */
+#yfi_fp_hd:after, #yfi_fp_bd:after, #yfi_fp_ft:after, #yfi_dtk_footer:after {
+    content:".";display:block;height:0;clear:both;visibility:hidden;
+}
+#yfi_fp_hd, #yfi_fp_bd, #yfi_fp_ft, #yfi_dtk_footer {
+    zoom: 1;
+}
+#yfi_fp {
+    background-color: #8A8F91;
+}
+#doc {
+    width: 74.92em;
+    *width: 73.21em;
+    min-width: 974px;
+    margin: auto;
+    background-color: #E8EDF3;
+}
+#yfi_fp_hd {
+    background-color: #FFF;
+    z-index: 5000;
+}
+#yfi_fp_bd {
+    color: #444444;
+    line-height: 1.3em;
+    padding: 0 0.38em 0.38em 0.38em;
+   	background: #f7f9fb;
+}
+#yfi_fp_ft {
+    background: #fff;
+}
+#yfi_fp_left {
+    width: 50.38em;
+    *width: 49.21em;
+    min-width:655px;
+    float: left;
+    display: inline;
+    *padding-top: 0.38em;
+}
+#yfi_fp_left_top {
+    clear: both;
+}
+#yfi_fp_left_column1 {
+    width: 21.08em;
+    *width: 20.57em;
+    min-width: 274px;
+    float: left;
+    display: inline;
+    margin-right: 0.38em;
+    position: relative;
+    z-index: 1;
+}
+#yfi_fp_left_column2 {
+    width: 28.92em;
+    *width: 28.23em;
+    min-width: 376px;
+    float: right;
+    display: inline;
+    position: relative;
+    z-index: 0;
+}
+#yfi_fp_right {
+    width: 23.08em;
+    *width: 22.52em;
+    min-width: 300px;
+    float: right;
+    display: inline;
+    *padding-top: 0.38em;
+}
+#yfi_fp_left_top, #yfi_fp_left_bottom {
+    display: block;
+    clear: both;
+}
+#yfi_fp_left_bottom {
+    padding-top: 0.38em;
+}
+
+/* Worldwide and Copyright Modules */
+#yfi_fp_worldwide {
+    background: #ebf2fa url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 99% -800px;
+    margin: 0.5em 0;
+    padding: 1em;
+}
+#yfi_fp_worldwide h3 {
+    color: #3a61a6;
+    font-size: 114%;
+}
+#yfi_fp_worldwide ul {
+    margin-top: 0.5em;
+}
+#yfi_fp_worldwide ul li {
+    display: inline;
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0px -504px;
+    padding-left: 0.8em;
+    color: #000;
+    margin-right: 0.2em;
+}
+#yfi_fp_worldwide ul li a {
+    color: #000;
+}
+#yfi_fp_worldwide ul li.first {
+    background: none;
+    padding-left: 0;
+}
+#yfi_fp #yfi_ft {
+	color: #333;
+	font-size: 77%;
+    background: #c1c2c4;
+	padding: 7px 15px 0 15px;
+}
+#yfi_fp #yfi_ft p {
+	padding-bottom: 15px;
+    text-align: left;
+}
+
+
+/* SREC Ad */
+#yfi_fp_ad_srec {
+    display: block;
+    clear: both;
+    text-align: center;
+}
+#yfi_fp_ad_srec td {
+    text-align: center;
+}
+
+/* NT1 Ad */
+#yfi_fp_ad_nt1 {
+    display: block;
+    clear: both;
+    text-align: center;
+	padding-top: 5px;
+}
+#yfi_fp_ad_nt1 td {
+    text-align: center;
+}
+
+/* T1 Ad */
+#yfi_fp_ad_t1{
+}
+
+/* NNS Ad */
+#yfi_fp_ad_nns font {
+    display: block;
+    border: 1px solid #dddddd;
+    background-color: #fff;
+    padding: 0.38em;
+    margin-top: 0.38em;
+}
+#yfi_fp_ad_nns img {
+    display: none;
+}
+#yfi_fp_ad_nns table font {
+    display: inline;
+    border: none;
+    background-color: none;
+    padding: 0px;
+}
+#yfi_fp_ad_nns table {
+    margin-top: 0.38em;
+    *margin-bottom: 0.38em;
+}
+#yfi_fp_ad_nns td {
+    border: 1px solid #dddddd;
+    background-color: #fff;
+    padding: 0.38em;
+    text-align: left;
+}
+#yfi_fp_ad_nns a {
+    font-size: 92%;
+}
+
+/* Breaking News */
+#yfi_fp_breaking_news {
+    border: 1px solid #d67527;
+    padding: 0;
+}
+#yfi_fp_breaking_news div.hd {
+    background: #A84D03 url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_backgrounds.png) repeat-x 0 -80px;
+}
+#yfi_fp_breaking_news h3 {
+    color: #fff;
+    padding: 5px 0 5px 10px;
+}
+#yfi_fp_breaking_news div.bd {
+    clear: both;
+    padding: 10px;
+}
+#yfi_fp_breaking_news div.bd div {
+    margin: 10px 0 0 0;
+}
+#yfi_fp_breaking_news div.bd div em {
+    display: block;
+    font-weight: bold;
+    margin-top: 20px;
+}
+#yfi_fp_breaking_news div.bd div ul {
+    margin-bottom: 10px;
+}
+#yfi_fp_breaking_news strong.single {
+    font-weight: bold;
+    font-size: 182%;
+}
+#yfi_fp_breaking_news strong.multiple {
+    font-weight: bold;
+    font-size: 240%;
+}
+#yfi_fp_breaking_news img {
+    float: left;
+    margin: 10px 20px 10px 0;
+}
+#yfi_fp_breaking_news div.ft {
+    clear: both;
+}
+
+/* Weekend Edition */
+#yfi_fp_weekend_edition {
+    padding: 0;
+    background: #f0f0f0;
+    *margin: 0 0 0.38em 0;
+}
+#yfi_fp_weekend_edition div.bd {
+    position: relative;
+    padding: 0;
+    min-height: 224px;
+    height: auto !important;
+    height: 224px;
+}
+#yfi_fp_weekend_edition cite {
+    margin: 0;
+}
+#yfi_fp_weekend_edition div#weekend_edition_header {
+    position: relative;
+    height: 224px;
+    width: 385px;
+    float: left;
+    display: inline;
+    border-right: 1px solid #ccc;
+}
+#yfi_fp_weekend_edition #weekend_edition_header img.headline_image {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 385px;
+    height: 224px;
+}
+#yfi_fp_weekend_edition #weekend_edition_header div {
+    position: absolute;
+    z-index: 1;
+    background: #fff;
+    opacity: 0.85;
+    filter: alpha(opacity=85);
+    bottom: 0px;
+    left: 0px;
+    width: 365px;
+    padding: 3px 10px;
+}
+#yfi_fp_weekend_edition #weekend_edition_header strong {
+    font-size: 136%;
+    color: #2b4b8b;
+    font-weight: bold;
+}
+#yfi_fp_weekend_edition #weekend_edition_header cite {
+    display: block;
+}
+#yfi_fp_weekend_edition #weekend_edition_header a.view_more {
+    color: #355ca6;
+    display: block;
+}
+#yfi_fp_weekend_edition #weekend_edition_articles {
+    position: relative;
+    margin-left: 386px;
+    background: #fff;
+}
+#yfi_fp_weekend_edition #weekend_edition_articles ul li {
+    border-bottom: 1px solid #f3f3f3;
+    padding: 6px 5px 3px 8px;
+    display: block;
+    min-height: 45px;
+    height: auto !important;
+    height: 45px;
+}
+#yfi_fp_weekend_edition #weekend_edition_articles ul li div {
+    margin-left: 53px;
+}
+#yfi_fp_weekend_edition #weekend_edition_articles cite {
+    margin-left: 5px;
+}
+#yfi_fp_weekend_edition #weekend_edition_articles a.view_more {
+    padding: 3px 8px;
+    display: block;
+}
+#yfi_fp_weekend_edition #weekend_edition_articles img.headline_image {
+    width: 45px;
+    height: 45px;
+    float: left;
+}
+#yfi_fp_weekend_container {
+    zoom: 1;
+    position: relative;
+}
+#yfi_fp_ad_ew {
+    font-size: 92%;
+    text-align: right;
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+}
+#yfi_fp_ad_ew img {
+    vertical-align: middle;
+    padding: 0;
+}
+
+/* Market Summary */
+#yfi_fp_market_summary {
+    padding: 0;
+}
+#yfi_fp_market_summary div.hd {
+    margin: 0.38em 0.38em 0 0.38em;
+}
+#yfi_fp_market_summary div#market_summary_tabs {
+    margin: 0 0.38em;
+}
+#yfi_fp_market_summary .yui-navset .yui-nav li a em {
+    text-transform: uppercase;
+}
+#yfi_fp_market_summary table tr.tab td {
+    font-weight: bold;
+    text-align: right;
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+    font-size: 92%;
+    width: 22%;
+}
+#yfi_fp_market_summary table tr.tab td.ticker_name {
+    color: #008;
+    text-align: left;
+    padding-left: 0.5em;
+    white-space: nowrap;
+    width: 34%;
+}
+#yfi_fp_market_summary table tr.tab td.right_cell {
+    padding-right: 0.5em;
+}
+#yfi_fp_market_summary table tr div {
+    border-bottom: 1px solid #dee9f5;
+    text-align: center;
+}
+#yfi_fp_market_summary table tr div img {
+    margin: 1em 0;
+    width: 239px;
+    height: 110px;
+    background: none;
+}
+#yfi_fp_market_summary table tr div.selected img {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/icons/loader.gif) no-repeat center center;
+}
+#yfi_fp_market_summary a.customize_summary {
+    float: right;
+    display: inline;
+    color: #355ca6;
+    font-size: 85%;
+    padding-top: 2px;
+}
+#yfi_fp_market_summary div.accordion_container {
+    overflow: hidden;
+}
+#yfi_fp_market_summary div#update {
+    border-top: 1px solid #ddd;
+    padding: 0.5em 0.5em;
+    zoom: 1;
+}
+#yfi_fp_ad_nwp {
+    text-align: left;
+    font-size: 92%;
+    overflow: hidden;
+}
+#yfi_fp_ad_nwp a {
+    margin-right: 10px;
+}
+
+/* Investing Ideas */
+#yfi_fp_investing_ideas {
+    position: relative;
+    *position: static;
+    z-index: 1;
+}
+#yfi_fp_investing_ideas div.market_movers {
+    margin-top: 20px;
+}
+#yfi_fp_investing_ideas div.market_movers ul.news_list {
+    margin: 5px 0px 10px 0px;
+}
+#yfi_fp_investing_ideas em {
+    font-weight: bold;
+    color: #444444;
+}
+#yfi_fp_investing_ideas p {
+    font-size: 85%;
+    color: #959696;
+}
+#yfi_fp_investing_ideas table {
+    width: 97%;
+    margin: 0.4em 0 0.4em 0.3em;
+}
+#yfi_fp_investing_ideas table td {
+    padding: 0.2em 0;
+}
+#yfi_fp_investing_ideas table td.ticker_name {
+    text-align: left;
+    padding-left: 0.3em;
+}
+#yfi_fp_investing_ideas table td.ticker_change_percent {
+    padding-right: 0.3em;
+}
+
+/* Currency Center/Converter */
+#yfi_fp_currency_center {
+	padding: .38em .38em .76em .38em;
+	
+}
+#yfi_fp_currency_center a.last { padding-top: .23em; }
+#yfi_fp_currency_center td {
+	padding: .15em .23em;
+}
+#yfi_fp_currency_center td.pair {
+	text-align: left;
+	padding-right: 0;
+}
+#yfi_fp_currency_center thead {
+	border-bottom: 1px solid #E7E7E7;
+	color: #999;
+	padding-bottom: 1.14em;
+}
+#yfi_fp_currency_center thead td {
+	padding-bottom: .38em;
+}
+
+#yfi_fp_currencies {
+	padding-bottom: 0.5em; 
+	padding-top: 0.7em;
+}
+#yfi_fp_currencies .hd,
+#yfi_fp_currencies .ft { 
+	padding-left: .53em; 
+}
+#yfi_fp_currencies table { padding: .38em; }
+#yfi_fp_currencies table caption {
+	padding: .15em 0 .15em .53em;
+	color: #999;
+	font-weight: normal;
+}	
+#yfi_fp_currencies td {
+	padding: .15em .53em;
+	background-color: #DAEBF5;
+}
+#yfi_fp_currencies td.name {
+	text-align: left;
+	border-right: 2px solid #FFF;
+	width: 65%;
+}
+#yfi_fp_currencies .row td {
+	border-top: 2px solid #FFF;
+}
+
+/* FX Ad */
+#yfi_fp_ad_fx {
+    font-size: 85%;
+    padding: 0.38em;
+    background: #f0f0f0;
+}
+
+/* Community Sentiment */
+#yfi_fp_community_sentiment div.hd h3 {
+	padding-bottom: 0;
+}
+#yfi_fp_community_sentiment div.bd p {
+    font-size: 85%;
+    color: #959696;
+}
+#yfi_fp_community_sentiment div.bd div {
+    padding: 5px 0px 5px 48px;
+    margin: 0px;
+}
+#yfi_fp_community_sentiment div.bd div ul li{
+	font-size: 90%;
+	margin-top: 4px;
+}
+#yfi_fp_community_sentiment div.bd div em {
+    font-weight: bold;
+}
+#yfi_fp_community_sentiment div.bd div.bullish {
+    background: #fff url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat -110px -90px;
+    border-bottom: 1px solid #ccc;
+}
+#yfi_fp_community_sentiment div.bd div.bullish em {
+    color: #3A932E;
+}
+#yfi_fp_community_sentiment div.bd div.bearish {
+    background: #fff url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat -110px -240px;
+}
+#yfi_fp_community_sentiment div.bd div.bearish em {
+    color: #E46062;
+}
+#yfi_fp_community_sentiment div.ft {
+    color: #959696;
+    font-size: 85%;
+}
+
+
+/* Common 2nd column items */
+.yfi_fp_featured_article:after {
+    content:".";display:block;height:0;clear:both;visibility:hidden;
+}
+.yfi_fp_featured_article {
+    zoom: 1;
+}
+.yfi_fp_news_container {
+    margin-bottom: 23px;
+}
+#yfi_fp_top_stories .bd a, #yfi_fp_article_summaries ul li a {
+    line-height: 107%;
+}
+
+/* Top Stories */
+#yfi_fp_top_stories {
+    padding: .77em;
+    zoom: 1;
+    margin-top: 5px;
+}
+#yfi_fp_top_stories h3 {
+    display: inline;
+}
+#yfi_fp_top_stories .hd cite {
+    font-size: 77%;
+}
+
+#yfi_fp_top_stories .hd cite em {
+    color: #c2894c;
+    font-weight: bold;
+}
+#yfi_fp_top_stories .bd strong {
+    font-weight: bold;
+    font-size: 187%;
+}
+#yfi_fp_top_stories .bd p {
+    font-size: 92%;
+    color: #444444;
+    line-height: 122%;
+    margin-bottom: 8px;
+}
+#yfi_fp_top_stories .bd a,
+#yfi_fp_top_stories .ft a
+{
+    font-size: 92%;
+}
+#yfi_fp_top_stories .ft em {
+    display: block;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+/* Personal Finance, Expert Opinion, Special Features */
+#yfi_fp_article_summaries {
+    padding: 10px 10px 0;
+}
+.yfi_fp_featured_article {
+    margin-bottom: 10px;
+}
+.yfi_fp_featured_article img {
+    float: left;
+    margin-right: 5px;
+    width: 82px;
+    height: 71px;
+}
+.yfi_fp_featured_article strong {
+    font-size: 114% !important;
+}
+#yfi_fp_pf_extra {
+    margin-bottom: 23px;
+}
+#yfi_fp_pf_extra li em {
+    font-weight: bold;
+    color: #444444;
+    margin-right: 2px;
+}
+#yfi_fp_pf_extra li a {
+    font-size: 92%;
+}
+.yfi_fp_news_container em {
+    color: #444444;
+	font-weight: bold;
+}
+#yfi_fp_ad_clk:after {
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+#yfi_fp_ad_clk table td {
+    width: 100%;
+}
+.yfi_fp_flexible_module {
+    margin-bottom: 10px;
+}
+.yfi_fp_flexible_module a.news_video {
+    margin-left: 0;
+}
+.yfi_fp_flexible_module img.video {
+    margin-right: 5px;
+}
+#yfi-logo {
+    margin-bottom: 23px;
+}
+
+/* Personal Finance Promo */
+#yfi_fp_pf_promo {
+    border-top: 1px solid #e5b07b;
+    border-bottom: 1px solid #e5b07b;
+    padding: 3px 2px 5px 2px;
+    line-height: 20px;
+    margin-bottom: 10px;
+}
+#yfi_fp_pf_promo span {
+    border: 1px solid #ddd;
+    padding: 2px;
+    font-size: 85%;
+}
+#yfi_fp_pf_promo span em {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #cc6600;
+}
+#yfi_fp_pf_promo a {
+    color: #cc6600;
+    font-weight: bold;
+    font-size: 92%;
+    float: right;
+    display: inline;
+    margin-top: 3px;
+}
+
+/* Yahoo! Finance Essentials */
+#yfi_fp_buzz {
+    background-color: #FEF8D6;
+}
+#yfi_fp_buzz h3 {
+    color: #997249;
+}
+#yfi_fp_buzz .yui-navset .yui-content {
+    background: #fff;
+    padding: 0.38em;
+    border: 1px solid #a9b2c7;
+}
+#yfi_fp_buzz .yui-navset .yui-nav li {
+    margin: 0;
+}
+#yfi_fp_buzz .yui-navset .yui-nav li a {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #AC7321 no-repeat -420px -80px;
+    border-bottom: 1px solid #6578a1;
+}
+#yfi_fp_buzz .yui-navset .yui-nav li a em {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #AC7321 no-repeat 100% -80px;
+    font-size: 85%;
+    font-weight: bold;
+    color: #fff;
+    padding: 7px 3em 7px 0.6em;
+    margin-left: 1.5em;
+}
+#yfi_fp_buzz .yui-navset .yui-nav li.selected a {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #FFF no-repeat -420px -150px;
+    border-bottom: 0;
+}
+#yfi_fp_buzz .yui-navset .yui-nav li.selected a em {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) #FFF no-repeat 100% -150px;
+    color: #000;
+    padding-bottom: 8px;
+}
+#yfi_fp_buzz p {
+    font-size: 85%;
+    margin-top: 5px;
+    color: #959696;
+    margin-left: 3px;
+    margin-bottom: 10px;
+}
+#yfi_fp_buzz dl#bullish_sentiment {
+    margin: 0 0.5em 1em 0.2em;
+}
+#yfi_fp_buzz dl#bearish_sentiment {
+    margin: 0 0.5em 0.5em 0.2em;
+}
+#yfi_fp_buzz dt {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+#yfi_fp_buzz dl#bullish_sentiment dt {
+    color: #3a932e;
+}
+#yfi_fp_buzz dl#bearish_sentiment dt {
+    color: #e46062;
+}
+#yfi_fp_buzz dl#bullish_sentiment {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_backgrounds.png) #317030 repeat-x 0 -270px;
+}
+#yfi_fp_buzz dl#bearish_sentiment {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_backgrounds.png) #A95042 repeat-x 0 -430px;
+}
+#yfi_fp_buzz dt, #yfi_fp_buzz dd {
+    background: #fff;
+    margin-left: 0.4em;
+    border-left: 0.5em solid #fff;
+}
+#yfi_fp_buzz dd {
+    padding: 2px 0px;
+}
+#yfi_fp_buzz dt {
+    border-bottom: 1px solid #ccc;
+}
+#yfi_fp_buzz dl#bullish_sentiment a.view_more, #yfi_fp_buzz dl#bearish_sentiment a.view_more {
+    display: inline;
+    float: right;
+}
+
+
+/* Topstories module */
+/* TopSearches */
+.MwTopSearch {
+	font: /*93% */arial;
+	text-align: left;
+	border: 1px solid #707070;
+	background: #fff;
+	margin-top: 15px;
+}
+.MwTopSearch .hd h2 {
+	font-weight: bold;
+}
+.MwTopSearch .bd .pad {
+	zoom: 1;
+}
+.MwTopSearch .bd .pad:after {
+	content: '.';
+	display: block;
+	clear: both;
+	height: 0;
+	font: 0 arial;
+	visibility: hidden;
+}
+.MwTopSearch .bd ol {
+	padding: 10px 0 10px 0px;
+}
+.MwTopSearch .cols-2 ol {
+	float: left;
+	width: 45%;
+	padding-left: 2.5%;
+}
+.MwTopSearch .bd ol li a {
+	color: #555;
+	text-decoration: none;
+}
+.MwTopSearch .bd ol li a em {
+	clear: left;
+	float: left;
+	width: 1.4em;
+	text-align: right;
+	font-style: normal;
+	padding-right: .5em;
+}
+.MwTopSearch .bd ol li a strong {
+	color: #707070;
+	font-weight: normal;
+}
+.MwTopSearch .bd ol li a:hover strong {
+	text-decoration: underline;
+}
+
+/* Finance Specific */
+
+.MwTopSearch {
+	border-color: #ddd;
+	padding:0.38em;
+}
+.MwTopSearch .hd {
+	/*color: #cc5b00;*/
+	padding-top: 5px;
+}
+.MwTopSearch .hd h2 {
+	text-transform: uppercase;
+}
+.MwTopSearch .hd h2 strong {
+	font-weight:bold;	
+}
+.MwTopSearch .bd ol li a {
+	color: #555;
+	zoom: 1;
+}
+.MwTopSearch .bd ol li a strong {
+	color: #18479b;
+}
+
+/* Featured Videos */
+#yfi_fp_featured_videos ul {
+    /*
+	border-top: 1px solid #18479B;
+    border-bottom: 1px solid #18479B;
+*/
+    font-size: 92%;
+}
+#yfi_fp_featured_videos li:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+#yfi_fp_featured_videos li {
+    *height: 1%;
+    padding: 5px 0px;
+    border-top: 1px solid #dce9f9;
+    margin-left: 3px;
+}
+#yfi_fp_featured_videos li a{
+	padding: 4px 0 4px 22px;
+	background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0 -330px;
+}
+
+#yfi_fp_featured_videos li img {
+    width: 41px;
+    height: 31px;
+}
+#yfi_fp_featured_videos li div.video_image {
+    margin: 0px 5px;
+    position: relative;
+    float: left;
+    width: 41px;
+    height: 31px;
+}
+/*
+#yfi_fp_featured_videos li div.video_image {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0 -330px;
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    width: 17px;
+    height: 17px;
+}
+*/
+#yfi_fp_featured_videos li.premier {
+    border-top: none;
+    position: relative;
+    margin-left:0;
+}
+#yfi_fp_featured_videos li.premier img {
+    width: 105px;
+    height: 79px;
+}
+#yfi_fp_featured_videos li.premier a {
+    font-size: 108%;
+    font-weight: bold;
+    padding:0;
+    background-image: none;
+}
+#yfi_fp_featured_videos li.premier div.video_image {
+    width: 105px;
+    height: 79px;
+}
+#yfi_fp_featured_videos li.premier div.premier_provider {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 85%;
+    color: #959696;
+}
+#yfi_fp_featured_videos li.premier div.premier_provider img {
+    border: 1px solid #959696;
+    width: auto;
+    height: auto;
+    margin: 0px;
+    vertical-align: text-bottom;
+}
+#yfi_fp_featured_videos .ft {
+    padding: 7px 0px 3px 0px; 
+    clear: both;
+}
+#yfi_fp_featured_videos li div.video_image em{
+	z-index: 502;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	height: 2em;
+	line-height: 2em;	
+	color: #FFF;
+	font-weight: bold;
+	text-indent: 2.45em;
+	background: transparent url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 2px -638px;
+    cursor: pointer;
+}
+
+
+/* LREC Ad */
+#yfi_fp_ad_lrec {
+    margin: 5px 0px;
+}
+#yfi_fp_ad_lrec table td {
+    text-align: center;
+}
+
+/* Quotes, Rates */
+#yfi_fp_quotes_rates div#quotes_tabs {
+    z-index: 1;
+}
+#yfi_fp_quotes_rates div#rates_tabs {
+    z-index: 0;
+}
+#yfi_fp_quotes_rates div#rates_tabs p {
+    font-size: 85%;
+    color: #7B7B7B;
+    padding-bottom: 10px;
+}
+#yfi_fp_quotes_rates .yui-navset .yui-content {
+    background: #fff;
+    padding: 0.38em;
+    border-top: 1px solid #a9b2c7;
+}
+#yfi_fp_quotes_rates div.sponsored_by {
+	margin-bottom: 15px;
+}
+#yfi_fp_quotes_rates ul#my_portfolios_accordion li {
+    padding: 1px 0;
+}
+#yfi_fp_quotes_rates ul#my_portfolios_accordion a.tab {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_backgrounds.png) #3d60b0 repeat-x 0 -180px;
+    border: 1px solid #aaa;
+}
+#yfi_fp_quotes_rates ul#my_portfolios_accordion a.tab em {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 101% -358px;
+    padding: 0.1em 0 0.1em 1em;
+    font-size: 92%;
+    color: #eee;
+    font-weight: bold;
+}
+#yfi_fp_quotes_rates ul#my_portfolios_accordion a.selected em {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 101% -413px;
+}
+#yfi_fp_quotes_rates table td, #yfi_fp_quotes_rates table th {
+    padding: 0.2em 0;
+    text-align: right;
+}
+#yfi_fp_quotes_rates table td.ticker_name, #yfi_fp_quotes_rates table th.ticker_name {
+    text-align: left;
+    padding-left: 0.3em;
+}
+#yfi_fp_quotes_rates table td.ticker_change_percent {
+    padding-right: 0.3em;
+}
+#yfi_fp_quotes_rates div#rates_tabs table td, #yfi_fp_quotes_rates div#rates_tabs table th {
+    text-align: left;
+}
+#yfi_fp_quotes_rates table thead th {
+    font-size: 85%;
+    color: #9b9b9b;
+    border-bottom: 1px solid #e6e6e6;
+}
+#yfi_fp_quotes_rates a#clear_recent_quotes {
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0 -748px;
+    display: block;
+    padding: 5px 0px 5px 20px;
+    font-size: 85%;
+}
+#yfi_fp_quotes_rates div#no_recent_quotes {
+    display: none;
+    margin: 2em 1em;
+}
+#yfi_fp_quotes_rates div#no_portfolios {
+    margin: 2em 1em;
+}
+#yfi_fp_ad_rq {
+    text-align: center;
+}
+#yfi_fp_ad_mort {
+    background-color: #F0F0F0;
+	padding: 0.38em;
+    font-size: 85%;
+}
+
+/* MIP Ad */
+#yfi_fp_ad_mip {
+    padding: 0.38em 0.38em 0px 0px;
+}
+#yfi_fp_ad_mip table td {
+    text-align: center;
+}
+
+/* Polls */
+#yfi_fp_poll {
+    background-color: #F4FAFF;
+    border: 1px solid #C5D6E2;
+	padding: 10px 5px 8px 5px;
+}
+#yfi_fp_poll h3 {
+    color: #4A689A;
+}
+#yfi_fp_poll p {
+	margin-top: 7px;
+	background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat -687px -470px;
+	min-height: 40px;
+}
+*html #yfi_fp_poll p {
+	height: 40px;
+}
+#yfi_fp_poll form {
+    line-height: 22px;
+	font-weight: bold;
+	margin-top: 13px;
+	background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat -687px -620px;
+}
+#yfi_fp_poll p,
+#yfi_fp_poll form {
+	padding-left: 36px;
+}
+#yfi_fp_poll form label {
+	padding-left: 4px;
+	_padding-left: 1px;
+}
+#yfi_fp_poll form button {
+    border: none;
+    cursor: pointer;
+    width: 80px;
+    height: 20px;
+    background: url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 0 -700px;
+    text-indent: -9999em;
+    display: block;
+    margin: 5px 0px 0px 0px;
+}
+#yfi_fp_ad_qqs {
+    background-color: #eaf4fd;
+    border-bottom: 1px solid #c5d6e2;
+    border-left: 1px solid #c5d6e2;
+    border-right: 1px solid #c5d6e2;
+}
+
+
+
+
+/*
+Copyright (c) 2007, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.2.0
+*/
+/* default space between tabs */
+.yui-navset .yui-nav li {
+    margin-right:0.5em; /* horizontal tabs */
+}
+.yui-navset-left .yui-nav li, .yui-navset-right .yui-nav li {
+    margin:0 0 0.5em; /* vertical tabs */
+}
+
+/* default width for side tabs */
+.yui-navset-left .yui-nav, .yui-navset-right .yui-nav { width:6em; }
+.yui-navset-left { padding-left:6em; } /* map to nav width */
+.yui-navset-right { padding-right:6em; } /* ditto */
+
+/* core */
+
+.yui-nav, .yui-nav li {
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+.yui-navset li em { font-style:normal; }
+
+.yui-navset {
+    position:relative; /* contain absolute positioned tabs (left/right) */
+    zoom:1;
+}
+
+.yui-navset .yui-content { zoom:1; }
+
+.yui-navset .yui-nav li {
+    display:inline-block;
+    display:-moz-inline-stack;
+    *display:inline; /* IE */
+    vertical-align:bottom; /* safari: for overlap */
+    cursor:pointer; /* gecko: due to -moz-inline-stack on anchor */
+    zoom:1; /* IE: kill space between horizontal tabs */
+}
+
+.yui-navset-left .yui-nav li, .yui-navset-right .yui-nav li {
+    display:block;
+}
+
+.yui-navset .yui-nav a {
+    outline:0; /* gecko: keep from shifting */
+}
+
+.yui-navset .yui-nav a { position:relative; } /* IE: to allow overlap */
+
+.yui-navset .yui-nav li a {
+    display:block;
+    display:inline-block;
+    vertical-align:bottom; /* safari: for overlap */
+    zoom:1;
+}
+
+.yui-navset-left .yui-nav li a, .yui-navset-right .yui-nav li a {
+    display:block;
+}
+
+.yui-navset-bottom .yui-nav li a {
+    vertical-align:text-top; /* for inline overlap (reverse for Op border bug) */
+}
+
+.yui-navset .yui-nav li a em { display:block; }
+
+/* position left and right oriented tabs */
+.yui-navset-left .yui-nav, .yui-navset-right .yui-nav { position:absolute; z-index:1; }
+.yui-navset-left .yui-nav { left:0; }
+.yui-navset-right .yui-nav { right:0; }
+
+
+ul.accordion_view li a.tab, ul.accordion_view li a.tab em {
+    display: block;
+}
+ul.accordion_view li a.tab em, table.accordion_view tr.tab {
+    text-decoration: none;
+    cursor: pointer;
+}
+ul.accordion_view li div, table.accordion_view tr td div {
+    overflow: hidden;
+}
+ul.accordion_view li div div {
+    overflow: auto;
+}
+
+
+#yfi_fidelity {
+    padding: 0px;
+}
+#yfi_fidelity .hd {
+    padding: 0.77em 0.77em 0px 0.77em;
+}
+#yfi_fidelity .bd {
+    padding: 0px 0.77em 0.77em 0.77em;
+}
+#yfi_fidelity h3 {
+    display: inline;
+}
+#yfi_fidelity div.article {
+    clear: both;
+    margin: 10px 0px 7px 0px;
+}
+#yfi_fidelity div.article img {
+    float: left;
+    display: inline;
+    margin-right: 5px;
+}
+#yfi_fidelity div.article a {
+    font-weight: bold;
+}
+
+
+/*******************************************************************************
+ *  Yahoo! Finance Tech Ticker Module [Generic CSS]
+ ******************************************************************************/
+
+#yfi_tech_ticker {
+	background-color: #FFF;
+	margin-top: .38em;
+}
+#yfi_tech_ticker cite {
+	margin-left: 0;	
+}
+#yfi_tech_ticker .hd {
+	background: #2A343C url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 3px -560px;
+	min-height: 36px;
+	_height: 36px;
+}
+#yfi_tech_ticker .hd h3 {
+	float: left;
+}
+#yfi_tech_ticker .hd h3 a {
+	text-indent: -9999em;
+	display: block;
+	width: 110px;
+	height: 35px;
+}
+#yfi_tech_ticker .hd cite {
+	float: left;
+    font-size: 85%;
+	color: #FFF;
+	padding: 15px 0 0 3px;
+}
+#yfi_tech_ticker .bd,
+#yfi_tech_ticker .ft {
+	border-left: .38em solid #22293C;
+	border-right: .38em solid #22293C;
+}
+#yfi_tech_ticker .bd ul {
+	padding: .62em 0 0 .62em;
+}
+#yfi_tech_ticker .bd li {
+	border: 1px solid #DDD;
+	width: 8.08em;
+	float: left;	
+	display: inline;	/* IE6 double margin bug */
+	margin-right: .8em;
+}
+#yfi_tech_ticker .bd li.last {
+	margin-right: 0;
+}
+#yfi_tech_ticker .bd cite {
+	display: block;	
+}
+#yfi_tech_ticker .video_image  {
+	position: relative;
+	height: 6.08em;
+}
+#yfi_tech_ticker .video_image img,
+#yfi_tech_ticker .article_image img {
+	width: 8.08em;
+}
+#yfi_tech_ticker .video_image div {
+     position: absolute;
+     bottom: 0;
+     left: 0;
+     width: 8.08em;
+     height: 2em;
+     background-color: #000;
+     opacity: .50;
+     filter: alpha(opacity=50); 
+}
+#yfi_tech_ticker .video_image em {
+	z-index: 502;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	height: 2em;
+	line-height: 2em;	
+	color: #FFF;
+	font-weight: bold;
+	text-indent: 2.45em;
+	background: transparent url(http://l.yimg.com/cz/lib/fi/us/p/d/static/images/3.0.87/2.0.0/fp_tabs_icons.png) no-repeat 2px -638px;
+    cursor: pointer;
+}
+#yfi_tech_ticker .video_image a:hover {
+    text-decoration: none;
+}
+#yfi_tech_ticker .article_info {
+	padding: .38em;
+}
+#yfi_tech_ticker .article_info h5 {
+	font-size: 85%;
+}
+#yfi_tech_ticker .article_info cite {
+	font-size: 77%;
+}
+#yfi_tech_ticker .ft {
+	padding: .38em .77em;
+	border-bottom: .38em solid #22293C;
+}
+#yfi_tech_ticker a.view_more {
+	float: left;
+}
+/* ad */
+#yfi_tech_ticker .ft table {
+	width: 20em;
+	height: 30px;
+}
+#yfi_tech_ticker .ft table td {
+	color: #A0A0A0;
+	width: 100%;
+	vertical-align: middle;
+	padding: 0 !important;
+}
+#yfi_tech_ticker .ft table img {
+	margin-left: 7px;
+	margin-right: 0 !important;
+	vertical-align: middle;
+}
+
+
