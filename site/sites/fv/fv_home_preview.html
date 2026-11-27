@@ -3140,7 +3140,7 @@ var MK = (function () {
   var L = window.LIVE, OPEN = 390, CLOSE = 780, fmtPT = null;
   try { fmtPT = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); } catch (e) {}
   function override() {
-    var m = /pt=(\d{1,2}):(\d{2})/.exec(location.hash || '') || /pt=(\d{1,2}):(\d{2})/.exec(window.PT_OVERRIDE || '');
+    var re = /pt=(\d{1,2})(?::|%3A)?(\d{2})/i, m = re.exec(location.hash || '') || re.exec(location.search || '') || re.exec(window.PT_OVERRIDE || '');
     try { if (!m && window.parent && window.parent !== window && parent.PT_OVERRIDE) m = /(\d{1,2}):(\d{2})/.exec(parent.PT_OVERRIDE); } catch (e) {}
     return m ? (+m[1]) * 60 + (+m[2]) : null;
   }
@@ -3261,7 +3261,7 @@ MK.fvta = function (img, spec, bar, prev) {
   c.fillStyle = '#000'; c.textBaseline = 'middle'; c.fillText(lt, 435, yl);
   var ch = last - prev, pc = ch / prev * 100;
   c.font = 'bold 11px Arial, "Liberation Sans", sans-serif'; c.textAlign = 'right'; c.textBaseline = 'top';
-  c.fillStyle = ch < 0 ? '#dc2828' : '#009600'; c.fillText((ch >= 0 ? '+' : '') + ch.toFixed(2) + ' (' + Math.abs(pc).toFixed(2) + '%)', 370, 3); c.textAlign = 'left';
+  c.fillStyle = ch < 0 ? '#dc2828' : '#009600'; c.fillText((ch >= 0 ? '+' : '') + ch.toFixed(2) + ' (' + (pc >= 0 ? '' : '-') + Math.abs(pc).toFixed(2) + '%)', 370, 3); c.textAlign = 'left';
 };
 
 // FINVIZ market stats bar (180x24)
@@ -3360,7 +3360,7 @@ MK.fvmap = function (cv, k, tiles, inds, secs, perf) {
       }
       if (im.getAttribute('data-s') !== 'day') { im.src = x.base; im.setAttribute('data-s', 'day'); }
       var vals = L[x.key], v = MK.at(vals, S.sm), ch = v - x.prev;
-      MK.fvidx(im, x.spec, vals, S.sm, { text: MK.num(v) + '  ' + MK.sgn(ch) + ' (' + Math.abs(ch / x.prev * 100).toFixed(2) + '%)', neg: ch < 0 },
+      MK.fvidx(im, x.spec, vals, S.sm, { text: MK.num(v) + '  ' + MK.sgn(ch) + ' (' + MK.sgn(ch / x.prev * 100) + '%)', neg: ch < 0 },
                'Nov 05  ' + MK.hm(MK.OPEN + S.sm, 'AM').toUpperCase().replace('AM', 'AM').replace('PM', 'PM') + ' PT', S.sm >= L.HALT[0]);
     });
   }
