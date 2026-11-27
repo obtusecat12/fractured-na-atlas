@@ -1,0 +1,500 @@
+# S&P 500 members on the FINVIZ map (area.js rev 11, Jan 2010), headquarters as of 2009: ticker|city|state
+A|Santa Clara|CA
+AA|New York|NY
+AAPL|Cupertino|CA
+ABC|Chesterbrook|PA-PHL
+ABT|Abbott Park|IL
+ACS|Dallas|TX
+ADBE|San Jose|CA
+ADI|Norwood|MA
+ADM|Decatur|IL
+ADP|Roseland|NJ
+ADSK|San Rafael|CA
+AEE|St. Louis|MO
+AEP|Columbus|OH
+AES|Arlington|VA-N
+AET|Hartford|CT
+AFL|Columbus|GA
+AGN|Irvine|CA
+AIG|New York|NY
+AIV|Denver|CO
+AIZ|New York|NY
+AKAM|Cambridge|MA
+AKS|West Chester|OH
+ALL|Northbrook|IL
+ALTR|San Jose|CA
+AMAT|Santa Clara|CA
+AMD|Sunnyvale|CA
+AMGN|Thousand Oaks|CA
+AMP|Minneapolis|MN
+AMT|Boston|MA
+AMZN|Seattle|WA
+AN|Fort Lauderdale|FL
+ANF|New Albany|OH
+AOC|Chicago|IL
+APA|Houston|TX
+APC|The Woodlands|TX
+APD|Allentown|PA
+APH|Wallingford|CT
+APOL|Phoenix|AZ
+ATI|Pittsburgh|PA
+AVB|Arlington|VA-N
+AVP|New York|NY
+AVY|Pasadena|CA
+AXP|New York|NY
+AYE|Greensburg|PA
+AZO|Memphis|TN
+BA|Chicago|IL
+BAC|Charlotte|NC
+BAX|Deerfield|IL
+BBBY|Union|NJ
+BBT|Winston-Salem|NC
+BBY|Richfield|MN
+BCR|Murray Hill|NJ
+BDK|Towson|MD
+BDX|Franklin Lakes|NJ
+BEN|San Mateo|CA
+BF-B|Louisville|KY
+BHI|Houston|TX
+BIG|Columbus|OH
+BIIB|Cambridge|MA
+BJS|Houston|TX
+BK|New York|NY
+BLL|Broomfield|CO
+BMC|Houston|TX
+BMS|Neenah|WI
+BMY|New York|NY
+BNI|Fort Worth|TX
+BRCM|Irvine|CA
+BSX|Natick|MA
+BTU|St. Louis|MO
+BXP|Boston|MA
+C|New York|NY
+CA|Islandia|NY
+CAG|Omaha|NE
+CAH|Dublin|OH
+CAM|Houston|TX
+CAT|Peoria|IL-CLC
+CB|Warren|NJ
+CBE|Houston|TX
+CBG|Los Angeles|CA
+CBS|New York|NY
+CCE|Atlanta|GA
+CCL|Miami|FL
+CEG|Baltimore|MD
+CELG|Summit|NJ
+CEPH|Frazer|PA-PHL
+CF|Deerfield|IL
+CHK|Oklahoma City|OK
+CHRW|Eden Prairie|MN
+CI|Philadelphia|PA-PHL
+CIEN|Linthicum|MD
+CINF|Fairfield|OH
+CL|New York|NY
+CLX|Oakland|CA
+CMA|Dallas|TX
+CMCSA|Philadelphia|PA-PHL
+CME|Chicago|IL
+CMI|Columbus|IN
+CMS|Jackson|MI
+CNP|Houston|TX
+CNX|Canonsburg|PA
+COF|McLean|VA-N
+COG|Houston|TX
+COH|New York|NY
+COL|Cedar Rapids|IA
+COP|Houston|TX
+COST|Issaquah|WA
+CPB|Camden|NJ
+CPWR|Detroit|MI
+CRM|San Francisco|CA
+CSC|Falls Church|VA-N
+CSCO|San Jose|CA
+CSX|Jacksonville|FL
+CTAS|Cincinnati|OH
+CTL|Monroe|LA
+CTSH|Teaneck|NJ
+CTXS|Fort Lauderdale|FL
+CVG|Cincinnati|OH
+CVH|Bethesda|MD
+CVS|Woonsocket|RI
+CVX|San Ramon|CA
+D|Richmond|VA
+DD|Wilmington|DE
+DE|Moline|IL
+DELL|Round Rock|TX
+DF|Dallas|TX
+DFS|Riverwoods|IL
+DGX|Madison|NJ
+DHI|Fort Worth|TX
+DHR|Washington|DC
+DIS|Burbank|CA
+DNB|Short Hills|NJ
+DNR|Plano|TX
+DO|Houston|TX
+DOV|New York|NY
+DOW|Midland|MI
+DPS|Plano|TX
+DRI|Orlando|FL
+DTE|Detroit|MI
+DTV|El Segundo|CA
+DUK|Charlotte|NC
+DV|Downers Grove|IL
+DVA|El Segundo|CA
+DVN|Oklahoma City|OK
+DYN|Houston|TX
+EBAY|San Jose|CA
+ECL|St. Paul|MN
+ED|New York|NY
+EFX|Atlanta|GA
+EIX|Rosemead|CA
+EK|Rochester|NY
+EL|New York|NY
+EMC|Hopkinton|MA
+EMN|Kingsport|TN
+EMR|St. Louis|MO
+EOG|Houston|TX
+EP|Houston|TX
+EQR|Chicago|IL
+EQT|Pittsburgh|PA
+ERTS|Redwood City|CA
+ESRX|St. Louis|MO
+ESV|Dallas|TX
+ETFC|New York|NY
+ETN|Cleveland|OH
+ETR|New Orleans|LA-NO
+EXC|Chicago|IL
+EXPD|Seattle|WA
+EXPE|Bellevue|WA
+F|Dearborn|MI
+FAST|Winona|MN
+FCX|Phoenix|AZ
+FDO|Matthews|NC
+FDX|Memphis|TN
+FE|Akron|OH
+FHN|Memphis|TN
+FII|Pittsburgh|PA
+FIS|Jacksonville|FL
+FISV|Brookfield|WI
+FITB|Cincinnati|OH
+FLIR|Wilsonville|OR
+FLR|Irving|TX
+FLS|Irving|TX
+FMC|Philadelphia|PA-PHL
+FO|Deerfield|IL
+FPL|Juno Beach|FL-PB
+FRX|New York|NY
+FTI|Houston|TX
+FTR|Stamford|CT
+GAS|Naperville|IL
+GCI|McLean|VA-N
+GD|Falls Church|VA-N
+GE|Fairfield|CT
+GENZ|Cambridge|MA
+GILD|Foster City|CA
+GIS|Minneapolis|MN
+GLW|Corning|NY
+GME|Grapevine|TX
+GNW|Richmond|VA
+GOOG|Mountain View|CA
+GPC|Atlanta|GA
+GPS|San Francisco|CA
+GR|Charlotte|NC
+GS|New York|NY
+GT|Akron|OH
+GWW|Lake Forest|IL
+HAL|Houston|TX
+HAR|Stamford|CT
+HAS|Pawtucket|RI
+HBAN|Columbus|OH
+HCBK|Paramus|NJ
+HCN|Toledo|OH
+HCP|Long Beach|CA
+HD|Atlanta|GA
+HES|New York|NY
+HIG|Hartford|CT
+HNZ|Pittsburgh|PA
+HOG|Milwaukee|WI
+HON|Morristown|NJ
+HOT|White Plains|NY
+HPQ|Palo Alto|CA
+HRB|Kansas City|MO
+HRL|Austin|MN
+HRS|Melbourne|FL
+HSP|Lake Forest|IL
+HST|Bethesda|MD
+HSY|Hershey|PA
+HUM|Louisville|KY
+IBM|Armonk|NY
+ICE|Atlanta|GA
+IFF|New York|NY
+IGT|Reno|NV
+INTC|Santa Clara|CA
+INTU|Mountain View|CA
+IP|Memphis|TN
+IPG|New York|NY
+IRM|Boston|MA
+ISRG|Sunnyvale|CA
+ITT|White Plains|NY
+ITW|Glenview|IL
+IVZ|Atlanta|GA
+JAVA|Santa Clara|CA
+JBL|St. Petersburg|FL
+JCI|Milwaukee|WI
+JCP|Plano|TX
+JDSU|Milpitas|CA
+JEC|Pasadena|CA
+JNJ|New Brunswick|NJ
+JNPR|Sunnyvale|CA
+JNS|Denver|CO
+JPM|New York|NY
+JWN|Seattle|WA
+K|Battle Creek|MI
+KBH|Los Angeles|CA
+KEY|Cleveland|OH
+KFT|Northfield|IL
+KG|Bristol|TN
+KIM|New Hyde Park|NY
+KLAC|Milpitas|CA
+KMB|Irving|TX
+KO|Atlanta|GA
+KR|Cincinnati|OH
+KSS|Menomonee Falls|WI
+L|New York|NY
+LEG|Carthage|MO
+LEN|Miami|FL
+LH|Burlington|NC
+LIFE|Carlsbad|CA
+LLL|New York|NY
+LLTC|Milpitas|CA
+LLY|Indianapolis|IN
+LM|Baltimore|MD
+LMT|Bethesda|MD
+LNC|Radnor|PA-PHL
+LO|Greensboro|NC
+LOW|Mooresville|NC
+LSI|Milpitas|CA
+LTD|Columbus|OH
+LUK|New York|NY
+LUV|Dallas|TX
+LXK|Lexington|KY
+M|Cincinnati|OH
+MA|Purchase|NY
+MAR|Bethesda|MD
+MAS|Taylor|MI
+MAT|El Segundo|CA
+MBI|Armonk|NY
+MCD|Oak Brook|IL
+MCHP|Chandler|AZ
+MCK|San Francisco|CA
+MCO|New York|NY
+MDP|Des Moines|IA
+MDT|Minneapolis|MN
+MEE|Richmond|VA
+MET|New York|NY
+MFE|Santa Clara|CA
+MHP|New York|NY
+MHS|Franklin Lakes|NJ
+MI|Milwaukee|WI
+MIL|Billerica|MA
+MKC|Sparks|MD
+MMC|New York|NY
+MMM|St. Paul|MN
+MO|Richmond|VA
+MOLX|Lisle|IL
+MON|St. Louis|MO
+MOT|Schaumburg|IL
+MRK|Whitehouse Station|NJ
+MRO|Houston|TX
+MS|New York|NY
+MSFT|Redmond|WA
+MTB|Buffalo|NY
+MU|Boise|ID
+MUR|El Dorado|AR
+MWV|Richmond|VA
+MWW|New York|NY
+MYL|Canonsburg|PA
+NBL|Houston|TX
+NBR|Houston|TX
+NDAQ|New York|NY
+NEM|Greenwood Village|CO
+NI|Merrillville|IN
+NKE|Beaverton|OR
+NOC|Los Angeles|CA
+NOV|Houston|TX
+NOVL|Waltham|MA
+NSC|Norfolk|VA
+NSM|Santa Clara|CA
+NTAP|Sunnyvale|CA
+NTRS|Chicago|IL
+NU|Berlin|CT
+NUE|Charlotte|NC
+NVDA|Santa Clara|CA
+NVLS|San Jose|CA
+NWL|Atlanta|GA
+NWSA|New York|NY
+NYT|New York|NY
+NYX|New York|NY
+ODP|Boca Raton|FL-PB
+OI|Perrysburg|OH
+OMC|New York|NY
+ORCL|Redwood City|CA
+ORLY|Springfield|MO
+OXY|Los Angeles|CA
+PAYX|Rochester|NY
+PBCT|Bridgeport|CT
+PBG|Somers|NY
+PBI|Stamford|CT
+PCAR|Bellevue|WA
+PCG|San Francisco|CA
+PCL|Seattle|WA
+PCP|Portland|OR
+PCS|Richardson|TX
+PDCO|St. Paul|MN
+PEG|Newark|NJ
+PEP|Purchase|NY
+PFE|New York|NY
+PFG|Des Moines|IA
+PG|Cincinnati|OH
+PGN|Raleigh|NC
+PGR|Mayfield Village|OH
+PH|Cleveland|OH
+PHM|Bloomfield Hills|MI
+PKI|Waltham|MA
+PLD|Denver|CO
+PLL|East Hills|NY
+PM|New York|NY
+PNC|Pittsburgh|PA
+PNW|Phoenix|AZ
+POM|Washington|DC
+PPG|Pittsburgh|PA
+PPL|Allentown|PA
+PRU|Newark|NJ
+PSA|Glendale|CA
+PTV|Lake Forest|IL
+PWR|Houston|TX
+PX|Danbury|CT
+PXD|Irving|TX
+Q|Denver|CO
+QCOM|San Diego|CA
+QLGC|Aliso Viejo|CA
+R|Miami|FL
+RAI|Winston-Salem|NC
+RDC|Houston|TX
+RF|Birmingham|AL
+RHI|Menlo Park|CA
+RHT|Raleigh|NC
+RL|New York|NY
+ROK|Milwaukee|WI
+RRC|Fort Worth|TX
+RRD|Chicago|IL
+RSG|Phoenix|AZ
+RSH|Fort Worth|TX
+RTN|Waltham|MA
+RX|Norwalk|CT
+S|Overland Park|KS
+SBUX|Seattle|WA
+SCG|Cayce|SC
+SCHW|San Francisco|CA
+SE|Houston|TX
+SEE|Elmwood Park|NJ
+SGP|Kenilworth|NJ
+SHLD|Hoffman Estates|IL
+SHW|Cleveland|OH
+SIAL|St. Louis|MO
+SII|Houston|TX
+SJM|Orrville|OH
+SLB|Houston|TX
+SLE|Downers Grove|IL
+SLM|Reston|VA-N
+SNA|Kenosha|WI
+SNDK|Milpitas|CA
+SNI|Knoxville|TN
+SO|Atlanta|GA
+SPG|Indianapolis|IN
+SPLS|Framingham|MA
+SRCL|Lake Forest|IL
+SRE|San Diego|CA
+STI|Atlanta|GA
+STJ|St. Paul|MN
+STR|Salt Lake City|UT
+STT|Boston|MA
+STZ|Victor|NY
+SUN|Philadelphia|PA-PHL
+SVU|Eden Prairie|MN
+SWK|New Britain|CT
+SWN|Houston|TX
+SWY|Pleasanton|CA
+SYK|Kalamazoo|MI
+SYMC|Mountain View|CA
+SYY|Houston|TX
+T|Dallas|TX
+TAP|Denver|CO
+TDC|Miamisburg|OH
+TE|Tampa|FL
+TEG|Chicago|IL
+TER|North Reading|MA
+TGT|Minneapolis|MN
+THC|Dallas|TX
+TIE|Dallas|TX
+TIF|New York|NY
+TJX|Framingham|MA
+TLAB|Naperville|IL
+TMK|McKinney|TX
+TMO|Waltham|MA
+TROW|Baltimore|MD
+TRV|New York|NY
+TSN|Springdale|AR
+TSO|San Antonio|TX
+TSS|Columbus|GA
+TWC|New York|NY
+TWX|New York|NY
+TXN|Dallas|TX
+TXT|Providence|RI
+UNH|Minnetonka|MN
+UNM|Chattanooga|TN
+UNP|Omaha|NE
+UPS|Atlanta|GA
+USB|Minneapolis|MN
+UTX|Hartford|CT
+VAR|Palo Alto|CA
+VFC|Greensboro|NC
+VIA-B|New York|NY
+VLO|San Antonio|TX
+VMC|Birmingham|AL
+VNO|New York|NY
+VRSN|Mountain View|CA
+VTR|Louisville|KY
+VZ|New York|NY
+WAG|Deerfield|IL
+WAT|Milford|MA
+WDC|Lake Forest|CA
+WEC|Milwaukee|WI
+WFC|San Francisco|CA
+WFMI|Austin|TX
+WFR|St. Peters|MO
+WHR|Benton Harbor|MI
+WIN|Little Rock|AR
+WLP|Indianapolis|IN
+WM|Houston|TX
+WMB|Tulsa|OK
+WMT|Bentonville|AR
+WPI|Corona|CA
+WPO|Washington|DC
+WU|Englewood|CO
+WY|Federal Way|WA
+WYE|Madison|NJ
+WYN|Parsippany|NJ
+WYNN|Las Vegas|NV
+X|Pittsburgh|PA
+XEL|Minneapolis|MN
+XL|Hamilton|BM
+XLNX|San Jose|CA
+XOM|Irving|TX
+XRAY|York|PA
+XRX|Norwalk|CT
+XTO|Fort Worth|TX
+YHOO|Sunnyvale|CA
+YUM|Louisville|KY
+ZION|Salt Lake City|UT
+ZMH|Warsaw|IN
