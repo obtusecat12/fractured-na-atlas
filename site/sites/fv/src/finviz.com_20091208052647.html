@@ -1,0 +1,747 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>FINVIZ.com - Stock Screener</title>
+<meta name="description" content="Stock screener for investors and traders, financial visualizations.">
+<meta name="keywords" content="Stock Screener, Charts, Quotes, Maps, News, Financial Visualizations, Research, Trading Systems">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+<meta http-equiv="Refresh" content="600">
+<link rel="stylesheet" href="/finviz.css?rev=57" type="text/css">
+<link rel="shortcut icon" href="/favicon.ico">
+<script src="/script/boxover.js?rev=2" type="text/javascript"></script>
+<script src="/script/lightup.js?rev=1" type="text/javascript"></script>
+<script src="/script/search.js?rev=4" type="text/javascript"></script>
+<script src="/script/time.js?rev=6" type="text/javascript"></script>
+<script src="/script/menu.js" type="text/javascript"></script>
+<script src="script/lightup_home.js" type="text/javascript"></script>
+<script src="script/ajax.js" type="text/javascript"></script>
+<script src="script/homepage.js?rev=3" type="text/javascript"></script>
+<script type="text/javascript">var userId="-1";</script>
+</head>
+<body onload="MenuInit();HomepageRefreshInit(240);" style="margin:0" bgcolor="#ffffff">
+<script type="text/javascript">if(document.body.clientWidth>1500){document.write('<table align="center" width="1425px" cellpadding="0" cellspacing="0" border="0">')}else{document.write('<table align="center" width="95%" style="max-width:1425px;" cellpadding="0" cellspacing="0" border="0">')}</script>
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr valign="bottom">
+<td width="34" class="header-top"><img src="/gfx/nic2x2.gif" width="34" height="18" alt="" border="0"></td>
+<td width="0" class="header-top-w" align="left"><span class="time-text" id="time"><script type="text/javascript">document.write(TimeString())</script></span></td>
+<td width="100%" class="header-top"></td>
+<td width="0" class="header-top-wm" align="right"><span class="header-menu"><span class="welcome-user-text">Welcome Guest!&nbsp;&nbsp;</span><span class="welcome-links"><a href="/login.ashx" class="tab-link">Login</a> | <a href="/register.ashx" class="tab-link">Register</a> | <a href="/help/screener.ashx" class="tab-link">Help</a> | <a href="http://survey.io/survey/cde12" class="tab-link" target="_blank">Survey</a></span></span></td>
+</tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+<tr>
+<td width="40"><img src="/gfx/nic2x2.gif" width="40" height="2" alt="" border="0"></td>
+<td width="188"><a href="/"><img src="/gfx/header_logo.png" width="172" height="90" alt="" border="0"></a></td>
+<td width="100%"></td>
+<td width="728" height="90"><div id="banner_position"></div></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/" class="body-menu-top-a">Home</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/news.ashx" class="body-menu-top">News</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/screener.ashx" class="body-menu-top">Screener</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/map.ashx" class="body-menu-top">Maps</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/groups.ashx" class="body-menu-top">Groups</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/portfolio.ashx" class="body-menu-top">Portfolio</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/insidertrading.ashx" class="body-menu-top">Insider</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/collaborate.ashx" class="body-menu-top">Collaborate</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/forex.ashx" class="body-menu-top">Forex</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/store/stock-brokers.ashx" class="body-menu-top">Store</a></td>
+<td class="body-menu-top" width="2%" align="center" background="/gfx/top_menu_bg.gif"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/services.ashx" class="body-menu-top">Institutional</a></td>
+<td class="body-menu-top" width="2%" align="center" background="/gfx/top_menu_bg.gif"></td>
+<td class="body-menu-top" width="2%" align="center" background="/gfx/top_menu_bg_black.gif"></td>
+<td align="center" background="/gfx/top_menu_bg_black.gif"><a href="/elite.ashx" class="body-menu-top">Elite</a></td>
+<td class="body-menu-top" width="2%" align="center" valign="top" background="/gfx/top_menu_bg_black.gif"><img src="/gfx/top_menu_bg_black_new.png" width="29" height="12" border="0" alt="">
+</td>
+<td width="26%" align="left">
+<ul id="p7menubar">
+<li>
+<table cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">
+<tr>
+<td width="7" align="left"><img src="/gfx/wnd_search.gif" width="7" height="25" alt="" border="0"></td>
+<td width="100%" align="left" background="/gfx/wnd_search_text_bg.gif"><input class="body-search-text" value="Search ticker, company or profile" onclick="if(this.value=='Search ticker, company or profile')this.value=''" onkeypress="if(event.keyCode==13)Search()" onfocus="onkeydownEventEnabled=false;" onblur="onkeydownEventEnabled=true;" style="border:0px none;width:100%;position:relative;left:-2px;top:1px;" id="search" type="text"></td>
+<td width="26" align="left"><a href="javascript:Search()"><img src="/gfx/search_icon.gif" alt="" width="26" border="0" height="25" style="cursor:pointer;"></a></td>
+</tr>
+</table>
+<ul>
+<li>
+<table class="searchtab" cellpadding="0" cellspacing="0" width="100%" bgcolor="#e3f6FF">
+<tr height="23">
+<form name="search_form" onkeypress="if(event.keyCode==13){Search();return false;}">
+<td width="3%"><input id="search_radio1" type="radio" name="type" value="ticker" checked="checked" onkeypress="if(event.keyCode==13){Search();return false;}"></td>
+<td width="30%" class="searchtab"><label for="search_radio1" class="body-menu-search-label">Ticker</label></td>
+<td width="3%"><input id="search_radio2" type="radio" name="type" value="company" onkeypress="if(event.keyCode==13){Search();return false;}"></td>
+<td width="30%" class="searchtab"><label for="search_radio2" class="body-menu-search-label">Company</label></td>
+<td width="3%"><input id="search_radio3" type="radio" name="type" value="profile" onkeypress="if(event.keyCode==13){Search();return false;}"></td>
+<td width="30%" class="searchtab"><label for="search_radio3" class="body-menu-search-label">Profile</label></td>
+</form>
+</tr>
+</table>
+</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td background="/gfx/top_menu_bg_shadow.gif"><img src="/gfx/nic2x2.gif" width="2" height="7" alt="" border="0"></td></tr>
+<tr><td width="100%"><img src="/gfx/nic2x2.gif" width="2" height="12" alt="" border="0"></td></tr>
+<tr>
+<td width="100%">
+<div id="homepage">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td width="5%" align="center"></td>
+<td align="center"><img src="image.ashx?dow&rev=633958287912081250" width="330" height="160" alt="" border="0"></td>
+<td align="center"><img src="image.ashx?nasdaq&rev=633958287912081250" width="330" height="160" alt="" border="0"></td>
+<td align="center"><img src="image.ashx?sp500&rev=633958287912081250" width="330" height="160" alt="" border="0"></td>
+<td width="5%" align="center"></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td align="center"><img src="gfx/nic2x2.gif" alt="" border="0" height="6" width="996"></td></tr>
+<tr>
+<td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" background="gfx/mktstats_bg.png">
+<tr><td width="2%" align="center"></td>
+<td align="center"><img src="mktstats_image.ashx?0&rev=633958287912081250" width="180" height="24" alt="" border="0"></td>
+<td align="center"><img src="mktstats_image.ashx?1&rev=633958287912081250" width="180" height="24" alt="" border="0"></td>
+<td align="center"><img src="mktstats_image.ashx?2&rev=633958287912081250" width="180" height="24" alt="" border="0"></td>
+<td align="center"><img src="mktstats_image.ashx?3&rev=633958287912081250" width="180" height="24" alt="" border="0"></td>
+<td align="center"><img src="mktstats_image.ashx?4&rev=633958287912081250" width="180" height="24" alt="" border="0"></td>
+<td width="2%" align="center"></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr><td align="center"><img src="gfx/nic2x2.gif" alt="" border="0" height="12" width="996"></td></tr>
+<tr>
+<td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="50%" valign="top">
+<table width="100%" cellpadding="1" cellspacing="0" class="t-home-table" border="0">
+<tr class="t-home-table-top">
+<td>Ticker</td><td align="center">Last</td><td align="center">Change</td><td align="right">Volume</td><td><img src="gfx/nic2x2.gif" width="4" height="2" alt="" border="0"></td><td>Signal</td>
+</tr><tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_topgainers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=OLCB'><br>&nbsp;<b>Ohio Legacy Corp.</b><br>&nbsp;Money Center Banks | USA | 4.57M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=OLCB" class="tab-link">OLCB</a></td><td align="right">2.07</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">95.28%</span></td><td align="right">43111</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price gain today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_topgainers" class="tab-link-nw">Top Gainers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_topgainers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ROY'><br>&nbsp;<b>International Royalty Corp</b><br>&nbsp;Nonmetallic Mineral Mining | USA | 637.33M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ROY" class="tab-link">ROY</a></td><td align="right">6.73</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">51.24%</span></td><td align="right">6246217</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price gain today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_topgainers" class="tab-link-nw">Top Gainers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_topgainers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=IHO'><br>&nbsp;<b>Invitel Holdings A/S</b><br>&nbsp;Diversified Communication Services | Hungary | 89.51M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=IHO" class="tab-link">IHO</a></td><td align="right">5.35</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">50.70%</span></td><td align="right">166892</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price gain today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_topgainers" class="tab-link-nw">Top Gainers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_topgainers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=NVGN'><br>&nbsp;<b>Novogen Limited</b><br>&nbsp;Drug Manufacturers - Major | Australia | 55.16M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=NVGN" class="tab-link">NVGN</a></td><td align="right">2.70</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">25.58%</span></td><td align="right">37329</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price gain today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_topgainers" class="tab-link-nw">Top Gainers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_topgainers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ASIA'><br>&nbsp;<b>AsiaInfo Holdings Inc.</b><br>&nbsp;Security Software & Services | China | 1.43B] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ASIA" class="tab-link">ASIA</a></td><td align="right">30.71</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">22.35%</span></td><td align="right">8495610</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price gain today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_topgainers" class="tab-link-nw">Top Gainers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_topgainers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=TRUE'><br>&nbsp;<b>Centrue Financial Corp.</b><br>&nbsp;Regional - Midwest Banks | USA | 8.90M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=TRUE" class="tab-link">TRUE</a></td><td align="right">1.47</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">19.84%</span></td><td align="right">10591</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price gain today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_topgainers" class="tab-link-nw">Top Gainers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newhigh'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ROY'><br>&nbsp;<b>International Royalty Corp</b><br>&nbsp;Nonmetallic Mineral Mining | USA | 637.33M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ROY" class="tab-link">ROY</a></td><td align="right">6.73</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">51.24%</span></td><td align="right">6246217</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks high today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newhigh" class="tab-link-nw">New High</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newhigh'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ZILG'><br>&nbsp;<b>Zilog Inc.</b><br>&nbsp;Semiconductor - Broad Line | USA | 60.93M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ZILG" class="tab-link">ZILG</a></td><td align="right">3.52</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">18.92%</span></td><td align="right">3781691</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks high today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newhigh" class="tab-link-nw">New High</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newhigh'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ASIA'><br>&nbsp;<b>AsiaInfo Holdings Inc.</b><br>&nbsp;Security Software & Services | China | 1.43B] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ASIA" class="tab-link">ASIA</a></td><td align="right">30.71</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">22.35%</span></td><td align="right">8495610</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks high today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newhigh" class="tab-link-nw">New High</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newhigh'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CYAN'><br>&nbsp;<b>Cyanotech Corp.</b><br>&nbsp;Drug Related Products | USA | 20.48M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=CYAN" class="tab-link">CYAN</a></td><td align="right">3.90</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">3.18%</span></td><td align="right">95460</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks high today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newhigh" class="tab-link-nw">New High</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_overbought'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BMJ'><br>&nbsp;<b>Birks & Mayors Inc.</b><br>&nbsp;Jewelry Stores | Canada | 16.29M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=BMJ" class="tab-link">BMJ</a></td><td align="right">1.43</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">50.53%</span></td><td align="right">180853</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with extreme price increase over past two weeks,<br>calculated by RSI(14) indicator] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_overbought" class="tab-link-nw">Overbought</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_overbought'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=DNE'><br>&nbsp;<b>Dune Energy Inc.</b><br>&nbsp;Oil & Gas Drilling & Exploration | USA | 12.93M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=DNE" class="tab-link">DNE</a></td><td align="right">0.37</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">15.63%</span></td><td align="right">371554</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with extreme price increase over past two weeks,<br>calculated by RSI(14) indicator] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_overbought" class="tab-link-nw">Overbought</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_unusualvolume'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ZILG'><br>&nbsp;<b>Zilog Inc.</b><br>&nbsp;Semiconductor - Broad Line | USA | 60.93M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ZILG" class="tab-link">ZILG</a></td><td align="right">3.52</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">18.92%</span></td><td align="right">3781691</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with unusually high volume today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_unusualvolume" class="tab-link-nw">Unusual Volume</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_unusualvolume'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=NOOF'><br>&nbsp;<b>New Frontier Media Inc.</b><br>&nbsp;Movie Production, Theaters | USA | 36.45M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=NOOF" class="tab-link">NOOF</a></td><td align="right">1.87</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-1.06%</span></td><td align="right">776928</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with unusually high volume today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_unusualvolume" class="tab-link-nw">Unusual Volume</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_unusualvolume'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BMJ'><br>&nbsp;<b>Birks & Mayors Inc.</b><br>&nbsp;Jewelry Stores | Canada | 16.29M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=BMJ" class="tab-link">BMJ</a></td><td align="right">1.43</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">50.53%</span></td><td align="right">180853</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with unusually high volume today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_unusualvolume" class="tab-link-nw">Unusual Volume</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_unusualvolume'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=SOMX'><br>&nbsp;<b>Somaxon Pharmaceuticals, Inc.</b><br>&nbsp;Drug Manufacturers - Other | USA | 33.33M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=SOMX" class="tab-link">SOMX</a></td><td align="right">1.41</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-60.06%</span></td><td align="right">30171296</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with unusually high volume today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_unusualvolume" class="tab-link-nw">Unusual Volume</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=n_upgrades'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ES'><br>&nbsp;<b>EnergySolutions, Inc</b><br>&nbsp;Business Services | USA | 798.50M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ES" class="tab-link">ES</a></td><td align="right">9.04</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">5.36%</span></td><td align="right">848955</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks upgraded by analyst today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=n_upgrades" class="tab-link-nw">Upgrades</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=n_earningsbefore'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BTH'><br>&nbsp;<b>Blyth, Inc.</b><br>&nbsp;Personal Products | USA | 266.56M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=BTH" class="tab-link">BTH</a></td><td align="right">29.95</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-14.18%</span></td><td align="right">198504</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Companies reporting earnings today, before market open] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=n_earningsbefore" class="tab-link-nw">Earnings Before</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=it_latestbuys'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ESI'><br>&nbsp;<b>ITT Educational Services Inc.</b><br>&nbsp;Education & Training Services | USA | 3.19B] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ESI" class="tab-link">ESI</a></td><td align="right">86.35</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">0.55%</span></td><td align="right">450488</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with recent insider buying] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=it_latestbuys" class="tab-link-nw">Insider Buying</a></td>
+</tr>
+</table>
+</td>
+<td><img src="gfx/nic2x2.gif" width="16" height="2" alt="" border="0"></td>
+<td width="50%" valign="top">
+<table width="100%" cellpadding="1" cellspacing="0" class="t-home-table" border="0">
+<tr class="t-home-table-top">
+<td>Ticker</td><td align="center">Last</td><td align="center">Change</td><td align="right">Volume</td><td><img src="gfx/nic2x2.gif" width="4" height="2" alt="" border="0"></td><td>Signal</td>
+</tr><tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_toplosers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=SOMX'><br>&nbsp;<b>Somaxon Pharmaceuticals, Inc.</b><br>&nbsp;Drug Manufacturers - Other | USA | 33.33M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=SOMX" class="tab-link">SOMX</a></td><td align="right">1.41</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-60.06%</span></td><td align="right">30171296</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price loss today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_toplosers" class="tab-link-nw">Top Losers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_toplosers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ZLC'><br>&nbsp;<b>Zale Corporation</b><br>&nbsp;Jewelry Stores | USA | 119.93M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ZLC" class="tab-link">ZLC</a></td><td align="right">3.75</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-24.40%</span></td><td align="right">4295019</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price loss today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_toplosers" class="tab-link-nw">Top Losers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_toplosers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=NCT'><br>&nbsp;<b>Newcastle Investment Corp.</b><br>&nbsp;REIT - Diversified | USA | 84.13M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=NCT" class="tab-link">NCT</a></td><td align="right">1.59</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-17.19%</span></td><td align="right">2390982</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price loss today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_toplosers" class="tab-link-nw">Top Losers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_toplosers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AVCA'><br>&nbsp;<b>Advocat Inc.</b><br>&nbsp;Long-Term Care Facilities | USA | 32.04M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=AVCA" class="tab-link">AVCA</a></td><td align="right">5.64</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-16.44%</span></td><td align="right">491943</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price loss today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_toplosers" class="tab-link-nw">Top Losers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_toplosers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AEZS'><br>&nbsp;<b>AEterna Zentaris Inc.</b><br>&nbsp;Biotechnology | Canada | 59.31M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=AEZS" class="tab-link">AEZS</a></td><td align="right">0.94</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-16.06%</span></td><td align="right">1086427</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price loss today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_toplosers" class="tab-link-nw">Top Losers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_toplosers'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=MPG'><br>&nbsp;<b>Maguire Properties Inc.</b><br>&nbsp;REIT - Office | USA | 65.72M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=MPG" class="tab-link">MPG</a></td><td align="right">1.37</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-15.43%</span></td><td align="right">2511984</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the highest price loss today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_toplosers" class="tab-link-nw">Top Losers</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newlow'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=PSBC'><br>&nbsp;<b>Pacific State Bancorp</b><br>&nbsp;Regional - Pacific Banks | USA | 2.60M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=PSBC" class="tab-link">PSBC</a></td><td align="right">0.70</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-12.50%</span></td><td align="right">34595</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks low today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newlow" class="tab-link-nw">New Low</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newlow'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=PABK'><br>&nbsp;<b>PAB Bankshares Inc.</b><br>&nbsp;Regional - Mid-Atlantic Banks | USA | 17.94M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=PABK" class="tab-link">PABK</a></td><td align="right">1.30</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-12.16%</span></td><td align="right">11891</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks low today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newlow" class="tab-link-nw">New Low</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newlow'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=PROV'><br>&nbsp;<b>Provident Financial Holdings Inc.</b><br>&nbsp;Savings & Loans | USA | 19.78M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=PROV" class="tab-link">PROV</a></td><td align="right">3.18</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-9.14%</span></td><td align="right">33054</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks low today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newlow" class="tab-link-nw">New Low</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=ta_newlow'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CWBS'><br>&nbsp;<b>Commonwealth Bankshares Inc.</b><br>&nbsp;Diversified Investments | USA | 12.82M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=CWBS" class="tab-link">CWBS</a></td><td align="right">1.86</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-9.71%</span></td><td align="right">36175</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks making new 52 weeks low today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=ta_newlow" class="tab-link-nw">New Low</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_oversold'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CWBS'><br>&nbsp;<b>Commonwealth Bankshares Inc.</b><br>&nbsp;Diversified Investments | USA | 12.82M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=CWBS" class="tab-link">CWBS</a></td><td align="right">1.86</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-9.71%</span></td><td align="right">36175</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with extreme price decrease over past two weeks,<br>calculated by RSI(14) indicator] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_oversold" class="tab-link-nw">Oversold</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_oversold'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BOSC'><br>&nbsp;<b>BOS Better On-Line Solutions Ltd.</b><br>&nbsp;Diversified Electronics | Israel | 2.78M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=BOSC" class="tab-link">BOSC</a></td><td align="right">0.29</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-3.37%</span></td><td align="right">13793</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with extreme price decrease over past two weeks,<br>calculated by RSI(14) indicator] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_oversold" class="tab-link-nw">Oversold</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_mostvolatile'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=OLCB'><br>&nbsp;<b>Ohio Legacy Corp.</b><br>&nbsp;Money Center Banks | USA | 4.57M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=OLCB" class="tab-link">OLCB</a></td><td align="right">2.07</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">95.28%</span></td><td align="right">43111</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the widest high/low trading range today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_mostvolatile" class="tab-link-nw">Most Volatile</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_mostvolatile'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=IHO'><br>&nbsp;<b>Invitel Holdings A/S</b><br>&nbsp;Diversified Communication Services | Hungary | 89.51M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=IHO" class="tab-link">IHO</a></td><td align="right">5.35</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">50.70%</span></td><td align="right">166892</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the widest high/low trading range today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_mostvolatile" class="tab-link-nw">Most Volatile</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_mostactive'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BAC'><br>&nbsp;<b>Bank of America Corporation</b><br>&nbsp;Money Center Banks | USA | 137.46B] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=BAC" class="tab-link">BAC</a></td><td align="right">15.89</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-2.40%</span></td><td align="right">290295136</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with highest trading volume today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_mostactive" class="tab-link-nw">Most Active</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=320&s=ta_mostactive'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=C'><br>&nbsp;<b>Citigroup, Inc.</b><br>&nbsp;Money Center Banks | USA | 92.14B] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=C" class="tab-link">C</a></td><td align="right">4.03</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-0.74%</span></td><td align="right">230604640</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with highest trading volume today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=320&s=ta_mostactive" class="tab-link-nw">Most Active</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=n_downgrades'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ZLC'><br>&nbsp;<b>Zale Corporation</b><br>&nbsp;Jewelry Stores | USA | 119.93M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=ZLC" class="tab-link">ZLC</a></td><td align="right">3.75</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-24.40%</span></td><td align="right">4295019</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks downgraded by analyst today] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=n_downgrades" class="tab-link-nw">Downgrades</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=n_earningsafter'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CASY'><br>&nbsp;<b>Casey's General Stores Inc.</b><br>&nbsp;Grocery Stores | USA | 1.58B] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=CASY" class="tab-link">CASY</a></td><td align="right">31.10</td><td align="right" style="white-space:nowrap"><span style="color:#008800;">1.07%</span></td><td align="right">578946</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Companies reporting earnings today, after market close] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=n_earningsafter" class="tab-link-nw">Earnings After</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=340&s=it_latestsales'">
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=HAIN'><br>&nbsp;<b>The Hain Celestial Group, Inc.</b><br>&nbsp;Processed & Packaged Goods | USA | 675.56M] offsetx=[200] offsety=[-95] delay=[250]"><a href="quote.ashx?t=HAIN" class="tab-link">HAIN</a></td><td align="right">16.57</td><td align="right" style="white-space:nowrap"><span style="color:#aa0000;">-0.78%</span></td><td align="right">420026</td><td></td><td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with recent insider selling] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=340&s=it_latestsales" class="tab-link-nw">Insider Selling</a></td>
+</tr>
+</table>
+</td>
+<td><img src="gfx/nic2x2.gif" width="16" height="2" alt="" border="0"></td>
+<td align="right" valign="top"><a href="map.ashx?t=sec"><img src="maps/current/1207091657/sec/sec_z-1.png" width="400" height="300" alt="" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td><img src="gfx/nic2x2.gif" width="10" height="12" alt="" border="0"></td>
+</tr>
+<tr>
+<td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="100%" valign="top">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td width="50%" valign="top">
+<table class="t-home-table" width="100%" cellpadding="1" cellspacing="0" border="0">
+<tr class="t-home-table-top">
+<td colspan="4">Tickers</td><td width="15" align="left"><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="14"></td><td> Signal</td>
+</tr><tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_tlsupport'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=LB'><br>&nbsp;<b>LaBarge Inc.</b><br>&nbsp;Scientific & Technical Instruments | USA | 182.28M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=LB" class="tab-link">LB</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=NKR'><br>&nbsp;<b>Nuveen Arizona Dividend Advantage Municipal Fund 2</b><br>&nbsp;Closed-End Fund - Debt | USA | 31.84M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=NKR" class="tab-link">NKR</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=VMED'><br>&nbsp;<b>Virgin Media, Inc.</b><br>&nbsp;CATV Systems | USA | 5.51B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=VMED" class="tab-link">VMED</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=VDC'><br>&nbsp;<b>Vanguard Consumer Staples ETF</b><br>&nbsp;Exchange Traded Fund | USA | 688.52M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=VDC" class="tab-link">VDC</a></td>
+<td><img src="gfx/home/pat_icons/3_tl_support.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong trendline support] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_tlsupport" class="tab-link-nw">Trendline Support</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_tlresistance'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ROM'><br>&nbsp;<b>Ultra Technology ProShares</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ROM" class="tab-link">ROM</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=RTG'><br>&nbsp;<b>Rydex 2x S&P Select Sector Technology</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=RTG" class="tab-link">RTG</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=VGT'><br>&nbsp;<b>Vanguard Information Technology ETF</b><br>&nbsp;Exchange Traded Fund | USA | 439.35M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=VGT" class="tab-link">VGT</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=DDM'><br>&nbsp;<b>Ultra Dow30 ProShares</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=DDM" class="tab-link">DDM</a></td>
+<td><img src="gfx/home/pat_icons/2_tl_resist.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong trendline resistance] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_tlresistance" class="tab-link-nw">Trendline Resistance</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_horizontal'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ORA'><br>&nbsp;<b>Ormat Technologies Inc.</b><br>&nbsp;Electric Utilities | USA | 1.97B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ORA" class="tab-link">ORA</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=FTO'><br>&nbsp;<b>Frontier Oil Corp.</b><br>&nbsp;Oil & Gas Refining & Marketing | USA | 1.20B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=FTO" class="tab-link">FTO</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=CHL'><br>&nbsp;<b>China Mobile Limited</b><br>&nbsp;Wireless Communications | Hong Kong | 189.42B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=CHL" class="tab-link">CHL</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=KINS'><br>&nbsp;<b>Kingstone Companies, Inc.</b><br>&nbsp;Property & Casualty Insurance | USA | 6.35M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=KINS" class="tab-link">KINS</a></td>
+<td><img src="gfx/home/pat_icons/1_horiz_sr.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong horizontal support/resistance] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_horizontal" class="tab-link-nw">Horizontal S/R</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_wedgeup'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=HITT'><br>&nbsp;<b>Hittite Microwave Corporation</b><br>&nbsp;Semiconductor - Integrated Circuits | USA | 1.20B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=HITT" class="tab-link">HITT</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=KXI'><br>&nbsp;<b>iShares S&P Global Consumer Staples</b><br>&nbsp;Exchange Traded Fund | USA | 303.66M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=KXI" class="tab-link">KXI</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=IFF'><br>&nbsp;<b>International Flavors & Fragrances Inc.</b><br>&nbsp;Synthetics | USA | 3.29B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=IFF" class="tab-link">IFF</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=CFL'><br>&nbsp;<b>Broadview Security</b><br>&nbsp;Security & Protection Services | USA | 1.51B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=CFL" class="tab-link">CFL</a></td>
+<td><img src="gfx/home/pat_icons/4_wedge_up.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong wedge-up pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_wedgeup" class="tab-link-nw">Wedge Up</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_wedge'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=MEA'><br>&nbsp;<b>Metalico Inc.</b><br>&nbsp;Steel & Iron | USA | 212.56M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=MEA" class="tab-link">MEA</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=VOXX'><br>&nbsp;<b>Audiovox Corp.</b><br>&nbsp;Electronics Wholesale | USA | 161.53M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=VOXX" class="tab-link">VOXX</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=INR'><br>&nbsp;<b>Market Vectors Rupee/USD ETN</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=INR" class="tab-link">INR</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=PXP'><br>&nbsp;<b>Plains Exploration & Production Company</b><br>&nbsp;Independent Oil & Gas | USA | 3.70B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=PXP" class="tab-link">PXP</a></td>
+<td><img src="gfx/home/pat_icons/8_wedge.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong wedge pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_wedge" class="tab-link-nw">Wedge</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_wedgedown'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ASCA'><br>&nbsp;<b>Ameristar Casinos Inc.</b><br>&nbsp;Resorts & Casinos | USA | 1.02B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ASCA" class="tab-link">ASCA</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=PZG'><br>&nbsp;<b>Paramount Gold and Silver Corp.</b><br>&nbsp;Industrial Metals & Minerals | Canada | 107.93M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=PZG" class="tab-link">PZG</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ICH'><br>&nbsp;<b>Investors Capital Holdings, Ltd.</b><br>&nbsp;Diversified Investments | USA | 11.10M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ICH" class="tab-link">ICH</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=KWT'><br>&nbsp;<b>Market Vectors Solar Energy ETF</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=KWT" class="tab-link">KWT</a></td>
+<td><img src="gfx/home/pat_icons/5_wedge_down.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong wedge-down pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_wedgedown" class="tab-link-nw">Wedge Down</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_wedgeresistance'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=RMBS'><br>&nbsp;<b>Rambus Inc.</b><br>&nbsp;Semiconductor- Memory Chips | USA | 2.23B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=RMBS" class="tab-link">RMBS</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=BEP'><br>&nbsp;<b>S&P 500 Covered Call Fund Inc.</b><br>&nbsp;Closed-End Fund - Equity | USA | 216.29M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=BEP" class="tab-link">BEP</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=IPD'><br>&nbsp;<b>SPDR S&P International Cons Disc Sector</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=IPD" class="tab-link">IPD</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=DAVE'><br>&nbsp;<b>Famous Dave's of America Inc.</b><br>&nbsp;Restaurants | USA | 53.49M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=DAVE" class="tab-link">DAVE</a></td>
+<td><img src="gfx/home/pat_icons/6_triangle_ascen.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong ascending triangle pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_wedgeresistance" class="tab-link-nw">Triangle Ascending</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_wedgesupport'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ORIT'><br>&nbsp;<b>Oritani Financial Corp.</b><br>&nbsp;Regional - Northeast Banks | USA | 515.88M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ORIT" class="tab-link">ORIT</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=FISV'><br>&nbsp;<b>Fiserv Inc.</b><br>&nbsp;Business Software & Services | USA | 7.23B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=FISV" class="tab-link">FISV</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ACAS'><br>&nbsp;<b>American Capital, Ltd.</b><br>&nbsp;Diversified Investments | USA | 848.14M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ACAS" class="tab-link">ACAS</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=BKRS'><br>&nbsp;<b>Bakers Footwear Group Inc.</b><br>&nbsp;Apparel Stores | USA | 6.13M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=BKRS" class="tab-link">BKRS</a></td>
+<td><img src="gfx/home/pat_icons/7_triangle_descen.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong descending triangle pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_wedgesupport" class="tab-link-nw">Triangle Descending</a></td>
+</tr>
+</table>
+</td>
+<td><img src="gfx/nic2x2.gif" width="16" height="2" alt="" border="0"></td>
+<td width="50%" valign="top">
+<table class="t-home-table" width="100%" cellpadding="1" cellspacing="0" border="0">
+<tr class="t-home-table-top">
+<td colspan="4">Tickers</td><td width="15" align="left"><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="14"></td><td> Signal</td>
+</tr><tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_channelup'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=BBL'><br>&nbsp;<b>BHP Billiton plc</b><br>&nbsp;Industrial Metals & Minerals | United Kingdom | 173.05B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=BBL" class="tab-link">BBL</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=NKR'><br>&nbsp;<b>Nuveen Arizona Dividend Advantage Municipal Fund 2</b><br>&nbsp;Closed-End Fund - Debt | USA | 31.84M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=NKR" class="tab-link">NKR</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=IGM'><br>&nbsp;<b>iShares S&P North Amer Technology</b><br>&nbsp;Exchange Traded Fund | USA | 377.58M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=IGM" class="tab-link">IGM</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ITW'><br>&nbsp;<b>Illinois Tool Works Inc.</b><br>&nbsp;Diversified Machinery | USA | 24.32B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ITW" class="tab-link">ITW</a></td>
+<td><img src="gfx/home/pat_icons/9_channel_up.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong channel-up pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_channelup" class="tab-link-nw">Channel Up</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_channel'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=IFN'><br>&nbsp;<b>India Fund, Inc.</b><br>&nbsp;Closed-End Fund - Foreign | USA | 1.20B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=IFN" class="tab-link">IFN</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=KNX'><br>&nbsp;<b>Knight Transportation Inc.</b><br>&nbsp;Trucking | USA | 1.51B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=KNX" class="tab-link">KNX</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=CHRS'><br>&nbsp;<b>Charming Shoppes Inc.</b><br>&nbsp;Apparel Stores | USA | 594.13M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=CHRS" class="tab-link">CHRS</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=BRID'><br>&nbsp;<b>Bridgford Foods Corp.</b><br>&nbsp;Meat Products | USA | 91.74M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=BRID" class="tab-link">BRID</a></td>
+<td><img src="gfx/home/pat_icons/11_channel.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong channel] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_channel" class="tab-link-nw">Channel</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_channeldown'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=AZO'><br>&nbsp;<b>AutoZone Inc.</b><br>&nbsp;Auto Parts Stores | USA | 7.65B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=AZO" class="tab-link">AZO</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=CLMS'><br>&nbsp;<b>Calamos Asset Management Inc.</b><br>&nbsp;Asset Management | USA | 208.17M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=CLMS" class="tab-link">CLMS</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=VXX'><br>&nbsp;<b>iPath S&P 500 VIX Short-Term Futures ETN</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=VXX" class="tab-link">VXX</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=SBB'><br>&nbsp;<b>Short SmallCap 600 ProShares</b><br>&nbsp;Exchange Traded Fund | USA | 129.54M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=SBB" class="tab-link">SBB</a></td>
+<td><img src="gfx/home/pat_icons/10_channel_down.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with the current price near strong channel-down pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_channeldown" class="tab-link-nw">Channel Down</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_doubletop'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=EFA'><br>&nbsp;<b>iShares MSCI EAFE Index</b><br>&nbsp;Exchange Traded Fund | USA | 36.05B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=EFA" class="tab-link">EFA</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=JGV'><br>&nbsp;<b>NUVEEN GLOBAL VALUE</b><br>&nbsp;Closed-End Fund - Equity | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=JGV" class="tab-link">JGV</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=WTS'><br>&nbsp;<b>Watts Water Technologies, Inc.</b><br>&nbsp;Industrial Equipment & Components | USA | 1.17B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=WTS" class="tab-link">WTS</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=DFT'><br>&nbsp;<b>DuPont Fabros Technology, Inc.</b><br>&nbsp;Property Management | USA | 713.32M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=DFT" class="tab-link">DFT</a></td>
+<td><img src="gfx/home/pat_icons/12_dtop.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with strong double-top pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_doubletop" class="tab-link-nw">Double Top</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_multipletop'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=JKL'><br>&nbsp;<b>iShares Morningstar Small Value Index</b><br>&nbsp;Exchange Traded Fund | USA | 100.52M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=JKL" class="tab-link">JKL</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=EET'><br>&nbsp;<b>Ultra MSCI Emerging Mkts ProShares</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=EET" class="tab-link">EET</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=VSS'><br>&nbsp;<b>Vanguard FTSE All-Wld ex-US SmCp Idx ETF</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=VSS" class="tab-link">VSS</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=UL'><br>&nbsp;<b>Unilever plc</b><br>&nbsp;Processed & Packaged Goods | United Kingdom | 87.47B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=UL" class="tab-link">UL</a></td>
+<td><img src="gfx/home/pat_icons/14_mtop.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with strong multiple-top pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_multipletop" class="tab-link-nw">Multiple Top</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_doublebottom'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=WXCO'><br>&nbsp;<b>WHX Corp.</b><br>&nbsp;Industrial Equipment & Components | USA | 27.65M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=WXCO" class="tab-link">WXCO</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ROS'><br>&nbsp;<b>Rostelecom OAO</b><br>&nbsp;Telecom Services - Foreign | Russia | 3.88B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ROS" class="tab-link">ROS</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=UTK'><br>&nbsp;<b>UTEK Corporation</b><br>&nbsp;Business Services | USA | 46.29M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=UTK" class="tab-link">UTK</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=NPSP'><br>&nbsp;<b>NPS Pharmaceuticals, Inc.</b><br>&nbsp;Biotechnology | USA | 175.32M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=NPSP" class="tab-link">NPSP</a></td>
+<td><img src="gfx/home/pat_icons/13_dbot.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with strong double-bottom pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_doublebottom" class="tab-link-nw">Double Bottom</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_multiplebottom'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=ADZ'><br>&nbsp;<b>PowerShares DB Agriculture Short ETN</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=ADZ" class="tab-link">ADZ</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=JPX'><br>&nbsp;<b>UltraShort MSCI Pacific ex-Jpn ProShares</b><br>&nbsp;Exchange Traded Fund | USA | -] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=JPX" class="tab-link">JPX</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=NHPI'><br>&nbsp;<b>Neuro-Hitech, Inc.</b><br>&nbsp;Drug Manufacturers - Other | USA | 0.25M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=NHPI" class="tab-link">NHPI</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=SKH'><br>&nbsp;<b>Skilled Healthcare Group, Inc.</b><br>&nbsp;Long-Term Care Facilities | USA | 256.08M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=SKH" class="tab-link">SKH</a></td>
+<td><img src="gfx/home/pat_icons/15_mbot.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with strong multiple-bottom pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_multiplebottom" class="tab-link-nw">Multiple Bottom</a></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='screener.ashx?v=210&s=ta_p_headandshoulders'">
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=GERN'><br>&nbsp;<b>Geron Corporation</b><br>&nbsp;Drug Manufacturers - Other | USA | 529.62M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=GERN" class="tab-link">GERN</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=RMTR'><br>&nbsp;<b>Ramtron International Corp.</b><br>&nbsp;Semiconductor- Memory Chips | USA | 48.91M] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=RMTR" class="tab-link">RMTR</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=CHL'><br>&nbsp;<b>China Mobile Limited</b><br>&nbsp;Wireless Communications | Hong Kong | 189.42B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=CHL" class="tab-link">CHL</a></td>
+<td title="cssbody=[tabchrtbdy-ta] cssheader=[tabchrthdr] body=[<img src='chart.ashx?ta=1&p=d&s=m&t=VE'><br>&nbsp;<b>Veolia Environnement SA</b><br>&nbsp;Foreign Utilities | France | 15.94B] offsetx=[20] offsety=[-280] delay=[250]"><a href="quote.ashx?t=VE" class="tab-link">VE</a></td>
+<td><img src="gfx/home/pat_icons/16_hs.gif" width="14" height="12" alt="" border="0"></td>
+<td title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Stocks with strong head & shoulders pattern] offsetx=[10] offsety=[20] delay=[300]"><a href="screener.ashx?v=210&s=ta_p_headandshoulders" class="tab-link-nw">Head&Shoulders</a></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td width="100%" colspan="3"><img src="gfx/nic2x2.gif" alt="" width="12" height="12" border="0"></td></tr>
+<tr>
+<td width="100%" colspan="3">
+<table class="t-home-table" border="0" cellpadding="1" cellspacing="0" width="100%">
+<tr class="t-home-table-top">
+<td></td>
+<td align="center">Time</td>
+<td align="center">News</td>
+</tr>
+<tr class="nn-home-first" onmouseover="this.className='nn-h';" onmouseout="this.className='nn-home-first';" onclick="window.open('http://www.bloomberg.com/apps/news?pid=20601087&sid=a3ZYKiRZe93g&pos=1','_blank');return false;"><td width="25"><img src="gfx/news/logo/7.gif" width="16" height="16" alt="" border="0"></td>
+<td width="55" class="nn-date" align="center">12:22AM</td><td title="cssbody=[nn_tooltip_bdy] cssheader=[nn_tooltip_hdr] body=[<table width=400><tr><td class='tooltip_tab'>Most Asian Stocks Decline on Bernanke, Japan Stimulus; Yen, Ringgit Gain</td></tr></table>] delay=[100]"><a href="http://www.bloomberg.com/apps/news?pid=20601087&sid=a3ZYKiRZe93g&pos=1" target="_blank" class="nn-tab-link">Most Asian Stocks Decline on Bernanke, Japan Stimulus; Yen, Ringgit Gain</a></td></tr><tr class="nn-home" onmouseover="this.className='nn-h';" onmouseout="this.className='nn-home';" onclick="window.open('http://www.bloomberg.com/apps/news?pid=20601087&sid=asB6dpx8tTnw&pos=9','_blank');return false;"><td width="25"><img src="gfx/news/logo/7.gif" width="16" height="16" alt="" border="0"></td>
+<td width="55" class="nn-date" align="center">12:21AM</td><td title="cssbody=[nn_tooltip_bdy] cssheader=[nn_tooltip_hdr] body=[<table width=400><tr><td class='tooltip_tab'>Chicago Man Accused by U.S. of Helping Plot Mumbai Attacks That Killed 170</td></tr></table>] delay=[100]"><a href="http://www.bloomberg.com/apps/news?pid=20601087&sid=asB6dpx8tTnw&pos=9" target="_blank" class="nn-tab-link">Chicago Man Accused by U.S. of Helping Plot Mumbai Attacks That Killed 170</a></td></tr><tr class="nn-home" onmouseover="this.className='nn-h';" onmouseout="this.className='nn-home';" onclick="window.open('http://feeds.reuters.com/~r/reuters/businessNews/~3/tBZpPOM4Q_A/idUSTRE5B30HG20091208','_blank');return false;"><td width="25"><img src="gfx/news/logo/3.gif" width="16" height="16" alt="" border="0"></td>
+<td width="55" class="nn-date" align="center">12:17AM</td><td title="cssbody=[nn_tooltip_bdy] cssheader=[nn_tooltip_hdr] body=[<table width=400><tr><td class='tooltip_tab'>HONG KONG (Reuters) - The dollar dipped on Tuesday after Federal Reserve Chairman Ben Bernanke dampened speculation of an early U.S. interest rate rise, while shares faltered on renewed concern about the strength of the global recovery.</td></tr></table>] delay=[100]"><a href="http://feeds.reuters.com/~r/reuters/businessNews/~3/tBZpPOM4Q_A/idUSTRE5B30HG20091208" target="_blank" class="nn-tab-link">Dollar dips after Bernanke comments, shares falter</a></td></tr><tr class="nn-home" onmouseover="this.className='nn-h';" onmouseout="this.className='nn-home';" onclick="window.open('http://www.bloomberg.com/apps/news?pid=20601087&sid=a0Yu4UNjUU9Y&pos=9','_blank');return false;"><td width="25"><img src="gfx/news/logo/7.gif" width="16" height="16" alt="" border="0"></td>
+<td width="55" class="nn-date" align="center">12:17AM</td><td title="cssbody=[nn_tooltip_bdy] cssheader=[nn_tooltip_hdr] body=[<table width=400><tr><td class='tooltip_tab'>Gates Arrives in Kabul for Talks With Karzai on Troop Surge in Afghanistan</td></tr></table>] delay=[100]"><a href="http://www.bloomberg.com/apps/news?pid=20601087&sid=a0Yu4UNjUU9Y&pos=9" target="_blank" class="nn-tab-link">Gates Arrives in Kabul for Talks With Karzai on Troop Surge in Afghanistan</a></td></tr><tr class="nn-home" onmouseover="this.className='nn-h';" onmouseout="this.className='nn-home';" onclick="window.open('http://www.bloomberg.com/apps/news?pid=20601087&sid=a8AIcmYws37s&pos=5','_blank');return false;"><td width="25"><img src="gfx/news/logo/7.gif" width="16" height="16" alt="" border="0"></td>
+<td width="55" class="nn-date" align="center">12:17AM</td><td title="cssbody=[nn_tooltip_bdy] cssheader=[nn_tooltip_hdr] body=[<table width=400><tr><td class='tooltip_tab'>Bernanke Signals Fed Will Keep Outlook for `Extended Period' of Low Rates</td></tr></table>] delay=[100]"><a href="http://www.bloomberg.com/apps/news?pid=20601087&sid=a8AIcmYws37s&pos=5" target="_blank" class="nn-tab-link">Bernanke Signals Fed Will Keep Outlook for `Extended Period' of Low Rates</a></td></tr></table></td>
+</tr>
+</table>
+</td>
+<td><img src="gfx/nic2x2.gif" width="16" height="2" alt="" border="0"></td>
+<td width="400" valign="top">
+<table width="400" class="t-home-table" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td width="85" valign="top">
+<table width="85" class="t-home-table" border="0" cellpadding="1" cellspacing="0">
+<tr class="t-home-table-top"><td colspan="2">Major news</td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=GOOG" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=GOOG'><br>&nbsp;<b>Google Inc.</b><br>&nbsp;Internet Information Providers | USA | 186.00B] offsetx=[-300] offsety=[-240] delay=[250]">GOOG</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#008800;">+0.21%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=BAC" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BAC'><br>&nbsp;<b>Bank of America Corporation</b><br>&nbsp;Money Center Banks | USA | 137.46B] offsetx=[-300] offsety=[-240] delay=[250]">BAC</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-2.40%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=C" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=C'><br>&nbsp;<b>Citigroup, Inc.</b><br>&nbsp;Money Center Banks | USA | 92.14B] offsetx=[-300] offsety=[-240] delay=[250]">C</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-0.74%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=AAPL" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AAPL'><br>&nbsp;<b>Apple Inc.</b><br>&nbsp;Personal Computers | USA | 170.18B] offsetx=[-300] offsety=[-240] delay=[250]">AAPL</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-2.26%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=JPM" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=JPM'><br>&nbsp;<b>JPMorgan Chase & Co.</b><br>&nbsp;Money Center Banks | USA | 162.55B] offsetx=[-300] offsety=[-240] delay=[250]">JPM</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-1.17%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=GS" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=GS'><br>&nbsp;<b>Goldman Sachs Group Inc.</b><br>&nbsp;Diversified Investments | USA | 84.23B] offsetx=[-300] offsety=[-240] delay=[250]">GS</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-2.03%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=MSFT" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=MSFT'><br>&nbsp;<b>Microsoft Corporation</b><br>&nbsp;Application Software | USA | 264.51B] offsetx=[-300] offsety=[-240] delay=[250]">MSFT</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-0.63%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=INTC" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=INTC'><br>&nbsp;<b>Intel Corporation</b><br>&nbsp;Semiconductor - Broad Line | USA | 112.48B] offsetx=[-300] offsety=[-240] delay=[250]">INTC</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-0.44%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=AIG" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AIG'><br>&nbsp;<b>American International Group, Inc.</b><br>&nbsp;Property & Casualty Insurance | USA | 4.06B] offsetx=[-300] offsety=[-240] delay=[250]">AIG</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#008800;">+0.17%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=GE" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=GE'><br>&nbsp;<b>General Electric Co.</b><br>&nbsp;Conglomerates | USA | 171.21B] offsetx=[-300] offsety=[-240] delay=[250]">GE</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-0.74%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=AMD" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AMD'><br>&nbsp;<b>Advanced Micro Devices Inc.</b><br>&nbsp;Semiconductor - Broad Line | USA | 5.71B] offsetx=[-300] offsety=[-240] delay=[250]">AMD</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#008800;background:#e7ffe2">+8.40%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=AMZN" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AMZN'><br>&nbsp;<b>Amazon.com Inc.</b><br>&nbsp;Catalog & Mail Order Houses | USA | 58.11B] offsetx=[-300] offsety=[-240] delay=[250]">AMZN</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-2.45%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=FDX" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=FDX'><br>&nbsp;<b>FedEx Corporation</b><br>&nbsp;Air Delivery & Freight Services | USA | 27.35B] offsetx=[-300] offsety=[-240] delay=[250]">FDX</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-0.47%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=NVDA" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=NVDA'><br>&nbsp;<b>NVIDIA Corporation</b><br>&nbsp;Semiconductor - Specialized | USA | 8.93B] offsetx=[-300] offsety=[-240] delay=[250]">NVDA</a></td><td align="right" style="white-space:nowrap;"> <small><b><span style="color:#008800;background:#e7ffe2">+12.83%</span></b></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=CELG" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CELG'><br>&nbsp;<b>Celgene Corporation</b><br>&nbsp;Biotechnology | USA | 25.52B] offsetx=[-300] offsety=[-240] delay=[250]">CELG</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-0.79%</span></small></td></tr>
+<tr onmouseover="this.className='table-light-row-cp-h'" onmouseout="this.className='table-light-row-cp'"><td><a href="quote.ashx?t=EBAY" class="tab-link-nw" title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=EBAY'><br>&nbsp;<b>eBay Inc.</b><br>&nbsp;Catalog & Mail Order Houses | USA | 29.89B] offsetx=[-300] offsety=[-240] delay=[250]">EBAY</a></td><td align="right" style="white-space:nowrap;"> <small><span style="color:#aa0000;">-2.32%</span></small></td></tr>
+</table>
+<td>&nbsp;</td>
+<td width="300" valign="top" align="right" style="background-image:url('gfx/banner_rec_bg.gif');background-repeat:no-repeat;"><div id="rectangle_position"></div></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td><img src="gfx/nic2x2.gif" width="10" height="10" alt="" border="0"></td>
+</tr>
+<tr>
+<td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td valign="top">
+<table class="calendar" border="0" cellpadding="1" cellspacing="0" width="100%">
+<tr class="t-home-table-top">
+<td width="8%" align="right">Date</td>
+<td width="10%" align="right">Time</td>
+<td width="2%" align="center"><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="2"></td>
+<td width="22%" align="left">Release</td>
+<td width="8%" align="left">Impact</td>
+<td width="8%" align="left">For</td>
+<td width="8%" align="right">Actual</td>
+<td width="8%" align="right">Expected</td>
+<td width="8%" align="right">Prior</td>
+<td width="2%"><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="2"></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='table-light-cp-row';" onclick="window.location='calendar.ashx'">
+<td align="right">Dec 08</td>
+<td align="center" colspan="8">No economic releases today</td>
+<td><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="2"></td>
+</tr></table>
+</td>
+<td width="16"><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="16"></td>
+<td width="400" class="t-home-table" valign="top" bgcolor="#f3f3f3">
+<table class="t-home-table" border="0" cellpadding="1" cellspacing="0" width="100%">
+<tr class="t-home-table-top">
+<td width="18%"align="center">Date</td>
+<td><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="4"></td>
+<td colspan="8" width="78%">Earnings release</td>
+<td width="2%"><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="16"></td>
+</tr>
+<tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='';" onclick="window.location='screener.ashx?v=161&f=earningsdate_yesterdayafter&o=-marketcap'">
+<td valign="top" align="center" title="After Market Close">Dec 07/a</td>
+<td></td><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CASY'><br>&nbsp;<b>Casey's General Stores Inc.</b><br>&nbsp;Grocery Stores | USA | 1.58B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=CASY" class="tab-link">CASY</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=PBY'><br>&nbsp;<b>Pep Boys - Manny, Moe & Jack</b><br>&nbsp;Auto Parts Stores | USA | 485.01M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=PBY" class="tab-link">PBY</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=MLNK'><br>&nbsp;<b>ModusLink Global Solutions, Inc.</b><br>&nbsp;Internet Software & Services | USA | 384.43M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=MLNK" class="tab-link">MLNK</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=FMCN'><br>&nbsp;<b>Focus Media Holding Ltd.</b><br>&nbsp;Advertising Agencies | China | 189.79M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=FMCN" class="tab-link">FMCN</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=REXI'><br>&nbsp;<b>Resource America Inc.</b><br>&nbsp;Asset Management | USA | 72.69M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=REXI" class="tab-link">REXI</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=EFUT'><br>&nbsp;<b>e-Future Information Technology Inc.</b><br>&nbsp;Business Software & Services | China | 27.45M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=EFUT" class="tab-link">EFUT</a></td>
+<td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td></td></tr><tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='';" onclick="window.location='screener.ashx?v=161&f=earningsdate_todaybefore&o=-marketcap'">
+<td valign="top" align="center" title="Before Market Open">Dec 08/b</td>
+<td></td><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BNS'><br>&nbsp;<b>The Bank Of Nova Scotia</b><br>&nbsp;Money Center Banks | Canada | 47.08B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=BNS" class="tab-link">BNS</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BF-B'><br>&nbsp;<b>Brown-Forman Corporation</b><br>&nbsp;Beverages - Wineries & Distillers | USA | 7.76B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=BF-B" class="tab-link">BF-B</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AZO'><br>&nbsp;<b>AutoZone Inc.</b><br>&nbsp;Auto Parts Stores | USA | 7.65B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=AZO" class="tab-link">AZO</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=HRB'><br>&nbsp;<b>H&R Block, Inc.</b><br>&nbsp;Personal Services | USA | 6.87B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=HRB" class="tab-link">HRB</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=MTN'><br>&nbsp;<b>Vail Resorts Inc.</b><br>&nbsp;Resorts & Casinos | USA | 1.50B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=MTN" class="tab-link">MTN</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=TTC'><br>&nbsp;<b>Toro Co.</b><br>&nbsp;Small Tools & Accessories | USA | 1.37B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=TTC" class="tab-link">TTC</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=SAFM'><br>&nbsp;<b>Sanderson Farms Inc.</b><br>&nbsp;Meat Products | USA | 862.40M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=SAFM" class="tab-link">SAFM</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=TLB'><br>&nbsp;<b>The Talbots Inc.</b><br>&nbsp;Apparel Stores | USA | 397.05M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=TLB" class="tab-link">TLB</a></td>
+<td></td></tr><tr onmouseover="this.className='table-light-row-cp-h';" onmouseout="this.className='';" onclick="window.location='screener.ashx?v=161&f=earningsdate_todayafter&o=-marketcap'">
+<td valign="top" align="center" title="After Market Close">Dec 08/a</td>
+<td></td><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=SAI'><br>&nbsp;<b>SAIC, Inc.</b><br>&nbsp;Aerospace/Defense Products & Services | USA | 3.78B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=SAI" class="tab-link">SAI</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=FCE-A'><br>&nbsp;<b>Forest City Enterprises Inc.</b><br>&nbsp;Property Management | USA | 1.87B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=FCE-A" class="tab-link">FCE-A</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=COO'><br>&nbsp;<b>The Cooper Companies Inc.</b><br>&nbsp;Medical Instruments & Supplies | USA | 1.53B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=COO" class="tab-link">COO</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=MW'><br>&nbsp;<b>The Men's Wearhouse, Inc.</b><br>&nbsp;Apparel Stores | USA | 1.16B] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=MW" class="tab-link">MW</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CMTL'><br>&nbsp;<b>Comtech Telecommunications Corp.</b><br>&nbsp;Communication Equipment | USA | 854.80M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=CMTL" class="tab-link">CMTL</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AVAV'><br>&nbsp;<b>AeroVironment, Inc.</b><br>&nbsp;Aerospace/Defense Products & Services | USA | 621.21M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=AVAV" class="tab-link">AVAV</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CKR'><br>&nbsp;<b>CKE Restaurants Inc.</b><br>&nbsp;Restaurants | USA | 475.94M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=CKR" class="tab-link">CKR</a></td>
+<td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=PLAB'><br>&nbsp;<b>Photronics Inc.</b><br>&nbsp;Semiconductor - Integrated Circuits | USA | 210.50M] offsetx=[-300] offsety=[-240] delay=[250]"><a href="quote.ashx?t=PLAB" class="tab-link">PLAB</a></td>
+<td></td></tr></table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td><img src="gfx/nic2x2.gif" width="10" height="12" alt="" border="0"></td>
+</tr>
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top">
+<table class="insider" border="0" cellpadding="1" cellspacing="0" width="100%">
+<tr class="t-home-table-top">
+<td align="left">Ticker</td>
+<td align="left">Latest Insider Trading</td>
+<td align="left">Relationship</td>
+<td align="left">Date</td>
+<td align="center">Transaction</td>
+<td align="right">Cost</td>
+<td align="right">#Shares</td>
+<td align="right">Value($)</td>
+</tr>
+<tr class="insider-sale-row-1" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-sale-row-1'" onclick="window.location='insidertrading.ashx'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=HAIN'><br>&nbsp;<b>The Hain Celestial Group, Inc.</b><br>&nbsp;Processed & Packaged Goods | USA | 675.56M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=HAIN" class="tab-link">HAIN</a></td><td><a href="insidertrading.ashx?oc=1198845&tc=7" class="tab-link-nw">BERKE RICHARD C</td><td style="white-space:nowrap">Director</td><td style="white-space:nowrap">Nov 17</td><td align="center">Sale</td><td align="right">18.79</td><td align="right">180</td><td align="right">3,382</td></tr><tr class="insider-sale-row-1" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-sale-row-1'" onclick="window.location='insidertrading.ashx'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=KNOL'><br>&nbsp;<b>Knology, Inc.</b><br>&nbsp;Wireless Communications | USA | 364.98M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=KNOL" class="tab-link">KNOL</a></td><td><a href="insidertrading.ashx?oc=1273549&tc=7" class="tab-link-nw">WACHTER CHAD S</td><td style="white-space:nowrap">VP, Gen Counsel</td><td style="white-space:nowrap">Dec 04</td><td align="center">Sale</td><td align="right">10.09</td><td align="right">9,152</td><td align="right">92,344</td></tr><tr class="insider-sale-row-1" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-sale-row-1'" onclick="window.location='insidertrading.ashx'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=KNOL'><br>&nbsp;<b>Knology, Inc.</b><br>&nbsp;Wireless Communications | USA | 364.98M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=KNOL" class="tab-link">KNOL</a></td><td><a href="insidertrading.ashx?oc=1273549&tc=7" class="tab-link-nw">WACHTER CHAD S</td><td style="white-space:nowrap">VP, Gen Counsel</td><td style="white-space:nowrap">Dec 07</td><td align="center">Sale</td><td align="right">10.00</td><td align="right">6,816</td><td align="right">68,160</td></tr><tr class="insider-sale-row-1" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-sale-row-1'" onclick="window.location='insidertrading.ashx'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=KNOL'><br>&nbsp;<b>Knology, Inc.</b><br>&nbsp;Wireless Communications | USA | 364.98M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=KNOL" class="tab-link">KNOL</a></td><td><a href="insidertrading.ashx?oc=1273549&tc=7" class="tab-link-nw">WACHTER CHAD S</td><td style="white-space:nowrap">VP, Gen Counsel</td><td style="white-space:nowrap">Dec 03</td><td align="center">Sale</td><td align="right">10.22</td><td align="right">4,032</td><td align="right">41,207</td></tr><tr class="insider-buy-row-2" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-buy-row-2'" onclick="window.location='insidertrading.ashx'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=ESI'><br>&nbsp;<b>ITT Educational Services Inc.</b><br>&nbsp;Education & Training Services | USA | 3.19B] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=ESI" class="tab-link">ESI</a></td><td><a href="insidertrading.ashx?oc=938775&tc=7" class="tab-link-nw">BLUM CAPITAL PARTNER</td><td style="white-space:nowrap">10% Owner</td><td style="white-space:nowrap">Dec 03</td><td align="center">Buy</td><td align="right">86.95</td><td align="right">40,000</td><td align="right">3,478,000</td></tr><tr class="insider-option-row" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-option-row'" onclick="window.location='insidertrading.ashx'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=KNOL'><br>&nbsp;<b>Knology, Inc.</b><br>&nbsp;Wireless Communications | USA | 364.98M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=KNOL" class="tab-link">KNOL</a></td><td><a href="insidertrading.ashx?oc=1273543&tc=7" class="tab-link-nw">MCCANTS BRET T</td><td style="white-space:nowrap">Executive VP, O</td><td style="white-space:nowrap">Dec 03</td><td align="center">Option Exercise</td><td align="right">1.70</td><td align="right">5,039</td><td align="right">8,566</td></tr></table>
+</td>
+<td width="16"><img src="gfx/nic2x2.gif" alt="" border="0" height="2" width="16"></td>
+<td class="t-home-table" valign="top" width="400">
+<table class="insider" border="0" cellpadding="1" cellspacing="0" width="100%">
+<tr class="t-home-table-top">
+<td align="left">Ticker</td>
+<td align="left">Top Insider Trading</td>
+<td align="left">Date</td>
+<td align="center">Transaction</td>
+<td align="right">Value($)</td>
+</tr>
+<tr class="insider-buy-row-2" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-buy-row-2'" onclick="window.location='insidertrading.ashx?or=-10&tv=100000&tc=1&o=-transactionValue'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=MMLP'><br>&nbsp;<b>Martin Midstream Partners LP</b><br>&nbsp;Independent Oil & Gas | USA | 408.43M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=MMLP" class="tab-link">MMLP</a></td><td><a href="insidertrading.ashx?oc=1201198&tc=7" class="tab-link-nw">MARTIN RUBEN S</td><td>Nov 25</td><td align="center">Buy</td><td align="right">19,999,980</td></tr><tr class="insider-buy-row-2" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-buy-row-2'" onclick="window.location='insidertrading.ashx?or=-10&tv=100000&tc=1&o=-transactionValue'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=CASA'><br>&nbsp;<b>Mexican Restaurants Inc.</b><br>&nbsp;Restaurants | USA | 7.66M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=CASA" class="tab-link">CASA</a></td><td><a href="insidertrading.ashx?oc=1032712&tc=7" class="tab-link-nw">DOMEC MICHAEL D</td><td>Dec 01</td><td align="center">Buy</td><td align="right">2,385,912</td></tr><tr class="insider-buy-row-2" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-buy-row-2'" onclick="window.location='insidertrading.ashx?or=-10&tv=100000&tc=1&o=-transactionValue'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=EIHI'><br>&nbsp;<b>Eastern Insurance Holdings, Inc.</b><br>&nbsp;Accident & Health Insurance | USA | 79.26M] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=EIHI" class="tab-link">EIHI</a></td><td><a href="insidertrading.ashx?oc=1352198&tc=7" class="tab-link-nw">Burke Paul Robert</td><td>Dec 02</td><td align="center">Buy</td><td align="right">1,816,136</td></tr><tr class="insider-sale-row-2" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-sale-row-2'" onclick="window.location='insidertrading.ashx?or=-10&tv=100000&tc=2&o=-transactionValue'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=AAPL'><br>&nbsp;<b>Apple Inc.</b><br>&nbsp;Personal Computers | USA | 170.18B] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=AAPL" class="tab-link">AAPL</a></td><td><a href="insidertrading.ashx?oc=1285042&tc=7" class="tab-link-nw">JOHNSON RONALD B</td><td>Dec 01</td><td align="center">Sale</td><td align="right">40,308,973</td></tr><tr class="insider-sale-row-2" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-sale-row-2'" onclick="window.location='insidertrading.ashx?or=-10&tv=100000&tc=2&o=-transactionValue'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=SLB'><br>&nbsp;<b>Schlumberger Limited</b><br>&nbsp;Oil & Gas Equipment & Services | USA | 73.63B] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=SLB" class="tab-link">SLB</a></td><td><a href="insidertrading.ashx?oc=1194100&tc=7" class="tab-link-nw">GOULD ANDREW</td><td>Dec 01</td><td align="center">Sale</td><td align="right">36,049,750</td></tr><tr class="insider-sale-row-2" onmouseover="this.className='insider-light-row-cp-h'" onmouseout="this.className='insider-sale-row-2'" onclick="window.location='insidertrading.ashx?or=-10&tv=100000&tc=2&o=-transactionValue'" valign="top"><td title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='chart.ashx?s=m&p=d&t=BRKR'><br>&nbsp;<b>Bruker Corporation</b><br>&nbsp;Scientific & Technical Instruments | USA | 1.81B] offsetx=[20] offsety=[-240] delay=[300]"><a href="quote.ashx?t=BRKR" class="tab-link">BRKR</a></td><td><a href="insidertrading.ashx?oc=1133648&tc=7" class="tab-link-nw">LAUKIEN DIRK D</td><td>Dec 01</td><td align="center">Sale</td><td align="right">21,340,000</td></tr></table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td><img src="gfx/nic2x2.gif" width="10" height="4" alt="" border="0"></td>
+</tr>
+<tr>
+<td align="center">
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+<tr>
+<td width="400">
+<table width="100%" cellpadding="1" cellspacing="0" class="t-home-table" border="0">
+<tr>
+<td><b>Futures</b></td>
+<td width="90" align="right">Last</td>
+<td width="90" align="right">Change</td>
+<td width="90" align="right">Change %</td>
+<td rowspan="10"><img src="gfx/nic2x2.gif" width="10" height="5" alt=""></td>
+</tr>
+<tr>
+<td>Crude Oil</td>
+<td align="right"><span style="color:#008800;">74.21</span></td>
+<td align="right"><span style="color:#008800;">+0.28</span></td>
+<td align="right"><span style="color:#008800;">+0.38%</span></td>
+</tr>
+<tr>
+<td>Natural Gas</td>
+<td align="right"><span style="color:#008800;">5.04</span></td>
+<td align="right"><span style="color:#008800;">+0.07</span></td>
+<td align="right"><span style="color:#008800;">+1.41%</span></td>
+</tr>
+<tr>
+<td>Gold</td>
+<td align="right"><span style="color:#008800;">1165.5</span></td>
+<td align="right"><span style="color:#008800;">+1.5</span></td>
+<td align="right"><span style="color:#008800;">+0.13%</span></td>
+</tr>
+<tr>
+<td>Dow</td>
+<td align="right"><span style="color:#008800;">10401</span></td>
+<td align="right"><span style="color:#008800;">+10</span></td>
+<td align="right"><span style="color:#008800;">+0.10%</span></td>
+</tr>
+<tr>
+<td>S&P 500</td>
+<td align="right"><span style="color:#008800;">1105</span></td>
+<td align="right"><span style="color:#008800;">+1.3</span></td>
+<td align="right"><span style="color:#008800;">+0.12%</span></td>
+</tr>
+<tr>
+<td>Nasdaq 100</td>
+<td align="right"><span style="color:#008800;">1785.5</span></td>
+<td align="right"><span style="color:#008800;">+1.5</span></td>
+<td align="right"><span style="color:#008800;">+0.08%</span></td>
+</tr>
+</table>
+</td>
+<td align="center" valign="middle"><br>
+<span class="gt-title">First Time Here?</span><br>
+<a href="help/guided-tour.ashx" onmouseover="lightup('pic_home_gt')" onmouseout="turnoff('pic_home_gt')"><img src="gfx/home/btn_gt.gif" width="183" height="35" name="pic_home_gt" alt="" border="0"></a>
+</td>
+<td width="400">
+<table width="100%" cellpadding="1" cellspacing="0" class="t-home-table" border="0">
+<tr>
+<td><b>Forex & Bonds</b></td>
+<td width="90" align="right">Last</td>
+<td width="90" align="right">Change</td>
+<td width="90" align="right">Change %</td>
+<td rowspan="10"><img src="gfx/nic2x2.gif" width="10" height="5" alt=""></td>
+</tr>
+<tr title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='fx_image.ashx?eurusd_m5_s.png&rev=633958287912081250'>] offsetx=[-300] offsety=[-220] delay=[0]">
+<td><a href="forex_charts.ashx?t=EURUSD" class="tab-link">EUR/USD</a></td>
+<td align="right"><span style="color:#008800;">1.4838</span></td>
+<td align="right"><span style="color:#008800;">+0.0010</span></td>
+<td align="right"><span style="color:#008800;">+0.07%</span></td>
+</tr>
+<tr title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='fx_image.ashx?usdjpy_m5_s.png&rev=633958287912081250'>] offsetx=[-300] offsety=[-220] delay=[0]">
+<td><a href="forex_charts.ashx?t=USDJPY" class="tab-link">USD/JPY</a></td>
+<td align="right"><span style="color:#aa0000;">88.78</span></td>
+<td align="right"><span style="color:#aa0000;">-0.57</span></td>
+<td align="right"><span style="color:#aa0000;">-0.64%</span></td>
+</tr>
+<tr title="cssbody=[tabchrtbdy] cssheader=[tabchrthdr] body=[<img src='fx_image.ashx?gbpusd_m5_s.png&rev=633958287912081250'>] offsetx=[-300] offsety=[-220] delay=[0]">
+<td><a href="forex_charts.ashx?t=GBPUSD" class="tab-link">GBP/USD</a></td>
+<td align="right"><span style="color:#aa0000;">1.6442</span></td>
+<td align="right"><span style="color:#aa0000;">-0.0011</span></td>
+<td align="right"><span style="color:#aa0000;">-0.07%</span></td>
+</tr>
+<tr>
+<td>5-Year Treasury</td>
+<td align="right"><span style="color:#aa0000;">2.188</span></td>
+<td align="right"><span style="color:#aa0000;">-0.06</span></td>
+<td align="right"><span style="color:#aa0000;">-2.67%</span></td>
+</tr>
+<tr>
+<td>10-Year Treasury</td>
+<td align="right"><span style="color:#aa0000;">3.448</span></td>
+<td align="right"><span style="color:#aa0000;">-0.035</span></td>
+<td align="right"><span style="color:#aa0000;">-1.00%</span></td>
+</tr>
+<tr>
+<td>30-Year Treasury</td>
+<td align="right"><span style="color:#aa0000;">4.406</span></td>
+<td align="right"><span style="color:#aa0000;">-0.007</span></td>
+<td align="right"><span style="color:#aa0000;">-0.16%</span></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td><img src="/gfx/nic2x2.gif" width="10" height="20" alt="" border="0"></td>
+</tr>
+<tr>
+<td align="center"><span class="menu-down"><script type="text/javascript">addthis_pub             = 'finviz';addthis_brand           = 'FINVIZ.com';addthis_options         = 'favorites, email, digg, delicious, google, facebook, twitter, more';</script><a href="http://www.addthis.com/bookmark.php" class="tab-link" onMouseOver="return addthis_open(this, '', 'http://finviz.com', 'FINVIZ.com - Financial Visualizations')" onMouseOut="addthis_close()" onClick="return addthis_to()">share</a><script type="text/javascript" src="http://s7.addthis.com/js/15/addthis_widget.js"></script> | <a class="tab-link" href="/about.ashx">about us</a> | <a class="tab-link" href="/advertise.ashx">advertise</a> | <a class="tab-link" href="/contact.ashx">contact</a> | <a class="tab-link" href="/privacy.ashx">privacy</a> | <a class="tab-link" href="/help/screener.ashx">help</a></span>
+<br>
+<span class="copyright">Quotes delayed 15 minutes for NASDAQ, and 20 minutes for NYSE and AMEX.<br>Copyright © 2009 FINVIZ.com. All Rights Reserved.</span></td>
+</tr>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-3261808-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+<script type="text/javascript">
+_qoptions={qacct:"p-c2W8esUZ6Q8oA"};
+</script>
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<noscript>
+<img src="http://pixel.quantserve.com/pixel/p-c2W8esUZ6Q8oA.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/>
+</noscript>
+<script language="javascript" type="text/javascript">var ord = Math.random() * 10000000000000000</script>
+<div id="banner" style="position:absolute;display:none"><script language="JavaScript" type="text/javascript">;
+document.write('<script language="JavaScript" src="http://ad.doubleclick.net/adj/invc.finviz/homepage;kw=;kval=stock;kval=market;kval=quotes;kval=signals;kval=earnings;kval=futures;kval=forex;kval=bonds;tile=1;dcopt=ist;sz=728x90;ord=' + ord + '?" type="text/javascript"><\/script>');</script>
+<noscript><a href="http://ad.doubleclick.net/jump/invc.finviz/homepage;kw=;kval=stock;kval=market;kval=quotes;kval=signals;kval=earnings;kval=futures;kval=forex;kval=bonds;tile=1;sz=728x90;ord=123456789?" target="_blank"><img src="http://ad.doubleclick.net/ad/invc.finviz/homepage;kw=;kval=stock;kval=market;kval=quotes;kval=signals;kval=earnings;kval=futures;kval=forex;kval=bonds;tile=1;sz=728x90;ord=123456789?" width="728" height="90" border="0" alt=""></a></noscript>
+</div>
+<div id="rectangle" style="position:absolute;display:none"><script language="JavaScript" type="text/javascript">;
+document.write('<script language="JavaScript" src="http://ad.doubleclick.net/adj/invc.finviz/homepage;kw=;kval=homepage;tile=2;sz=300x250;ord=' + ord + '?" type="text/javascript"><\/script>');</script>
+<noscript><a href="http://ad.doubleclick.net/jump/invc.finviz/homepage;kw=;kval=homepage;tile=2;sz=300x250;ord=123456789?" target="_blank"><img src="http://ad.doubleclick.net/ad/invc.finviz/homepage;kw=;kval=homepage;tile=2;sz=300x250;ord=123456789?" width="300" height="250" border="0" alt=""></a></noscript>
+</div>
+<script type="text/javascript">function OnResize(){var banner=document.getElementById("banner");var el=document.getElementById("banner_position");if(el.offsetParent){var x=el.offsetLeft;while(el=el.offsetParent)x+=el.offsetLeft;banner.style.left=x;banner.style.top=18;banner.style.display='block';}var rectangle=document.getElementById("rectangle");var el=document.getElementById("rectangle_position");if(el.offsetParent){var x=el.offsetLeft;var y=el.offsetTop;while(el=el.offsetParent){x+=el.offsetLeft;y+=el.offsetTop};rectangle.style.left=x;rectangle.style.top=y;rectangle.style.display='block';}}window.onresize=OnResize;OnResize();</script>
+</body>
+</html>

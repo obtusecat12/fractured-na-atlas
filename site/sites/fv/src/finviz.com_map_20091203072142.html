@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>S&P 500 Map Heatmap</title>
+<meta name="description" content="Stock screener for investors and traders, financial visualizations.">
+<meta name="keywords" content="Stock Screener, Charts, Quotes, Maps, News, Financial Visualizations, Research, Trading Systems">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+<link rel="stylesheet" href="/finviz.css?rev=57" type="text/css">
+<link rel="shortcut icon" href="/favicon.ico">
+<script src="/script/boxover.js?rev=2" type="text/javascript"></script>
+<script src="/script/lightup.js?rev=1" type="text/javascript"></script>
+<script src="/script/search.js?rev=4" type="text/javascript"></script>
+<script src="/script/time.js?rev=6" type="text/javascript"></script>
+<script src="/script/menu.js" type="text/javascript"></script>
+<script src="script/lightup_map.js?rev=3" type="text/javascript"></script>
+<script src="script/browser.js" type="text/javascript"></script>
+<script src="script/maps/sec/current.js?rev=2.633954037172705000" type="text/javascript"></script>
+<script src="script/maps/sec/area.js?rev=11" type="text/javascript"></script>
+<script src="script/maps/sec/map_list.js?rev=11" type="text/javascript"></script>
+<script src="script/maps/panel.js?rev=8" type="text/javascript"></script>
+<script src="script/maps/map.js?rev=9" type="text/javascript"></script>
+<script type="text/javascript">
+function Publish(url)
+{
+window.open('publish_map.ashx?' + url,'','top=100,left=100,width=430,height=500');
+}
+</script>
+</head>
+<body onload="BrowserDetect.init();MenuInit();MapInit('sec','lc',800,600,4);" onresize="MapResize();" style="margin:0" bgcolor="#ffffff">
+<script type="text/javascript">if(document.body.clientWidth>1500){document.write('<table align="center" width="1425px" cellpadding="0" cellspacing="0" border="0">')}else{document.write('<table align="center" width="95%" style="max-width:1425px;" cellpadding="0" cellspacing="0" border="0">')}</script>
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr valign="bottom">
+<td width="34" class="header-top"><img src="/gfx/nic2x2.gif" width="34" height="18" alt="" border="0"></td>
+<td width="0" class="header-top-w" align="left"><span class="time-text" id="time"><script type="text/javascript">document.write(TimeString())</script></span></td>
+<td width="100%" class="header-top"></td>
+<td width="0" class="header-top-wm" align="right"><span class="header-menu"><span class="welcome-user-text">Welcome Guest!&nbsp;&nbsp;</span><span class="welcome-links"><a href="/login.ashx" class="tab-link">Login</a> | <a href="/register.ashx" class="tab-link">Register</a> | <a href="/help/maps.ashx" class="tab-link">Help</a> | <a href="http://survey.io/survey/cde12" class="tab-link" target="_blank">Survey</a></span></span></td>
+</tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+<tr>
+<td width="40"><img src="/gfx/nic2x2.gif" width="40" height="2" alt="" border="0"></td>
+<td width="188"><a href="/"><img src="/gfx/header_logo.png" width="172" height="90" alt="" border="0"></a></td>
+<td width="100%"></td>
+<td width="728" height="90"><div id="banner_position"></div></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/" class="body-menu-top">Home</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/news.ashx" class="body-menu-top">News</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/screener.ashx" class="body-menu-top">Screener</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/map.ashx" class="body-menu-top-a">Maps</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/groups.ashx" class="body-menu-top">Groups</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/portfolio.ashx" class="body-menu-top">Portfolio</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/insidertrading.ashx" class="body-menu-top">Insider</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/collaborate.ashx" class="body-menu-top">Collaborate</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/forex.ashx" class="body-menu-top">Forex</a></td>
+<td width="2%" align="center" background="/gfx/top_menu_bg.gif" class="body-menu-top"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/store/stock-brokers.ashx" class="body-menu-top">Store</a></td>
+<td class="body-menu-top" width="2%" align="center" background="/gfx/top_menu_bg.gif"></td>
+<td align="center" background="/gfx/top_menu_bg.gif"><a href="/services.ashx" class="body-menu-top">Institutional</a></td>
+<td class="body-menu-top" width="2%" align="center" background="/gfx/top_menu_bg.gif"></td>
+<td class="body-menu-top" width="2%" align="center" background="/gfx/top_menu_bg_black.gif"></td>
+<td align="center" background="/gfx/top_menu_bg_black.gif"><a href="/elite.ashx" class="body-menu-top">Elite</a></td>
+<td class="body-menu-top" width="2%" align="center" valign="top" background="/gfx/top_menu_bg_black.gif"><img src="/gfx/top_menu_bg_black_new.png" width="29" height="12" border="0" alt="">
+</td>
+<td width="26%" align="left">
+<ul id="p7menubar">
+<li>
+<table cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">
+<tr>
+<td width="7" align="left"><img src="/gfx/wnd_search.gif" width="7" height="25" alt="" border="0"></td>
+<td width="100%" align="left" background="/gfx/wnd_search_text_bg.gif"><input class="body-search-text" value="Search ticker, company or profile" onclick="if(this.value=='Search ticker, company or profile')this.value=''" onkeypress="if(event.keyCode==13)Search()" onfocus="onkeydownEventEnabled=false;" onblur="onkeydownEventEnabled=true;" style="border:0px none;width:100%;position:relative;left:-2px;top:1px;" id="search" type="text"></td>
+<td width="26" align="left"><a href="javascript:Search()"><img src="/gfx/search_icon.gif" alt="" width="26" border="0" height="25" style="cursor:pointer;"></a></td>
+</tr>
+</table>
+<ul>
+<li>
+<table class="searchtab" cellpadding="0" cellspacing="0" width="100%" bgcolor="#e3f6FF">
+<tr height="23">
+<form name="search_form" onkeypress="if(event.keyCode==13){Search();return false;}">
+<td width="3%"><input id="search_radio1" type="radio" name="type" value="ticker" checked="checked" onkeypress="if(event.keyCode==13){Search();return false;}"></td>
+<td width="30%" class="searchtab"><label for="search_radio1" class="body-menu-search-label">Ticker</label></td>
+<td width="3%"><input id="search_radio2" type="radio" name="type" value="company" onkeypress="if(event.keyCode==13){Search();return false;}"></td>
+<td width="30%" class="searchtab"><label for="search_radio2" class="body-menu-search-label">Company</label></td>
+<td width="3%"><input id="search_radio3" type="radio" name="type" value="profile" onkeypress="if(event.keyCode==13){Search();return false;}"></td>
+<td width="30%" class="searchtab"><label for="search_radio3" class="body-menu-search-label">Profile</label></td>
+</form>
+</tr>
+</table>
+</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td background="/gfx/top_menu_bg_shadow.gif"><img src="/gfx/nic2x2.gif" width="2" height="7" alt="" border="0"></td></tr>
+<tr><td width="100%"><img src="/gfx/nic2x2.gif" width="2" height="10" alt="" border="0"></td></tr>
+<tr><td class="fullview-links" align="center"><a href="map.ashx?t=sec" class="tab-link"><b>S&P 500</b></a> | <a href="map.ashx?t=geo" class="tab-link">World</a> | <a href="map.ashx?t=sec_all" class="tab-link">Full</a> | <a href="map3d.ashx" class="tab-link">Market 3D</a> | <a href="map3darchive.ashx" class="tab-link">Market Archive</a> | <a href="map.ashx?t=etf" class="tab-link">Exchange Traded Funds</a></td></tr>
+<td><img src="gfx/nic2x2.gif" width="10" height="4" alt="" border="0"></td>
+<tr>
+<td width="100%" align="center">
+<table cellpadding="0" cellspacing="0" border="0">
+<tr valign="top">
+<td width="50%" rowspan="1000"></td>
+<td width="800"><div id="map-view"><div id="map-view-in"></div><div id="map-view-surface"></div></div></td>
+<td><img src="gfx/map/tab_left_spacer.gif" width="13" height="600" alt="" border="0"></td>
+<td width="174">
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td><a href="map.ashx?t=sec" title="cssbody=[tooltip_bdy] cssheader=[tooltip_hdr] header=[Standard and Poor's 500 Map] body=[<table width=300><tr><td class='tooltip_tab'>Standard and Poor's 500 index stocks categorized by sectors and industries</td></tr></table>] offsetx=[-305] delay=[500]"><img src="gfx/map/tab_s_a.gif" name="pic_map_s" width="50" height="23" alt="" border="0"></a></td>
+<td><a href="map.ashx?t=geo" title="cssbody=[tooltip_bdy] cssheader=[tooltip_hdr] header=[World Map] body=[<table width=300><tr><td class='tooltip_tab'>Foreign ADR stocks listed on NYSE, NASDAQ, AMEX categorized by geo location</td></tr></table>] offsetx=[-305] delay=[500]" onmouseover="lightup('pic_map_w')" onmouseout="turnoff('pic_map_w')"><img src="gfx/map/tab_w_d.gif" name="pic_map_w" width="49" height="23" alt="" border="0"></a></td>
+<td><a href="map.ashx?t=sec_all" title="cssbody=[tooltip_bdy] cssheader=[tooltip_hdr] header=[Full Map] body=[<table width=300><tr><td class='tooltip_tab'>All stocks listed on US stock exchanges, categorized by sectors and industries</td></tr></table>] offsetx=[-305] delay=[500]" onmouseover="lightup('pic_map_f')" onmouseout="turnoff('pic_map_f')"><img src="gfx/map/tab_f_d.gif" name="pic_map_f" width="39" height="23" alt="" border="0"></a></td>
+<td><a href="map.ashx?t=etf" title="cssbody=[tooltip_bdy] cssheader=[tooltip_hdr] header=[ETF Map] body=[<table width=300><tr><td class='tooltip_tab'>Exchange Traded Funds categorized by sectors and styles</td></tr></table>] offsetx=[-305] delay=[500]" onmouseover="lightup('pic_map_e')" onmouseout="turnoff('pic_map_e')"><img src="gfx/map/tab_e_d.gif" name="pic_map_e" width="36" height="23" alt="" border="0"></a></td>
+</tr>
+<tr>
+<td colspan="4" width="100%" background="gfx/map/data_tab.gif"><img src="gfx/nic2x2.gif" width="50" height="25" border="0"><select id="mapDataSelect" style="position:absolute;margin-top:3px;width:120;font-size:11px;" onchange='window.location="map.ashx?" + document.getElementById("mapDataSelect").value'><option value="t=sec" selected="selected">1 Day Performance</option><option value="t=sec&st=w1">1 Week Performance</option><option value="t=sec&st=w4">1 Month Performance</option><option value="t=sec&st=w13">3 Months Performance</option><option value="t=sec&st=w26">6 Months Performance</option><option value="t=sec&st=w52">1 Year Performance</option><option value="t=sec&st=ytd">Year To Date Performance</option><option value="t=sec&st=relvol">Relative Volume</option><option value="t=sec&st=pe">P/E</option><option value="t=sec&st=fpe">Forward P/E</option><option value="t=sec&st=peg">PEG</option><option value="t=sec&st=ps">P/S</option><option value="t=sec&st=pb">P/B</option><option value="t=sec&st=div">Dividend Yield</option><option value="t=sec&st=eps5y">EPS Growth Past 5 Years</option><option value="t=sec&st=short">Float Short</option><option value="t=sec&st=rec">Analysts Recom.</option><option value="t=sec&st=earnperf">Earnings Day Performance</option><option value="t=sec&st=earndate">Earnings Date</option></select></td>
+</tr>
+<tr>
+<td colspan="4"><img src="gfx/map/tab_top_navigation.gif" width="174" height="66" alt="" border="0"><br><a href="javascript:MapClickZoomOut()" title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Map Zoom Out] offsetx=[-95] delay=[500]" onmouseover="lightup('pic_map_min')" onmouseout="turnoff('pic_map_min')"><img src="gfx/map/tab_zoom_min_d.gif" name="pic_map_min" width="52" height="21" alt="" border="0"></a><img src="gfx/map/tab_zoom_icon_left.gif" width="14" height="21" alt="" border="0"><a href="javascript:MapClickZoom(0)" title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Zoom Level 1] offsetx=[-85] delay=[500]" onmouseover="UpdateZoomStatusHover(0)" onmouseout="UpdateZoomStatusHover(-1)"><img id="map-zoom-icon1" src="gfx/map/tab_zoom_icon_z1_d.gif" width="11" height="21" alt="" border="0"></a><a href="javascript:MapClickZoom(1)" title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Zoom Level 2] offsetx=[-85] delay=[500]" onmouseover="UpdateZoomStatusHover(1)" onmouseout="UpdateZoomStatusHover(-1)"><img id="map-zoom-icon2" src="gfx/map/tab_zoom_icon_z2_d.gif" width="11" height="21" alt="" border="0"></a><a href="javascript:MapClickZoom(2)" title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Zoom Level 3] offsetx=[-85] delay=[500]" onmouseover="UpdateZoomStatusHover(2)" onmouseout="UpdateZoomStatusHover(-1)"><img id="map-zoom-icon3" src="gfx/map/tab_zoom_icon_z3_d.gif" width="11" height="21" alt="" border="0"></a><a href="javascript:MapClickZoom(3)" title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Zoom Level 4] offsetx=[-85] delay=[500]" onmouseover="UpdateZoomStatusHover(3)" onmouseout="UpdateZoomStatusHover(-1)"><img id="map-zoom-icon4" src="gfx/map/tab_zoom_icon_z4_d.gif" width="10" height="21" alt="" border="0"></a><img src="gfx/map/tab_zoom_icon_right.gif" width="13" height="21" alt="" border="0"><a href="javascript:MapClickZoomIn()" title="cssbody=[tooltip_short_bdy] cssheader=[tooltip_short_hdr] body=[Map Zoom In] offsetx=[-85] delay=[500]" onmouseover="lightup('pic_map_plu')" onmouseout="turnoff('pic_map_plu')"><img src="gfx/map/tab_zoom_plu_d.gif" name="pic_map_plu" width="52" height="21" alt="" border="0"></a></td>
+</tr>
+</table>
+<table cellpadding="0" cellspacing="0" background="gfx/map/tab_disp_cell.gif" border="0">
+<tr>
+<td width="174" height="47" valign="center" align="center"><div id="map-panel-ticker"></div></td>
+</tr>
+</table>
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td style="cursor:pointer;" onmouseover="MapPanelUp();lightup('pic_map_up');" onmouseout="turnoff('pic_map_up');MapPanelRelease();"><img src="gfx/map/tab_button_up_d.gif" name="pic_map_up" width="174" height="34" alt="" border="0"></td>
+</tr>
+<tr><td width="100%" background="gfx/map/search.png"><img src="gfx/nic2x2.gif" width="47" height="19" border="0"><input type="text" id="map-panel-search" style="background:#B7CDD5;position:absolute;margin-top:3px;width:108;height:14px;font-size:9px;border:0px" value="ticker" onfocus="onkeydownEventEnabled=false;this.value='';" onblur="onkeydownEventEnabled=true;" onkeyup="this.value=this.value.toUpperCase();PanelLocateTicker(this.value,true,false);" onkeypress="PanelLocateTicker(this.value,true,event.keyCode==13);"><img src="gfx/nic2x2.gif" width="108" height="19" border="0"><a href="javascript:PanelLocateTickerGo()"><img src="gfx/nic2x2.gif" width="19" height="19" border="0"></a></td></tr>
+<tr>
+<td valign="top">
+<div id="map-panel-list-content-clip"><div id="map-panel-list-content" style="top:0px"></div><div id="map-panel-list-scroller"><div id="map-panel-list-scroller-drag" onmouseover="lightup('pic_map_scroll')" onmouseout="turnoff('pic_map_scroll')"><img src="gfx/map/tab_scroll_d.gif" name="pic_map_scroll" alt="" onmousedown="MapPanelDrag();" onclick="scrollDown();" height="154" width="18"></div></div></div></td></tr>
+<tr>
+<td style="cursor:pointer;" onmouseover="lightup('pic_map_down');MapPanelDown();" onmouseout="turnoff('pic_map_down');MapPanelRelease();"><img src="gfx/map/tab_button_down_d.gif" name="pic_map_down" width="174" height="34" alt="" border="0"></td>
+</tr>
+</table>
+</td>
+<td><img src="gfx/map/tab_right_spacer.gif" width="6" height="600" alt="" border="0"></td>
+<td width="50%" rowspan="1000"></td>
+</tr>
+<tr>
+<td colspan="4"><img src="gfx/map/tab_bottom_spacer.gif" width="993" height="13" alt="" border="0"></td>
+</tr>
+<tr>
+<td colspan="4">
+<table background="gfx/map/scale_tab.gif" width="993" height="32" cellpadding="0" cellspacing="0" border="0"><tr>
+<td style="cursor:pointer;" title="cssbody=[tooltip_bdy] cssheader=[tooltip_hdr] header=[1 Day Performance] body=[<table width=300><tr><td class='tooltip_tab'>Color indicates today's stock performance in percent. Based on the color you can identify losers (red), neutral (black), and gainers (green).</td></tr></table>] offsety=[-70] delay=[500]"><img src="gfx/nic2x2.gif" width="665" height="9" alt="" border="0"></td>
+<td width="148"><img src="gfx/nic2x2.gif" width="15" height="9" alt="" border="0"><span id="map-status" class="map-status"></span><br><img src="gfx/nic2x2.gif" width="5" height="8" alt="" border="0"></td>
+<td><a href="javascript:Publish('t=sec')" title="cssbody=[tooltip_bdy] cssheader=[tooltip_hdr] header=[Publish Map] body=[<table width=300><tr><td class='tooltip_tab'>Publish this map on your blog, forum or any other website</td></tr></table>] offsetx=[-305] offsety=[-70] delay=[500]" onmouseover="lightup('pic_map_publish')" onmouseout="turnoff('pic_map_publish')"><img src="gfx/map/map_publish.gif" name="pic_map_publish" width="180" height="32" alt="" border="0"></a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-3261808-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+<script type="text/javascript">
+_qoptions={qacct:"p-c2W8esUZ6Q8oA"};
+</script>
+<script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+<noscript>
+<img src="http://pixel.quantserve.com/pixel/p-c2W8esUZ6Q8oA.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/>
+</noscript>
+<script language="javascript" type="text/javascript">var ord = Math.random() * 10000000000000000</script>
+<div id="banner" style="position:absolute;display:none"><script language="JavaScript" type="text/javascript">;
+document.write('<script language="JavaScript" src="http://ad.doubleclick.net/adj/invc.finviz/sector_maps;kw=;kval=sector and maps;tile=1;dcopt=ist;sz=728x90;ord=' + ord + '?" type="text/javascript"><\/script>');</script>
+<noscript><a href="http://ad.doubleclick.net/jump/invc.finviz/sector_maps;kw=;kval=sector and maps;tile=1;sz=728x90;ord=123456789?" target="_blank"><img src="http://ad.doubleclick.net/ad/invc.finviz/sector_maps;kw=;kval=sector and maps;tile=1;sz=728x90;ord=123456789?" width="728" height="90" border="0" alt=""></a></noscript>
+</div>
+<script type="text/javascript">function OnResize(){var banner=document.getElementById("banner");var el=document.getElementById("banner_position");if(el.offsetParent){var x=el.offsetLeft;while(el=el.offsetParent)x+=el.offsetLeft;banner.style.left=x;banner.style.top=18;banner.style.display='block';}}window.onresize=OnResize;OnResize();</script>
+</body>
+</html>
