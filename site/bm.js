@@ -2,6 +2,7 @@
 (function () {
   var M = window.CWSITE_META || {};
   window.CWBOOKMARKS = [
+    { key: 'gmail', title: 'Gmail - Inbox (14) - bmiller79@gmail.com', fav: window.GMAIL_FAV, w: 1035, h: 620 },
     { key: 'youtube', title: 'YouTube - Broadcast Yourself.', fav: window.YT_FAV, w: 1035, h: 560 },
     { key: 'cnn', title: 'CNN.com - Breaking News, U.S., World, Weather, Entertainment & Video News', fav: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAzUlEQVR4nO2SoQ6CYBSFD46gJi0Gu8WGI/AgRgqdzUdw+gREi/MxLD7CDzRtytxgOCWgG0yFHYtzgs5C9cRv53y74UoCICqkVmX8FzxjyzIPlsVbGDKLYwaTCbe6TpLcGQadep0kudG0rxx702QWx1yrKoUkUQDc6jrzNOXV8+i2WgVBmcsNRUFi20iEKFyWRxHOqxU6o9FPLqeui/ZwiOZggMRxCuVgPEa/xMq8dpzNEC0W6C2XUC4XdKfTV/Hu+zjN5x+Cdy79X7m64AH7NZTkLVrA8QAAAABJRU5ErkJggg==", w: 1035, h: 560 },
     { key: 'yahoofinance', title: 'Yahoo! Finance - Business Finance, Stock Market, Quotes, News', fav: window.YF_FAV, w: 1035, h: 600 },
