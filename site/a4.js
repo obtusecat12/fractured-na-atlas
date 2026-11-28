@@ -1,9 +1,15 @@
 // a4.js — 2009 chrome: tooltip, overview inset, link/print/send, about, nav stubs
 (function () {
   function $(id) { return document.getElementById(id); }
-  // ---- dead nav links do nothing (period chrome) ----
+  // ---- dead nav links do nothing (period chrome), except Mail opens 2009 Gmail ----
   document.querySelectorAll('#gnav a, #guser a, #sopts, #terms').forEach(function (a) {
-    a.addEventListener('click', function (e) { e.preventDefault(); });
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (a.id === 'gnav-mail' && window.CW) {
+        if (CW.el.hidden) CW.show(); else CW.focus();
+        CW.openSite('gmail');
+      }
+    });
   });
   // help / learn more: period chrome, do nothing
   ['help', 'learn'].forEach(function (id) { if ($(id)) $(id).onclick = function (e) { e.preventDefault(); }; });
